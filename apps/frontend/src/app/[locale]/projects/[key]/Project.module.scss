@@ -1,0 +1,74 @@
+.content {
+  position: relative;
+  background-color: white;
+
+  .project {
+    .label {
+      font-family: myriad-boldcond;
+      font-weight: normal;
+      display: block;
+      letter-spacing: 1px;
+      margin-top: 15px;
+      margin-right: 0;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .projectButtons {
+      margin: 20px auto 0;
+
+      .button {
+        margin: 10px 20px 0 0;
+
+        &.disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
+    }
+
+    .projectPicture {
+      position: relative;
+      display: block;
+      margin: 0 auto 30px;
+      width: 100%;
+      height: auto;
+      max-height: 640px;
+      box-sizing: border-box;
+      border: 2px solid black;
+
+      .profileVideo {
+        position: relative;
+        width: 100%;
+        height: auto;
+        max-height: 640px;
+      }
+
+      .profileVideoBackground {
+        position: absolute;
+        width: 100%;
+        height: auto;
+        max-height: 640px;
+        object-fit: cover;
+        object-position: 50% 50%;
+        filter: blur(5px);
+      }
+    }
+
+    .description {
+      letter-spacing: 0;
+    }
+  }
+}
+
+@media(max-width: 768px) {
+  .content .projectButtons {
+    margin: 20px auto 0;
+    text-align: center;
+
+    .button {
+      display: block;
+      margin: 10px auto;
+    }
+  }
+}

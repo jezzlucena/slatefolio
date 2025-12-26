@@ -1,0 +1,68 @@
+packages:
+  - 'apps/*'
+
+catalog:
+  # Shared dependencies
+  typescript: ^5.8.2
+  eslint: ^9.23.0
+
+  # React ecosystem
+  react: ^19.0.0
+  react-dom: ^19.0.0
+  next: 15.3.2
+  next-intl: ^4.1.0
+
+  # Type definitions
+  "@types/node": ^20
+  "@types/react": ^19
+  "@types/react-dom": ^19
+
+  # Backend dependencies
+  express: ^4.21.2
+  mongoose: ^8.9.3
+  bcryptjs: ^2.4.3
+  jsonwebtoken: ^9.0.2
+  nodemailer: ^6.9.16
+  cors: ^2.8.5
+  dotenv: ^16.4.7
+  body-parser: ^1.20.2
+  cookie-parser: ^1.4.7
+
+  # WebAuthn
+  "@simplewebauthn/server": ^11.0.0
+  "@simplewebauthn/browser": ^11.0.0
+  "@simplewebauthn/types": ^11.0.0
+
+  # Type definitions for backend
+  "@types/express": ^5.0.1
+  "@types/bcryptjs": ^2.4.6
+  "@types/cookie-parser": ^1.4.8
+  "@types/jsonwebtoken": ^9.0.7
+  "@types/nodemailer": ^6.4.17
+  "@types/lodash": ^4.17.16
+
+  # ESLint ecosystem
+  "@eslint/js": ^9.23.0
+  "@eslint/eslintrc": ^3
+  typescript-eslint: ^8.27.0
+  eslint-config-next: 15.3.2
+  globals: ^16.0.0
+
+  # Styling
+  tailwindcss: ^4
+  "@tailwindcss/postcss": ^4
+  sass: ^1.89.0
+
+  # Utilities
+  lodash: ^4.17.21
+  deepmerge: ^4.3.1
+  ts-node: ^10.9.2
+
+  # Markdown editor
+  "@uiw/react-md-editor": ^4.0.5
+
+  # File handling
+  multer: ^1.4.5-lts.1
+  sharp: ^0.33.5
+  "@types/multer": ^1.4.12
+

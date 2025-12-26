@@ -1,0 +1,34 @@
+{
+  "name": "slatefolio-frontend",
+  "version": "0.4.7",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p $FRONTEND_PORT --turbopack",
+    "build": "next build",
+    "start": "next start -p $FRONTEND_PORT",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "catalog:",
+    "@uiw/react-md-editor": "catalog:",
+    "deepmerge": "catalog:",
+    "lodash": "catalog:",
+    "next": "catalog:",
+    "next-intl": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/lodash": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "sass": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  }
+}

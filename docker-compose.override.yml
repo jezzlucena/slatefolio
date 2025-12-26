@@ -1,0 +1,22 @@
+# Development overrides - automatically loaded by docker compose
+# For production, use: docker compose -f docker-compose.yml up
+
+services:
+  frontend:
+    build:
+      args:
+        ENVIRONMENT: development
+    environment:
+      ENVIRONMENT: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      # Mount source code for hot-reloading
+      - ./apps/frontend/src:/app/apps/frontend/src:ro
+      - ./apps/frontend/public:/app/apps/frontend/public:ro
+      - ./apps/frontend/messages:/app/apps/frontend/messages:ro
+    
+  backend:
+    volumes:
+      # Mount backend source for development
+      - ./apps/backend/src:/app/apps/backend/src:ro
+

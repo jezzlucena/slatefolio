@@ -1,0 +1,52 @@
+# Dependencies - must be reinstalled in container for correct platform binaries
+node_modules
+apps/*/node_modules
+
+# Build outputs
+apps/backend/dist
+apps/frontend/.next
+apps/frontend/out
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Lock files from other package managers (we use pnpm)
+package-lock.json
+yarn.lock
+
+# Test and development files
+coverage
+.nyc_output
+*.test.ts
+*.spec.ts
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# Docker files (not needed inside container)
+docker-compose.yml
+Dockerfile
+

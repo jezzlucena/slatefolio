@@ -1,0 +1,44 @@
+{
+  "name": "slatefolio-backend",
+  "version": "0.4.7",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "populate": "npx ts-node scripts/populate-projects.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/bcryptjs": "catalog:",
+    "@types/cookie-parser": "catalog:",
+    "@types/express": "catalog:",
+    "@types/jsonwebtoken": "catalog:",
+    "@types/multer": "catalog:",
+    "@types/nodemailer": "catalog:",
+    "eslint": "catalog:",
+    "globals": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "catalog:",
+    "@simplewebauthn/types": "catalog:",
+    "bcryptjs": "catalog:",
+    "body-parser": "catalog:",
+    "cookie-parser": "catalog:",
+    "cors": "catalog:",
+    "dotenv": "catalog:",
+    "express": "catalog:",
+    "jsonwebtoken": "catalog:",
+    "mongoose": "catalog:",
+    "multer": "catalog:",
+    "nodemailer": "catalog:",
+    "sharp": "catalog:"
+  }
+}

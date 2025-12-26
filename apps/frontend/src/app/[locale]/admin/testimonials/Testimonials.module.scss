@@ -1,0 +1,235 @@
+.container {
+  position: relative;
+  background-color: white;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.backLink {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  text-decoration: none;
+  transition: 0.2s color ease;
+
+  &:hover {
+    color: white;
+  }
+}
+
+.title {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 36px;
+  margin: 0;
+  color: white;
+}
+
+.addButton {
+  background: white;
+  color: black;
+  border: 2px solid white;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-family: myriad-boldcond, sans-serif;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background: transparent;
+    color: white;
+  }
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border: 2px solid black;
+  box-shadow: 8px 8px 0 -1px rgba(0, 0, 0, 1);
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+}
+
+.loading {
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  padding: 40px;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border: 2px solid black;
+
+  p {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+}
+
+.testimonialList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.testimonialItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border: 2px solid black;
+  transition: 0.2s all ease;
+
+  &:hover {
+    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    transform: translate(-2px, -2px);
+  }
+}
+
+.testimonialInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.testimonialAuthor {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 18px;
+  margin: 0 0 5px 0;
+  color: black;
+}
+
+.testimonialRole {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 10px 0;
+}
+
+.testimonialQuote {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+  font-style: italic;
+}
+
+.testimonialActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.editButton {
+  background: black;
+  color: white;
+  border: 2px solid black;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: opensans, sans-serif;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-decoration: none;
+
+  &:hover {
+    background: white;
+    color: black;
+  }
+}
+
+.deleteButton {
+  background: transparent;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: opensans, sans-serif;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: #dc2626;
+    color: white;
+  }
+}
+
+.deleteConfirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  span {
+    font-size: 12px;
+    color: #dc2626;
+  }
+}
+
+.confirmYes {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: #b91c1c;
+  }
+}
+
+.confirmNo {
+  background: #e5e5e5;
+  color: #555;
+  border: none;
+  padding: 6px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: #d4d4d4;
+  }
+}
+
+@media (max-width: 640px) {
+  .testimonialItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .testimonialActions {
+    justify-content: flex-end;
+  }
+}
+

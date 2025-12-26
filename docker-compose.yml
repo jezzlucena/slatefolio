@@ -1,8 +1,64 @@
-name: next-portfolio
+name: slatefolio
 
 services:
-  frontend:
-    build: ./
+  mongo:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_DATABASE: slatefolio
+    volumes:
+      - mongo_data:/data/db
     ports:
-      - 8086:8086
-    restart: always
+      - 27017:27017
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+      MONGODB_URI: mongodb://mongo:27017/slatefolio
+      JWT_SECRET: ${JWT_SECRET}
+      WEBAUTHN_RP_NAME: ${WEBAUTHN_RP_NAME}
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID}
+      WEBAUTHN_ORIGIN: ${WEBAUTHN_ORIGIN}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      SMTP_TO_EMAIL: ${SMTP_TO_EMAIL}
+      # Uploads configuration
+      UPLOADS_DIR: /app/uploads
+      UPLOADS_URL: ${UPLOADS_URL:-/uploads}
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - 5050:5050
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        FRONTEND_PORT: ${FRONTEND_PORT}
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+        NEXT_PUBLIC_SOURCE: ${NEXT_PUBLIC_SOURCE}
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_URL: http://backend:5050
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+      NEXT_PUBLIC_SOURCE: ${NEXT_PUBLIC_SOURCE}
+    ports:
+      - 8080:8080
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  uploads_data:

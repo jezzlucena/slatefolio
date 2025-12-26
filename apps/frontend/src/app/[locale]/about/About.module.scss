@@ -1,0 +1,163 @@
+
+.content {
+  position: relative;
+  background-color: white;
+  width: 100%;
+  color: black;
+  border-top: 2px solid white;
+
+  .aboutContainer {
+    .profilePicture {
+      float: left;
+      margin: 20px 40px 20px 0;
+      height: 175px;
+      width: 175px;
+      background-image: url('/assets/img/jezz_profile.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border: 2px solid black;
+      transition: 0.2s box-shadow ease, 0.2s transform ease;
+
+      &:hover, &:global(.hovered) {
+        box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+        transform: translate(-3px, -3px);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .profilePicture {
+        height: 140px;
+        width: 140px;
+        margin: 10px 20px 10px 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .profilePicture {
+        height: 100px;
+        width: 100px;
+        margin: 10px 20px 10px 0;
+      }
+    }
+
+    .profileName {
+      font-size: 30px;
+      font-weight: bold;
+      line-height: 30px;
+      padding-top: 24px;
+      margin-bottom: 10px;
+      text-decoration: underline;
+      font-family: myriad-boldcond;
+    }
+    
+    .profileTitle {
+      font-size: 18px;
+      line-height: 18px;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 1024px) {
+      .profileName {
+        margin-bottom: 5px;
+        font-size: 26px;
+        padding-top: 10px;
+      }
+
+      .profileTitle {
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .profileName {
+        font-size: 22px;
+      }
+
+      .profileTitle {
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+  }
+
+  .textContainer {
+    margin-top: 30px;
+    max-height: 1000px;
+    transition: 1s max-height ease;
+    padding-bottom: 40px;
+    overflow: hidden;
+
+    .readMoreContainer {
+      background-image: linear-gradient(to bottom, transparent, white);
+    }
+
+    &.collapsed {
+      max-height: 100px;
+      overflow: hidden;
+    }
+
+    .paragraph {
+      margin-bottom: 20px;
+      line-height: 28px;
+
+      &:first-child {
+        text-indent: 40px;
+      }
+    }
+
+    .readMoreContainer {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 80px;
+      width: 100%;
+
+      .button {
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .textContainer {
+      max-height: 1000px;
+
+      &.collapsed {
+        max-height: 300px;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .textContainer {
+      max-height: 1000px;
+
+      &.collapsed {
+        max-height: 200px;
+      }
+    }
+  }
+}
+
+.testimonials {
+  background-color: white;
+  padding: 50px 0;
+  margin: 0 auto;
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .paragraph {
+    text-indent: 60px;
+    margin-bottom: 20px;
+  }
+}

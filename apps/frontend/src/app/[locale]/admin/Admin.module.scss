@@ -1,0 +1,130 @@
+.container {
+  position: relative;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.title {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 36px;
+  margin: 0;
+  color: white;
+}
+
+.logoutButton {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-family: myriad-boldcond, sans-serif;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    background: white;
+    color: black;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border: 2px solid black;
+  box-shadow: 8px 8px 0 -1px rgba(0, 0, 0, 1);
+}
+
+.cardTitle {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 22px;
+  margin: 0 0 15px 0;
+  color: black;
+}
+
+.cardText {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: black;
+  color: white;
+  border: 2px solid black;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-family: opensans, sans-serif;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    background: white;
+    color: black;
+    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    transform: translate(-2px, -2px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.success {
+  color: #16a34a;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.comingSoon {
+  color: #888;
+  font-style: italic;
+  font-size: 14px;
+}
+
