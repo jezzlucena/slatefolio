@@ -519,6 +519,99 @@
   margin: 0;
 }
 
+// Profile image upload styles
+.imageUploadArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px;
+  border: 2px dashed #ddd;
+  background: #f9f9f9;
+}
+
+.imagePreview {
+  width: 150px;
+  height: 150px;
+  border: 2px solid #ddd;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.noImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #e5e5e5;
+  color: #9ca3af;
+
+  svg {
+    width: 60%;
+    height: 60%;
+  }
+}
+
+.imageUploadControls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-family: myriad-boldcond, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: black;
+  color: white;
+  border: 2px solid black;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-align: center;
+
+  &:hover {
+    background: white;
+    color: black;
+    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    transform: translate(-2px, -2px);
+  }
+}
+
+.removeImageButton {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: myriad-boldcond, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: white;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  cursor: pointer;
+  transition: 0.2s all ease;
+
+  &:hover {
+    background: #dc2626;
+    color: white;
+  }
+}
+
 @media (max-width: 640px) {
   .form {
     padding: 20px;

@@ -16,7 +16,8 @@
     "next": "catalog:",
     "next-intl": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "react-markdown": "catalog:"
   },
   "devDependencies": {
     "@eslint/eslintrc": "catalog:",

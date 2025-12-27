@@ -1,0 +1,311 @@
+.container {
+  position: relative;
+  background-color: white;
+  min-height: 100vh;
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  border: 2px solid black;
+  padding: 40px;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.backLink {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.2s color ease;
+
+  &:hover {
+    color: black;
+  }
+}
+
+.title {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 32px;
+  margin: 0;
+}
+
+.uploadArea {
+  display: flex;
+  align-items: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  background: black;
+  color: white;
+  border: 2px solid black;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-family: myriad-boldcond, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-decoration: none;
+
+  &:hover {
+    background: white;
+    color: black;
+    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    transform: translate(-2px, -2px);
+  }
+}
+
+.info {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 15px 20px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #666;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+}
+
+.success {
+  color: #16a34a;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.resumeList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resumeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid #ddd;
+  background: white;
+  transition: 0.2s all ease;
+
+  &:hover {
+    border-color: #999;
+  }
+
+  &.active {
+    border-color: #16a34a;
+    background: #f0fdf4;
+  }
+}
+
+.resumeInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.resumeHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.resumeName {
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 18px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activeBadge {
+  background: #16a34a;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resumeMeta {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resumeActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.viewButton,
+.activateButton,
+.deleteButton {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-family: myriad-boldcond, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+  text-decoration: none;
+  border: 2px solid;
+}
+
+.viewButton {
+  background: white;
+  color: black;
+  border-color: black;
+
+  &:hover {
+    background: black;
+    color: white;
+  }
+}
+
+.activateButton {
+  background: #16a34a;
+  color: white;
+  border-color: #16a34a;
+
+  &:hover {
+    background: #15803d;
+    border-color: #15803d;
+  }
+}
+
+.deleteButton {
+  background: white;
+  color: #dc2626;
+  border-color: #dc2626;
+
+  &:hover:not(:disabled) {
+    background: #dc2626;
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.deleteConfirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+.confirmYes,
+.confirmNo {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-family: myriad-boldcond, sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 2px solid;
+  transition: 0.2s all ease;
+}
+
+.confirmYes {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+
+  &:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+  }
+}
+
+.confirmNo {
+  background: white;
+  color: #666;
+  border-color: #999;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: #666;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .uploadButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .resumeItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .resumeActions {
+    flex-wrap: wrap;
+  }
+
+  .viewButton,
+  .activateButton,
+  .deleteButton {
+    flex: 1;
+    text-align: center;
+  }
+}
+

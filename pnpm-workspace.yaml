@@ -60,6 +60,7 @@ catalog:
 
   # Markdown editor
   "@uiw/react-md-editor": ^4.0.5
+  react-markdown: ^10.1.0
 
   # File handling
   multer: ^1.4.5-lts.1

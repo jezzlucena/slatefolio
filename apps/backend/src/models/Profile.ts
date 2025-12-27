@@ -12,6 +12,7 @@ export interface IProfile extends Document {
   role: ILocalizedString;
   company?: ILocalizedString;
   keywords: string[];
+  profileImageUrl?: string;
   linkedinUrl?: string;
   githubUrl?: string;
   websiteUrl?: string;
@@ -65,6 +66,10 @@ const ProfileSchema = new Schema<IProfile>(
     keywords: {
       type: [String],
       default: [],
+    },
+    profileImageUrl: {
+      type: String,
+      default: null,
     },
     linkedinUrl: {
       type: String,

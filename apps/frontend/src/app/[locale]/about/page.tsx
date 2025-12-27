@@ -1,14 +1,44 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { useLocale, useTranslations } from "next-intl";
+import ReactMarkdown from "react-markdown";
 import styles from "./About.module.scss"
 import Link from "next/link";
-import { PROFILE_KEYWORDS } from "@/utils/constants";
 import Button from "@/components/Button/Button";
 import Heading from "@/components/Heading/Heading";
 import Keywords from "@/components/Keywords/Keywords";
 import Testimonial from "@/components/Testimonial/Testimonial";
-import { useTranslations } from "next-intl";
+
+interface LocalizedString {
+  en: string;
+  es: string;
+  pt: string;
+}
+
+interface ProfileData {
+  name: LocalizedString;
+  blurb: LocalizedString;
+  role: LocalizedString;
+  company?: LocalizedString;
+  keywords: string[];
+  profileImageUrl?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  websiteUrl?: string;
+}
+
+interface TestimonialData {
+  _id: string;
+  key: string;
+  author: string;
+  url: string;
+  quote: LocalizedString;
+  role?: LocalizedString;
+  connection: LocalizedString;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
 
 /**
  * Page that displays details about Jezz's career, including testimonials from former
@@ -17,39 +47,116 @@ import { useTranslations } from "next-intl";
 export default function About() {
   const t = useTranslations("about");
   const commonT = useTranslations("common");
+  const locale = useLocale() as keyof LocalizedString;
   const [isTextCollapsed, setTextCollapsed] = useState(true);
-  
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [testimonials, setTestimonials] = useState<TestimonialData[]>([]);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(true);
+
+  // Fetch profile and testimonials
   useEffect(() => {
-    if (typeof document !== 'undefined') document.title = `${commonT("about")} - ${commonT("jezzLucena")}`;
-  });
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${API_URL}/profile`);
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data.profile || null);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch(`${API_URL}/testimonials`);
+        if (response.ok) {
+          const data = await response.json();
+          setTestimonials(data.testimonials || []);
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+      } finally {
+        setIsLoadingTestimonials(false);
+      }
+    };
+
+    fetchProfile();
+    fetchTestimonials();
+  }, []);
+
+  // Update document title
+  useEffect(() => {
+    const name = profile?.name[locale] || profile?.name.en || commonT("jezzLucena");
+    if (typeof document !== 'undefined') {
+      document.title = `${commonT("about")} - ${name}`;
+    }
+  }, [profile, locale, commonT]);
+
+  // Get localized content with fallback
+  const getName = () => profile?.name[locale] || profile?.name.en || commonT("jezzLucena");
+  const getRole = () => profile?.role[locale] || profile?.role.en || commonT("fullStackEngineer");
+  const getBlurb = () => profile?.blurb[locale] || profile?.blurb.en || '';
+  const getKeywords = () => profile?.keywords || [];
+  const getLinkedInUrl = () => profile?.linkedinUrl || 'http://linkedin.com/in/jezzlucena';
+  const getProfileImageUrl = () => profile?.profileImageUrl ? `${API_URL}${profile.profileImageUrl}` : null;
 
   return (
     <div className={`${styles.content} relative bg-white`}>
       <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
         <div className="w-[100%] mx-auto py-[30px] px-[20px] md:px-[30px] lg:px-[50px]">
-          <div className={`${styles.aboutContainer}`}>
-            <div className={`${styles.description}`}>
-              <Link className={`${styles.profilePicture}`} target="_blank" href="http://linkedin.com/in/jezzlucena" />
-              <Link target="_blank" href="http://linkedin.com/in/jezzlucena">
-                <div className={`${styles.profileName}`}>{commonT("jezzLucena")}</div>
-                <div className={`${styles.profileTitle}`}>{commonT("fullStackEngineer")}</div>
-              </Link>
-              
-              <Keywords label="Keywords" keywords={PROFILE_KEYWORDS} />
-            </div>
-          </div>
-          <div className={`${styles.textContainer} relative ${isTextCollapsed ? styles.collapsed : "" }`}>
-            <p className={styles.paragraph}>{t("blurb.p0")}</p>
-            <p className={styles.paragraph}>{t("blurb.p1")}</p>
-            <p className={styles.paragraph}>{t("blurb.p2")}</p>
+          {isLoadingProfile ? (
+            <div className={styles.loadingProfile}>Loading profile...</div>
+          ) : (
+            <>
+              <div className={`${styles.aboutContainer}`}>
+                <div className={`${styles.description}`}>
+                  <Link 
+                    className={`${styles.profilePicture} ${!getProfileImageUrl() ? styles.noImage : ''}`} 
+                    target="_blank" 
+                    href={getLinkedInUrl()}
+                    style={getProfileImageUrl() ? { backgroundImage: `url('${getProfileImageUrl()}')` } : undefined}
+                  >
+                    {!getProfileImageUrl() && (
+                      <svg
+                        className={styles.silhouette}
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    )}
+                  </Link>
+                  <Link target="_blank" href={getLinkedInUrl()}>
+                    <div className={`${styles.profileName}`}>{getName()}</div>
+                    <div className={`${styles.profileTitle}`}>{getRole()}</div>
+                  </Link>
+                  
+                  {getKeywords().length > 0 && (
+                    <Keywords label="Keywords" keywords={getKeywords()} />
+                  )}
+                </div>
+              </div>
+              {getBlurb() && (
+                <div className={`${styles.textContainer} relative ${isTextCollapsed ? styles.collapsed : "" }`}>
+                  <div className={styles.blurbContent}>
+                    <ReactMarkdown>{getBlurb()}</ReactMarkdown>
+                  </div>
 
-            <div className={`${styles.readMoreContainer}`}>
-              <Button
-                className={ styles.button }
-                onClick={() => setTextCollapsed(!isTextCollapsed)}
-              >{isTextCollapsed ? t("readMore") : t("collapse")}</Button>
-            </div>
-          </div>
+                  <div className={`${styles.readMoreContainer}`}>
+                    <Button
+                      className={ styles.button }
+                      onClick={() => setTextCollapsed(!isTextCollapsed)}
+                    >{isTextCollapsed ? t("readMore") : t("collapse")}</Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
           <div style={{ clear: "both" }}></div>
         </div>
 
@@ -57,34 +164,22 @@ export default function About() {
           <Heading>{t("testimonials.title")}</Heading>
 
           <div className={styles.container}>
-            <Testimonial
-              href={t("testimonials.chris.link")}
-              author={t("testimonials.chris.author")}
-              role={t("testimonials.chris.role")}
-              connection={t("testimonials.chris.connection")}
-            >
-              <p className={styles.paragraph}>{t("testimonials.chris.quote")}</p>
-            </Testimonial>
-
-            <Testimonial
-              href={t("testimonials.klew.link")}
-              author={t("testimonials.klew.author")}
-              role={t("testimonials.klew.role")}
-              connection={t("testimonials.klew.connection")}
-            >
-              <p className={styles.paragraph}>{t("testimonials.klew.quote1")}</p>
-              <p className={styles.paragraph}>{t("testimonials.klew.quote2")}</p>
-              <p className={styles.paragraph}>{t("testimonials.klew.quote3")}</p>
-            </Testimonial>
-
-            <Testimonial
-              href={t("testimonials.chaima.link")}
-              author={t("testimonials.chaima.author")}
-              role={t("testimonials.chaima.role")}
-              connection={t("testimonials.chaima.connection")}
-            >
-              <p className={styles.paragraph}>{t("testimonials.chaima.quote")}</p>
-            </Testimonial>
+            {isLoadingTestimonials ? (
+              <p className={styles.loading}>Loading testimonials...</p>
+            ) : testimonials.length === 0 ? (
+              <p className={styles.noTestimonials}>No testimonials available.</p>
+            ) : (
+              testimonials.map((testimonial) => (
+                <Testimonial
+                  key={testimonial._id}
+                  href={testimonial.url}
+                  author={testimonial.author}
+                  role={testimonial.role?.[locale] || testimonial.role?.en || ''}
+                  connection={testimonial.connection[locale] || testimonial.connection.en}
+                  quote={testimonial.quote[locale] || testimonial.quote.en}
+                />
+              ))
+            )}
           </div>
       </div>
     </div>

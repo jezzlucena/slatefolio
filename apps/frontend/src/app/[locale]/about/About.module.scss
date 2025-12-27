@@ -12,16 +12,28 @@
       margin: 20px 40px 20px 0;
       height: 175px;
       width: 175px;
-      background-image: url('/assets/img/jezz_profile.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       border: 2px solid black;
       transition: 0.2s box-shadow ease, 0.2s transform ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover, &:global(.hovered) {
         box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
         transform: translate(-3px, -3px);
+      }
+
+      &.noImage {
+        background-color: #e5e5e5;
+      }
+
+      .silhouette {
+        width: 60%;
+        height: 60%;
+        color: #9ca3af;
       }
     }
 
@@ -146,6 +158,47 @@
   }
 }
 
+.loadingProfile {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.blurbContent {
+  p {
+    margin-bottom: 20px;
+    line-height: 28px;
+
+    &:first-child {
+      text-indent: 40px;
+    }
+  }
+
+  strong, b {
+    font-weight: 700;
+  }
+
+  em, i {
+    font-style: italic;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  ul, ol {
+    margin-left: 40px;
+    margin-bottom: 20px;
+  }
+
+  li {
+    margin-bottom: 8px;
+    line-height: 28px;
+  }
+}
+
 .testimonials {
   background-color: white;
   padding: 50px 0;
@@ -159,5 +212,13 @@
   .paragraph {
     text-indent: 60px;
     margin-bottom: 20px;
+  }
+
+  .loading,
+  .noTestimonials {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 16px;
   }
 }

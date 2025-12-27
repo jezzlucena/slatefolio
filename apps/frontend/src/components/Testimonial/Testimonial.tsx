@@ -1,8 +1,11 @@
+'use client';
+
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
 import styles from "./Testimonial.module.scss"
 
 interface TestimonialProps {
-  children: React.ReactNode,
+  quote: string,
   role: string,
   connection: string,
   author: string,
@@ -13,9 +16,10 @@ interface TestimonialProps {
  * Instance of a Testimonial to be used on the About screen
  * 
  * @prop {string} href Hyperlink to be opened on a separate tab of the browser upon clicking this testimonial
+ * @prop {string} quote Markdown content for the testimonial quote
  */
 export default function Testimonial({
-  children,
+  quote,
   role,
   connection,
   author,
@@ -25,7 +29,7 @@ export default function Testimonial({
     <Link href={href} target="_blank">
       <div className={`${styles.testimonial}`}>
         <div className={`${styles.quote}`}>
-          { children }
+          <ReactMarkdown>{quote}</ReactMarkdown>
         </div>
         <div className={`${styles.author}`}>
           - { author }

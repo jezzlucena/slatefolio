@@ -3,6 +3,19 @@
   padding-bottom: calc(129% + 56px);
 }
 
+.loading,
+.error,
+.noResume {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.error {
+  color: #dc2626;
+}
+
 .icon {
   position: absolute;
   top: 50%;

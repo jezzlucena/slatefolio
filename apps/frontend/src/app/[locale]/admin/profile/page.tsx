@@ -1,10 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import styles from './Profile.module.scss';
+
+// Debounce helper
+function debounce<T extends (...args: Parameters<T>) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 // Dynamic import for markdown editor to avoid SSR issues
 const MDEditor = dynamic(
@@ -24,6 +36,7 @@ interface ProfileData {
   role: LocalizedString;
   company?: LocalizedString;
   keywords: string[];
+  profileImageUrl?: string;
   linkedinUrl?: string;
   githubUrl?: string;
   websiteUrl?: string;
@@ -66,6 +79,7 @@ export default function AdminProfilePage() {
     role: emptyLocalizedString(),
     company: emptyLocalizedString(),
     keywords: [],
+    profileImageUrl: '',
     linkedinUrl: '',
     githubUrl: '',
     websiteUrl: '',
@@ -78,8 +92,10 @@ export default function AdminProfilePage() {
     country: '',
   });
 
+  // Profile image upload state
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   // Keyword autocomplete state
-  const [keywordSuggestions, setKeywordSuggestions] = useState<string[]>([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
@@ -107,6 +123,7 @@ export default function AdminProfilePage() {
             role: data.profile.role || emptyLocalizedString(),
             company: data.profile.company || emptyLocalizedString(),
             keywords: data.profile.keywords || [],
+            profileImageUrl: data.profile.profileImageUrl || '',
             linkedinUrl: data.profile.linkedinUrl || '',
             githubUrl: data.profile.githubUrl || '',
             websiteUrl: data.profile.websiteUrl || '',
@@ -128,26 +145,44 @@ export default function AdminProfilePage() {
       }
     };
 
-    const fetchKeywordSuggestions = async () => {
-      try {
-        const response = await fetch(`${API_URL}/admin/profile/keyword-suggestions`, {
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setKeywordSuggestions(data.suggestions || []);
-        }
-      } catch (err) {
-        console.error('Error fetching keyword suggestions:', err);
-      }
-    };
-
     if (isLoggedIn) {
       fetchProfile();
-      fetchKeywordSuggestions();
     }
   }, [isLoggedIn]);
+
+  // Debounced fetch for autocomplete suggestions
+  const fetchAutocompleteSuggestions = useCallback(
+    async (query: string) => {
+      try {
+        const response = await fetch(
+          `${API_URL}/autocomplete/suggestions?q=${encodeURIComponent(query)}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const suggestions = data.suggestions || [];
+          
+          // Filter out already selected keywords
+          const filtered = suggestions.filter(
+            (s: string) => !formData.keywords.some((k) => k.toLowerCase() === s.toLowerCase())
+          );
+          
+          setFilteredSuggestions(filtered);
+          setShowSuggestions(filtered.length > 0 && query.trim().length > 0);
+        }
+      } catch (error) {
+        console.error('Error fetching autocomplete suggestions:', error);
+      }
+    },
+    [formData.keywords]
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFetchSuggestions = useCallback(
+    debounce((query: string) => {
+      fetchAutocompleteSuggestions(query);
+    }, 300),
+    [fetchAutocompleteSuggestions]
+  );
 
   const handleLocalizedChange = (
     field: 'name' | 'blurb' | 'role' | 'company',
@@ -213,13 +248,7 @@ export default function AdminProfilePage() {
     const currentWord = value.trim();
     
     if (currentWord.length > 0) {
-      const filtered = keywordSuggestions.filter(
-        (suggestion) =>
-          suggestion.toLowerCase().includes(currentWord.toLowerCase()) &&
-          !formData.keywords.some((k) => k.toLowerCase() === suggestion.toLowerCase())
-      );
-      setFilteredSuggestions(filtered);
-      setShowSuggestions(filtered.length > 0);
+      debouncedFetchSuggestions(currentWord);
       setSelectedSuggestionIndex(-1);
     } else {
       setShowSuggestions(false);
@@ -275,6 +304,52 @@ export default function AdminProfilePage() {
       setShowSuggestions(false);
       setSelectedSuggestionIndex(-1);
     }, 150);
+  };
+
+  // Handle profile image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setError(null);
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/admin/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formDataUpload,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        setFormData((prev) => ({
+          ...prev,
+          profileImageUrl: data.url,
+        }));
+        setSuccess('Image uploaded successfully!');
+        setTimeout(() => setSuccess(null), 3000);
+      }
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      setError('Failed to upload image');
+    } finally {
+      setIsUploadingImage(false);
+      // Reset file input
+      e.target.value = '';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -391,6 +466,57 @@ export default function AdminProfilePage() {
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Profile Image</h2>
+          <p className={styles.sectionDescription}>
+            Upload a profile photo that will be displayed on the About page.
+          </p>
+
+          <div className={styles.imageUploadArea}>
+            <div className={styles.imagePreview}>
+              {formData.profileImageUrl ? (
+                <img
+                  src={`${API_URL}${formData.profileImageUrl}`}
+                  alt="Profile"
+                  className={styles.previewImage}
+                />
+              ) : (
+                <div className={styles.noImage}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <div className={styles.imageUploadControls}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className={styles.fileInput}
+                id="profile-image-upload"
+                disabled={isUploadingImage}
+              />
+              <label htmlFor="profile-image-upload" className={styles.uploadButton}>
+                {isUploadingImage ? 'Uploading...' : formData.profileImageUrl ? 'Change Image' : 'Upload Image'}
+              </label>
+              {formData.profileImageUrl && (
+                <button
+                  type="button"
+                  className={styles.removeImageButton}
+                  onClick={() => setFormData((prev) => ({ ...prev, profileImageUrl: '' }))}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Localized Content</h2>
           <p className={styles.sectionDescription}>
             Fill in the content for each language. Switch between tabs to enter translations.
@@ -447,7 +573,7 @@ export default function AdminProfilePage() {
                 <MDEditor
                   value={formData.blurb[activeTab]}
                   onChange={(value: string | undefined) => handleLocalizedChange('blurb', activeTab, value || '')}
-                  preview="edit"
+                  preview="live"
                   height={200}
                   textareaProps={{
                     placeholder: 'Write your bio in markdown...',

@@ -1,17 +1,56 @@
+'use client';
+
 import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
 import Logo from "../Logo/Logo";
+import SacredGeometry from "../SacredGeometry/SacredGeometry";
+import HolyGeometry from "../HolyGeometry/HolyGeometry";
+import CellularAutomata from "../CellularAutomata/CellularAutomata";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
 
+type HeaderArt = 'logo' | 'sacred' | 'holy' | 'cellular';
+
 export default function Header() {
   const t = useTranslations('common');
+  const [headerArt, setHeaderArt] = useState<HeaderArt>('logo');
+  const [isClient, setIsClient] = useState(false);
+
+  // Randomly decide which art to show (1/4 each)
+  useEffect(() => {
+    setIsClient(true);
+    const random = Math.random();
+    if (random < 0.25) {
+      setHeaderArt('logo');
+    } else if (random < 0.5) {
+      setHeaderArt('sacred');
+    } else if (random < 0.75) {
+      setHeaderArt('holy');
+    } else {
+      setHeaderArt('cellular');
+    }
+  }, []);
+
+  const renderHeaderArt = () => {
+    switch (headerArt) {
+      case 'sacred':
+        return <SacredGeometry />;
+      case 'holy':
+        return <HolyGeometry />;
+      case 'cellular':
+        return <CellularAutomata />;
+      case 'logo':
+      default:
+        return <Logo />;
+    }
+  };
 
   return (
     <>
       <TopBar />
 
       <div className={`${styles.header} ${styles.fixed}`}>
-        <Logo />
+        {isClient && renderHeaderArt()}
       </div>
 
       <div className={`${styles.header} ${styles.relative}`}>

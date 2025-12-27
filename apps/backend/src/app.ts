@@ -14,6 +14,8 @@ import projectsController from './controllers/projects';
 import testimonialsController from './controllers/testimonials';
 import profileController from './controllers/profile';
 import uploadController from './controllers/upload';
+import resumeController from './controllers/resume';
+import autocompleteController from './controllers/autocomplete';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -86,9 +88,23 @@ app.get('/profile', profileController.getProfile);
 app.put('/admin/profile', requireAuth, profileController.upsertProfile);
 app.get('/admin/profile/keyword-suggestions', requireAuth, profileController.getKeywordSuggestions);
 
+// Autocomplete endpoint (public)
+app.get('/autocomplete/suggestions', autocompleteController.getSuggestions);
+
 // Admin Upload endpoints (protected)
 app.post('/admin/upload', requireAuth, uploadController.upload.single('file'), uploadController.uploadFile);
 app.delete('/admin/upload', requireAuth, uploadController.deleteFile);
+
+// Resume endpoints (public)
+app.get('/resume/active', resumeController.getActiveResume);
+app.get('/resume/file/active', resumeController.serveActiveResume);
+app.get('/resume/file/:id', resumeController.serveResume);
+
+// Admin Resume endpoints (protected)
+app.get('/admin/resumes', requireAuth, resumeController.getAllResumes);
+app.post('/admin/resumes', requireAuth, resumeController.uploadMiddleware.single('file'), resumeController.uploadResume);
+app.put('/admin/resumes/:id/activate', requireAuth, resumeController.setActiveResume);
+app.delete('/admin/resumes/:id', requireAuth, resumeController.deleteResume);
 
 // Connect to database and start server
 const startServer = async () => {

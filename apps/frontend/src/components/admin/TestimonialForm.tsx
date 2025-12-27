@@ -1,7 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import styles from './TestimonialForm.module.scss';
+
+// Dynamic import for markdown editor to avoid SSR issues
+const MDEditor = dynamic(
+  () => import('@uiw/react-md-editor').then((mod) => mod.default),
+  { ssr: false }
+);
 
 interface LocalizedString {
   en: string;
@@ -45,6 +52,8 @@ export default function TestimonialForm({
   isEditMode = false,
 }: TestimonialFormProps) {
   const [activeTab, setActiveTab] = useState<'en' | 'es' | 'pt'>('en');
+  const [copyFromLang, setCopyFromLang] = useState<'en' | 'es' | 'pt'>('en');
+  const [copyToLang, setCopyToLang] = useState<'en' | 'es' | 'pt'>('es');
   const [formData, setFormData] = useState<TestimonialData>({
     key: initialData?.key || '',
     author: initialData?.author || '',
@@ -95,6 +104,31 @@ export default function TestimonialForm({
       formData.quote[lang]?.trim() !== '' &&
       formData.connection[lang]?.trim() !== ''
     );
+  };
+
+  const copyLocalizedContent = () => {
+    if (copyFromLang === copyToLang) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      quote: {
+        ...prev.quote,
+        [copyToLang]: prev.quote[copyFromLang],
+      },
+      role: prev.role
+        ? {
+            ...prev.role,
+            [copyToLang]: prev.role[copyFromLang],
+          }
+        : prev.role,
+      connection: {
+        ...prev.connection,
+        [copyToLang]: prev.connection[copyFromLang],
+      },
+    }));
+
+    // Switch to the target tab to show the copied content
+    setActiveTab(copyToLang);
   };
 
   return (
@@ -173,14 +207,17 @@ export default function TestimonialForm({
             <label className={styles.label}>
               Quote <span className={styles.langBadge}>{activeTab.toUpperCase()}</span>
             </label>
-            <textarea
-              value={formData.quote[activeTab]}
-              onChange={(e) => handleLocalizedChange('quote', activeTab, e.target.value)}
-              className={styles.textarea}
-              rows={4}
-              placeholder={`Enter the testimonial quote in ${LANGUAGE_LABELS[activeTab]}...`}
-              required={activeTab === 'en'}
-            />
+            <div className={styles.markdownEditor} data-color-mode="light">
+              <MDEditor
+                value={formData.quote[activeTab]}
+                onChange={(value: string | undefined) => handleLocalizedChange('quote', activeTab, value || '')}
+                preview="live"
+                height={200}
+                textareaProps={{
+                  placeholder: `Enter the testimonial quote in ${LANGUAGE_LABELS[activeTab]}...`,
+                }}
+              />
+            </div>
           </div>
 
           <div className={styles.fieldGroup}>
@@ -224,6 +261,41 @@ export default function TestimonialForm({
               </span>
             </div>
           ))}
+        </div>
+
+        <div className={styles.copyWidget}>
+          <span className={styles.copyLabel}>Copy from</span>
+          <select
+            value={copyFromLang}
+            onChange={(e) => setCopyFromLang(e.target.value as 'en' | 'es' | 'pt')}
+            className={styles.copySelect}
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>
+                {LANGUAGE_LABELS[lang]}
+              </option>
+            ))}
+          </select>
+          <span className={styles.copyLabel}>to</span>
+          <select
+            value={copyToLang}
+            onChange={(e) => setCopyToLang(e.target.value as 'en' | 'es' | 'pt')}
+            className={styles.copySelect}
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>
+                {LANGUAGE_LABELS[lang]}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={copyLocalizedContent}
+            className={styles.copyButton}
+            disabled={copyFromLang === copyToLang}
+          >
+            Copy
+          </button>
         </div>
       </div>
 
