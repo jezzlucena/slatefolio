@@ -1,49 +1,16 @@
 {
   "common": {
-    "jezzLucena": "Jezz Lucena",
-    "fullStackEngineer": "Full Stack Engineer",
     "about": "About",
     "portfolio": "Portfolio",
     "resume": "Resumé",
-    "contact": "Contact",
-    "switchToNuxt": "Switch to Nuxt / Vue 3",
-    "switchToNext": "Switch to Next.js / React"
+    "contact": "Contact"
   },
   "home": {
     "myWork": "Some of my work"
   },
   "about": {
     "readMore": "Read More",
-    "collapse": "Collapse",
-    "blurb": {
-      "p0": "Building magical end-user experiences is my true passion. I actively seek out new technologies, and stay up-to-date on the industry's most recent frameworks, languages and trends.",
-      "p1": "With a Bachelor’s degree in Computer Engineering and a Master’s degree in Interactive Media & Game Development, continued education has allowed me to stay ahead of the curve and deliver exceptional work to each employer I’ve worked for - both full-time and contract.",
-      "p2": "My technical expertise includes cross-platform proficiency (Mac OS, Unix, Linux and Windows); experience with 13 scripting/programming languages (including ES6, CSS3, HTML5, Phoenix/Elixir and PostgreSQL); and advanced knowledge of developer applications, tools, methodologies and best practices (including OOD, client/server architecture and self-test automation)."
-    },
-    "testimonials": {
-      "title": "Testimonials",
-      "chris": {
-        "link": "https://www.linkedin.com/in/chrisebennett/",
-        "quote": "Working with Jezz was a pleasure. His creative, detail oriented approach was very valuable in the product creation process at Wonderschool. I found it rare and rewarding to work with engineer who could think about the full stack of development while also empathizing with the customers needs.",
-        "author": "Chris Bennet",
-        "role": "CEO at Wonderschool, Inc.",
-        "connection": "Chris was senior to Jezz at Wonderschool"
-      },
-      "klew": {
-        "link": "https://www.linkedin.com/in/klewstill/",
-        "quote": "Jezz and I studied together at Worcester Polytechnic Institute for our MS in Interactive Media and Game Development where we worked together on projects.\n\nJezz is a phenomenal worker and a phenomenal personality to work with. He has a broad base of talents, particularly engineering, writing, design, and criticism, and is a truly deep thinker who is easy to collaborate on and passionate about positivity, authenticity, and morality in the work place.\n\nThe best thing about Jezz as a worker is that he has true, raw talent that he's honed with practice and that he is deeply focused on making positive changes in his community and his industry with that talent and practice. He seeks to learn about others, to understand the theory behind his work, and to act beyond himself. This reflects WPI's motto, \"Theory and Practice\" which Jezz has truly exemplified in his academic and personal projects.",
-        "author": "Klew Still",
-        "role": "UX Designer at Finalize, Inc.",
-        "connection": "Jezz and Klew were grad students together at Worcester Polytechnic Institute"
-      },
-      "chaima": {
-        "link": "https://www.linkedin.com/in/chaima-jemmali-732a7655/",
-        "quote": "Jezz is not only an excellent programmer with technical skills covering multiple languages, platforms and engines, he is also a creative thinker and designer always looking for new ideas and projects. As an active learner, he is continuously taking on new challenges to harness his skills and acquire new ones.",
-        "author": "Chaima Jemmali",
-        "role": "PhD Researcher at Northeastern University",
-        "connection": "Jezz and Chaima were grad students together at Worcester Polytechnic Institute"
-      }
-    }
+    "collapse": "Collapse"
   },
   "projects": {
     "project": "Project",
@@ -56,91 +23,7 @@
     "tryLiveDemo": "Try Live Demo",
     "watchVideo": "Watch Full Video",
     "onBehance": "View on Behance",
-    "onGitHub": "View on GitHub",
-    "roles": {
-      "designerAi": "Designer / AI Engineer",
-      "frontEnd": "Front End Engineer",
-      "fullStack": "Full Stack Engineer",
-      "fullStackAi": "Full Stack / AI Engineer",
-      "independentCollaborator": "Collaborator",
-      "leadEngineerGameDesigner": "Game Designer and Engineer",
-      "seniorFullStack": "Senior Full Stack Engineer",
-      "softwareEngineer": "Software Engineer"
-    },
-    "companies": {
-      "celestialBodies": "Celestial Bodies",
-      "independentProject": "Personal Project",
-      "hxd": "HXD Smart Solutions",
-      "kaon": "Kaon Interactive",
-      "thermoFisher": "Thermo Fisher",
-      "wpi": "WPI"
-    },
-    "items": {
-      "multiverse": {
-        "name": "Playa: Multiverse",
-        "description": "A socialy distanced and virtual 2020 simulation of what would happen on Playa"
-      },
-      "chatbot": {
-        "name": "AI Chatbot",
-        "description": "A chatbot powered by the Large Language Model Qwen 2.5, by Alibaba Cloud"
-      },
-      "climatempo": {
-        "name": "Climatempo",
-        "description": "The leading weather forecast cross-platform app in Brazil"
-      },
-      "dell": {
-        "name": "Dell Training Game",
-        "description": "Dell's gamified experience to showcase their cutting-edge corporate server deployment application"
-      },
-      "thermofisher": {
-        "name": "Precision Medicine",
-        "description": "Thermo Fisher Scientific's Precision Medicine technology showcase app"
-      },
-      "abbott": {
-        "name": "Abbott Transformation",
-        "description": "B2B sales showcase for Abbott Diagnostics' Transformation laboratory solutions"
-      },
-      "strikeapose": {
-        "name": "Strike A Pose",
-        "description": "A dystopian rhythm action-adventure video game, but make it fashion"
-      },
-      "kaon": {
-        "name": "Kaon.com",
-        "description": "Kaon creates advanced software technology and platforms to enable global companies to simplify their complex stories at every customer touch-point"
-      },
-      "dxma": {
-        "name": "DxMA Awards 2016",
-        "description": "The digital catalog for DxMA's best B2B apps award ceremony"
-      },
-      "f5": {
-        "name": "F5 Hybrid Cloud",
-        "description": "A showcase app for F5 Networks' best practices on cloud computing and security"
-      },
-      "hyundai": {
-        "name": "Hyundai HB20s",
-        "description": "Hyundai's marketing app for the launch of HB20 and HB20s new models in Brazil"
-      },
-      "photobooth": {
-        "name": "Photobooth",
-        "description": "A web application that snaps a picture when you smile. Machine Learning, AI, and Material Design included"
-      },
-      "haystack": {
-        "name": "In a Haystack",
-        "description": "A graduate thesis proof-of-concept video game project implementation"
-      },
-      "cocacola": {
-        "name": "Coca-Cola FM",
-        "description": "Coca-Cola FM's official Smart TV app in Latin America"
-      },
-      "pong4x": {
-        "name": "Pong! 4X",
-        "description": "Proof-of-concept computer game that takes the classic Pong to a whole new hectic multiplayer experience"
-      },
-      "bandip": {
-        "name": "Band IP",
-        "description": "Band TV's leading video-on-demand multiplatform app in Brazil"
-      }
-    }
+    "onGitHub": "View on GitHub"
   },
   "contact": {
     "pleaseWait": "Please wait...",

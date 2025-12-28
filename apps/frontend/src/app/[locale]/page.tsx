@@ -5,7 +5,9 @@ import styles from "./Portfolio.module.scss"
 import Heading from "../../components/Heading/Heading";
 import ProjectGallery from "../../components/ProjectGallery/ProjectGallery";
 import useHoveredOnTouch from "@/hooks/useHoveredOnTouch";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useProfile } from "@/stores/profileStore";
+import type { LocalizedString } from "@/types/LocalizedString";
 
 export default function Portfolio() {
   const t = useTranslations("home");
@@ -13,10 +15,16 @@ export default function Portfolio() {
   const [isShowingGallery, setShowingGallery] = useState(true);
   const galleryTimeout = useRef<NodeJS.Timeout | null>(null);
   const [resizeCount, doResizeCount] = useState(0);
+  const locale = useLocale() as keyof LocalizedString;
+  const { profile } = useProfile();
   
+  // Update document title
   useEffect(() => {
-    if (typeof document !== 'undefined') document.title = 'Portfolio - Jezz Lucena';
-  }, []);
+    const name = profile?.name[locale] || profile?.name?.en;
+    if (typeof document !== 'undefined') {
+      document.title = `Slatefolio${name ? ` - ${name}` : ''}`;
+    }
+  }, [profile, locale]);
 
   useHoveredOnTouch();
 

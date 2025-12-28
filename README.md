@@ -97,9 +97,9 @@ Create a `.env` file in the project root with the following variables:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `WEBAUTHN_RP_NAME` | Relying Party name displayed during passkey registration | `Slatefolio` |
-| `WEBAUTHN_RP_ID` | Your domain (without protocol) | `localhost` or `yourdomain.com` |
-| `WEBAUTHN_ORIGIN` | Full origin URL | `http://localhost:8080` |
+| `WEB_NAME` | Relying Party name displayed during passkey registration | `Slatefolio` |
+| `WEB_ID` | Your domain (without protocol) | `localhost` or `yourdomain.com` |
+| `WEB_ORIGIN` | Full origin URL | `http://localhost:8080` |
 
 #### Email (Contact Form)
 
@@ -111,7 +111,7 @@ Create a `.env` file in the project root with the following variables:
 | `SMTP_USER` | SMTP username/email | `your-email@gmail.com` |
 | `SMTP_PASS` | SMTP password or app password | `your-app-password` |
 | `SMTP_FROM_EMAIL` | Sender email address | `noreply@yourdomain.com` |
-| `SMTP_TO_EMAIL` | Email to receive contact submissions | `you@yourdomain.com` |
+| `CONTACT_EMAIL` | Email to receive contact submissions | `you@yourdomain.com` |
 
 #### Optional
 
@@ -132,9 +132,9 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:5050
 JWT_SECRET=change-this-to-a-very-long-random-string-at-least-32-characters
 
 # WebAuthn (Passkeys)
-WEBAUTHN_RP_NAME=Slatefolio
-WEBAUTHN_RP_ID=localhost
-WEBAUTHN_ORIGIN=http://localhost:8080
+WEB_NAME=Slatefolio
+WEB_ID=localhost
+WEB_ORIGIN=http://localhost:8080
 
 # Email (optional - for contact form)
 SMTP_HOST=smtp.gmail.com
@@ -143,7 +143,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 SMTP_FROM_EMAIL=noreply@yourdomain.com
-SMTP_TO_EMAIL=you@yourdomain.com
+CONTACT_EMAIL=you@yourdomain.com
 ```
 
 ## Usage
@@ -270,7 +270,7 @@ npx ts-node scripts/populate-testimonials.ts
 ### Production with Docker Compose
 
 1. Set production values in your `.env`:
-   - Use your actual domain for `WEBAUTHN_RP_ID` and `WEBAUTHN_ORIGIN`
+   - Use your actual domain for `WEB_ID` and `WEB_ORIGIN`
    - Set a strong `JWT_SECRET`
    - Configure SMTP for contact form
 

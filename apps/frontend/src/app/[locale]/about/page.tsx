@@ -9,24 +9,8 @@ import Button from "@/components/Button/Button";
 import Heading from "@/components/Heading/Heading";
 import Keywords from "@/components/Keywords/Keywords";
 import Testimonial from "@/components/Testimonial/Testimonial";
-
-interface LocalizedString {
-  en: string;
-  es: string;
-  pt: string;
-}
-
-interface ProfileData {
-  name: LocalizedString;
-  blurb: LocalizedString;
-  role: LocalizedString;
-  company?: LocalizedString;
-  keywords: string[];
-  profileImageUrl?: string;
-  linkedinUrl?: string;
-  githubUrl?: string;
-  websiteUrl?: string;
-}
+import { useProfile } from "@/stores/profileStore";
+import type { LocalizedString } from "@/types/LocalizedString";
 
 interface TestimonialData {
   _id: string;
@@ -41,35 +25,20 @@ interface TestimonialData {
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
 
 /**
- * Page that displays details about Jezz's career, including testimonials from former
- * coworkers and academic partners
+ * Page that displays details about your career, including testimonials
+ * from former coworkers and academic partners
  */
 export default function About() {
   const t = useTranslations("about");
   const commonT = useTranslations("common");
   const locale = useLocale() as keyof LocalizedString;
+  const { profile, isLoading: isLoadingProfile } = useProfile();
   const [isTextCollapsed, setTextCollapsed] = useState(true);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [testimonials, setTestimonials] = useState<TestimonialData[]>([]);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isLoadingTestimonials, setIsLoadingTestimonials] = useState(true);
 
-  // Fetch profile and testimonials
+  // Fetch testimonials
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${API_URL}/profile`);
-        if (response.ok) {
-          const data = await response.json();
-          setProfile(data.profile || null);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    };
-
     const fetchTestimonials = async () => {
       try {
         const response = await fetch(`${API_URL}/testimonials`);
@@ -84,24 +53,23 @@ export default function About() {
       }
     };
 
-    fetchProfile();
     fetchTestimonials();
   }, []);
 
   // Update document title
   useEffect(() => {
-    const name = profile?.name[locale] || profile?.name.en || commonT("jezzLucena");
+    const name = profile?.name[locale] || profile?.name?.en;
     if (typeof document !== 'undefined') {
-      document.title = `${commonT("about")} - ${name}`;
+      document.title = `${commonT("about")}${name ? ` - ${name}` : ''}`;
     }
   }, [profile, locale, commonT]);
 
   // Get localized content with fallback
-  const getName = () => profile?.name[locale] || profile?.name.en || commonT("jezzLucena");
-  const getRole = () => profile?.role[locale] || profile?.role.en || commonT("fullStackEngineer");
+  const getName = () => profile?.name[locale] || profile?.name.en;
+  const getRole = () => profile?.role[locale] || profile?.role.en;
   const getBlurb = () => profile?.blurb[locale] || profile?.blurb.en || '';
   const getKeywords = () => profile?.keywords || [];
-  const getLinkedInUrl = () => profile?.linkedinUrl || 'http://linkedin.com/in/jezzlucena';
+  const getLinkedInUrl = () => profile?.linkedinUrl || 'http://linkedin.com/';
   const getProfileImageUrl = () => profile?.profileImageUrl ? `${API_URL}${profile.profileImageUrl}` : null;
 
   return (

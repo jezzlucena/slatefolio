@@ -33,7 +33,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    if (typeof document !== 'undefined') document.title = `${commonT("contact")} - ${commonT("jezzLucena")}`;
+    if (typeof document !== 'undefined') document.title = `Slatefolio - ${commonT("contact")}`;
   });
 
   const handleSubmit = async () => {

@@ -1,59 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Heading from "@/components/Heading/Heading";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./Resume.module.scss";
-
-interface Resume {
-  _id: string;
-  filename: string;
-  originalName: string;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+import { useActiveResume } from "@/stores/resumeStore";
 
 /**
  * Page that displays an embedded resumé, with a link for download 
  */
 export default function Resume() {
   const t = useTranslations("common");
-  const [resume, setResume] = useState<Resume | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { resumeFileUrl, isLoading, error } = useActiveResume();
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      document.title = `${t("resume")} - ${t("jezzLucena")}`;
+      document.title = t("resume");
     }
   }, [t]);
-
-  useEffect(() => {
-    const fetchActiveResume = async () => {
-      try {
-        const response = await fetch(`${API_URL}/resume/active`);
-        if (response.ok) {
-          const data = await response.json();
-          setResume(data.resume);
-        } else if (response.status === 404) {
-          setError('No resume available');
-        } else {
-          throw new Error('Failed to fetch resume');
-        }
-      } catch (err) {
-        console.error('Error fetching resume:', err);
-        setError('Failed to load resume');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchActiveResume();
-  }, []);
-
-  const resumeFileUrl = resume ? `${API_URL}/resume/file/${resume._id}` : null;
 
   return (
     <div className="relative bg-white">

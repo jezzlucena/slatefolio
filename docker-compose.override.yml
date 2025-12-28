@@ -7,7 +7,6 @@ services:
       args:
         ENVIRONMENT: development
     environment:
-      ENVIRONMENT: development
       WATCHPACK_POLLING: "true"
     volumes:
       # Mount source code for hot-reloading

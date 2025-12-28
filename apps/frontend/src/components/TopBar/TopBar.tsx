@@ -8,8 +8,11 @@ import styles from "./TobBar.module.scss"
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import LocaleSwitcher from "../LocaleSwitcher/LocaleSwitcher";
+import { useProfile } from "@/stores/profileStore";
+import { useActiveResume } from "@/stores/resumeStore";
+import { LocalizedString } from "@/types/LocalizedString";
 
 /**
  * Top Bar used for navigation, to be imported on every page
@@ -19,6 +22,9 @@ export default function TopBar() {
   const { isScrolled } = useWindowScroll();
   const [isNavOpen, setNavOpen] = useState(false);
   const pathname = usePathname();
+  const { profile } = useProfile();
+  const { resume } = useActiveResume();
+  const locale = useLocale() as keyof LocalizedString;
 
   const toggleNavOpen = () => {
     setNavOpen(!isNavOpen);
@@ -48,10 +54,10 @@ export default function TopBar() {
               className="inline mr-3"
               height="40"
               width="40"
-              alt="Jezz's Logo"
+              alt="Logo"
             />
-            <span className={`${styles.name} pr-2`}>{t("jezzLucena")}</span>
-            <span className={`${styles.title} pl-3`}>{t("fullStackEngineer")}</span>
+            <span className={`${styles.name} pr-2`}>{profile?.name[locale] || profile?.name?.en || "Slatefolio"}</span>
+            <span className={`${styles.title} pl-3`}>{profile?.role[locale] || profile?.role?.en}</span>
           </Link>
 
           <div className="grow"></div>
@@ -73,16 +79,20 @@ export default function TopBar() {
               className={`${styles.link} ${pathname.startsWith('/projects') || pathname === '/' ? styles.routerLinkActive : ""}`}
               onClick={() => setNavOpen(false)}
             >{t("portfolio")}</Link>
-            <Link
-              href="/resume#content"
-              className={`${styles.link} ${pathname.startsWith('/resume') ? styles.routerLinkActive : ""}`}
-              onClick={() => setNavOpen(false)}
-            >{t("resume")}</Link>
-            <Link
-              href="/contact#content"
-              className={`${styles.link} ${pathname.startsWith('/contact') ? styles.routerLinkActive : ""}`}
-              onClick={() => setNavOpen(false)}
-            >{t("contact")}</Link>
+            {resume && (
+              <Link
+                href="/resume#content"
+                className={`${styles.link} ${pathname.startsWith('/resume') ? styles.routerLinkActive : ""}`}
+                onClick={() => setNavOpen(false)}
+              >{t("resume")}</Link>
+            )}
+            {process.env.NEXT_PUBLIC_SMTP_ENABLED === 'true' && (
+              <Link
+                href="/contact#content"
+                className={`${styles.link} ${pathname.startsWith('/contact') ? styles.routerLinkActive : ""}`}
+                onClick={() => setNavOpen(false)}
+              >{t("contact")}</Link>
+            )}
             <LocaleSwitcher />
           </div>
         </div>

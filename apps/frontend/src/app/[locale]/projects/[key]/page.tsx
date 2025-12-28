@@ -10,7 +10,7 @@ import Button from '@/components/Button/Button';
 import { getTranslations } from 'next-intl/server';
 
 // Use internal Docker network URL for server-side requests, fallback to localhost for local dev
-const API_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
 
 // Fetch project from API
 async function getProject(key: string): Promise<Project | null> {
@@ -41,7 +41,7 @@ export async function generateMetadata({
   const project = await getProject(key);
   const lang = locale as keyof LocalizedString;
 
-  if (project) return { title: `${project.name[lang]} - ${t("common.jezzLucena")}` };
+  if (project) return { title: project.name[lang] };
 }
 
 /**

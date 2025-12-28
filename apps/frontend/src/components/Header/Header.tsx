@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import Logo from "../Logo/Logo";
 import SacredGeometry from "../SacredGeometry/SacredGeometry";
@@ -8,6 +8,8 @@ import HolyGeometry from "../HolyGeometry/HolyGeometry";
 import CellularAutomata from "../CellularAutomata/CellularAutomata";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
+import { useProfile } from "@/stores/profileStore";
+import { LocalizedString } from "@/types/LocalizedString";
 
 type HeaderArt = 'logo' | 'sacred' | 'holy' | 'cellular';
 
@@ -15,6 +17,8 @@ export default function Header() {
   const t = useTranslations('common');
   const [headerArt, setHeaderArt] = useState<HeaderArt>('logo');
   const [isClient, setIsClient] = useState(false);
+  const { profile } = useProfile();
+  const locale = useLocale() as keyof LocalizedString;
 
   // Randomly decide which art to show (1/4 each)
   useEffect(() => {
@@ -55,8 +59,8 @@ export default function Header() {
 
       <div className={`${styles.header} ${styles.relative}`}>
         <div className={`${styles.text}`}>
-          <span>{t("jezzLucena")}</span>
-          <span className={`${styles.title}`}>{t("fullStackEngineer")}</span>
+          <span>{profile?.name[locale] || profile?.name?.en || "Slatefolio"}</span>
+          <span className={`${styles.title}`}>{profile?.role[locale] || profile?.role?.en}</span>
         </div>
       </div>
     </>

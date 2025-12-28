@@ -16,9 +16,9 @@ import User, { IUser } from '../models/User';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = '7d';
 
-const rpName = process.env.WEBAUTHN_RP_NAME || 'Slatefolio';
-const rpID = process.env.WEBAUTHN_RP_ID || 'localhost';
-const origin = process.env.WEBAUTHN_ORIGIN || 'http://localhost:8080';
+const rpName = process.env.WEB_NAME || 'Slatefolio';
+const rpID = process.env.WEB_ID || 'localhost';
+const origin = process.env.WEB_ORIGIN || 'http://localhost:8080';
 
 const generateToken = (user: IUser): string => {
   return jwt.sign(

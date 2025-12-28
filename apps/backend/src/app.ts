@@ -16,18 +16,13 @@ import profileController from './controllers/profile';
 import uploadController from './controllers/upload';
 import resumeController from './controllers/resume';
 import autocompleteController from './controllers/autocomplete';
+import metaController from './controllers/meta';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
 
 const whitelist = [
-  'https://jezzlucena.com',
-  'https://www.jezzlucena.com',
-  'https://jezzlucena.xyz',
-  'https://www.jezzlucena.xyz',
-  'http://localhost:8080',
-  'http://localhost',
-  'http://localhost:3000',
+  process.env.WEB_ORIGIN
 ];
 
 const corsOptions: cors.CorsOptions = {
@@ -90,6 +85,9 @@ app.get('/admin/profile/keyword-suggestions', requireAuth, profileController.get
 
 // Autocomplete endpoint (public)
 app.get('/autocomplete/suggestions', autocompleteController.getSuggestions);
+
+// Site metadata endpoint (public)
+app.get('/meta', metaController.getSiteMeta);
 
 // Admin Upload endpoints (protected)
 app.post('/admin/upload', requireAuth, uploadController.upload.single('file'), uploadController.uploadFile);

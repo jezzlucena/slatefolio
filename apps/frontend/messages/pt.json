@@ -1,45 +1,16 @@
 {
   "common": {
-    "jezzLucena": "Jezz Lucena",
-    "fullStackEngineer": "Desenvolvedor Full Stack",
     "about": "Sobre",
     "portfolio": "Portfólio",
     "resume": "Currículo",
-    "contact": "Contato",
-    "switchToNuxt": "Mudar para Nuxt / Vue 3",
-    "switchToNext": "Mudar para Next.js / React"
+    "contact": "Contato"
   },
   "home": {
     "myWork": "Meu Trabalho"
   },
   "about": {
     "readMore": "Ler Mais",
-    "collapse": "Ler Menos",
-    "blurb": {
-      "p0": "Desenvolver experiências mágicas para o usuário final é a minha verdadeira paixão. Eu busco novas tecnologias constantemente, e me mantenho atualizado nos últimos frameworks, línguas, e tendências.",
-      "p1": "Graduado em Engenharia de Computação e tendo um Mestrado em Desenvolvimento de Games e Mídia Interativa, a educação superior me permitiu permanecer na crista da ondae entregar trabalhos excepcionais para cada um de meus empregadores - tanto como full-time formal e como contratado.",
-      "p2": "Minha expertise técnica inclui proficência multi-plataforma (Mac OS, Linux e Windows); experiência com mais de 13 linguages de programação compiladas / interpretadas (incluindo ES6, Typescript, Javascript, CSS3, HTML5, Phoenix/Elixir e PostgreSQL); e conhecimento avançado sobre aplicações para o desenvolvedor, ferramentas, metodologias, e melhores práticas (incluindo desenvolvimento orientado ao objeto, arquitetura cliente/servidor e automação de testes)."
-    },
-    "testimonials": {
-      "title": "Depoimentos",
-      "chris": {
-        "quote": "Trabalhar com Jezz foi um prazer. Sua abordagem criativa e detalhista foi muito valiosa no processo de criação de produtos na Wonderschool. Achei raro e gratificante trabalhar com um engenheiro que conseguia pensar em toda a pilha de desenvolvimento e, ao mesmo tempo, ter empatia pelas necessidades dos clientes.",
-        "role": "CEO na Wonderschool, Inc.",
-        "connection": "Chris foi sênior de Jezz na Wonderschool"
-      },
-      "klew": {
-        "quote1": "Jezz e eu estudamos juntos no Worcester Polytechnic Institute para nosso mestrado em Mídia Interativa e Desenvolvimento de Jogos, onde trabalhamos juntos em projetos.",
-        "quote2": "Jezz é um trabalhador fenomenal e uma personalidade fenomenal para se trabalhar. Ele tem uma ampla base de talentos, particularmente engenharia, escrita, design e crítica, e é um pensador verdadeiramente profundo, fácil de colaborar e apaixonado por positividade, autenticidade e moralidade no local de trabalho.",
-        "quote3": "A melhor coisa sobre Jezz como trabalhador é que ele tem um talento verdadeiro e bruto que ele aprimorou com a prática e que ele está profundamente focado em fazer mudanças positivas em sua comunidade e sua indústria com esse talento e prática. Ele busca aprender sobre os outros, entender a teoria por trás de seu trabalho e agir além de si mesmo. Isso reflete o lema do WPI, \"Teoria e Prática\", que Jezz realmente exemplificou em seus projetos acadêmicos e pessoais.",
-        "role": "Designer de UX na Finalize, Inc.",
-        "connection": "Jezz e Klew foram estudantes de mestrado juntos no Worcester Polytechnic Institute"
-      },
-      "chaima": {
-        "quote": "Jezz não é apenas um excelente programador com habilidades técnicas cobrindo múltiplas linguagens, plataformas e engines, ele também é um pensador criativo e designer sempre buscando novas ideias e projetos. Como um aprendiz ativo, ele está continuamente assumindo novos desafios para aproveitar suas habilidades e adquirir outras novas.",
-        "role": "Candidata / Pesquisadora de PhD na Northeastern University",
-        "connection": "Jezz e Chaima foram estudantes de mestrado juntos no Worcester Polytechnic Institute"
-      }
-    }
+    "collapse": "Ler Menos"
   },
   "projects": {
     "project": "Projeto",
@@ -51,75 +22,7 @@
     "tryLiveDemo": "Ver Demo",
     "watchVideo": "Assista ao Video",
     "onBehance": "Ver no Behance",
-    "onGitHub": "Ver no GitHub",
-    "roles": {
-      "designerAi": "Designer / Desenvolvedor IA",
-      "frontEnd": "Desenvolvedor Front End",
-      "fullStack": "Desenvolvedor Full Stack",
-      "fullStackAi": "Desenvolvedor Full Stack / IA",
-      "independentCollaborator": "Colaborador",
-      "leadEngineerGameDesigner": "Game Designer e Desenvolvedor",
-      "seniorFullStack": "Desenvolvedor Full Stack Sênior",
-      "softwareEngineer": "Engenheiro de Software"
-    },
-    "companies": {
-      "independentProject": "Projeto Independente"
-    },
-    "items": {
-      "multiverse": {
-        "name": "Playa: Multiverso",
-        "description": "Uma simulação, de 2020, virtual e socialmente distanciada de tudo o que aconteceria na Playa"
-      },
-      "chatbot": {
-        "name": "Chatbot IA",
-        "description": "Um assistente desenvolvido utilizando o Modelo de linguagem de grande escala Qwen 2.5, da Alibaba Cloud"
-      },
-      "climatempo": {
-        "name": "Climatempo",
-        "description": "O aplicativo multi-plataforma líder em previsão do tempo no Brasil"
-      },
-      "dell": {
-        "name": "Dell Game Educativo",
-        "description": "A experiência gamificada da Dell para educar sobre seu aplicativo de implantação de servidores de ponta"
-      },
-      "thermofisher": {
-        "description": "O aplicativo vitrine da tecnologia de Medicina de Precisão da Thermo Fisher Scientific"
-      },
-      "abbott": {
-        "description": "Vitrine de vendas B2B das soluções de laboratório Transformation, da Abbott Diagnostics"
-      },
-      "strikeapose": {
-        "description": "Um game distópico de rítmo, ação-aventura; porém fashion"
-      },
-      "kaon": {
-        "description": "A Kaon cria tecnologia de ponta e plataformas que empoderam companhias globais a simplificar suas complexas histórias; ao toque de todo consumidor"
-      },
-      "dxma": {
-        "name": "Prêmios DxMA 2016",
-        "description": "O catálogo digital da cerimônia de prêmios DxMA de melhores aplicativos B2B"
-      },
-      "f5": {
-        "description": "Um aplicativo vitrine das melhores práticas em cyber-segurança e computação na núvem da F5 Networks"
-      },
-      "hyundai": {
-        "description": "O aplicativo de marketing da Hyundai para o lançamento de sua linha HB20 e HB20s no Brasil"
-      },
-      "photobooth": {
-        "description": "Uma aplicação web que tira uma foto quando você sorri; Aprendizado de Máquina, IA, e Design Material incluídos"
-      },
-      "haystack": {
-        "description": "Implementação de um game-projeto de tese de mestrado, prova de conceito"
-      },
-      "cocacola": {
-        "description": "O aplicativo oficial da Coca-Cola FM para SmarTVs na América Latina"
-      },
-      "pong4x": {
-        "description": "Game prova-de-conceito que eleva o clássico Pong a um inovador e frenético novo patamar de experiência multiplayer"
-      },
-      "bandip": {
-        "description": "O aplicativo líder da TV Bandeirantes para transmissão de video-em-demanda OTT multiplataforma no Brasil"
-      }
-    }
+    "onGitHub": "Ver no GitHub"
   },
   "contact": {
     "pleaseWait": "Aguarde, processando...",

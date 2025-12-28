@@ -1,51 +1,16 @@
 {
   "common": {
-    "jezzLucena": "Jezz Lucena",
-    "fullStackEngineer": "Desarrollador Full Stack",
     "about": "Sobre",
     "portfolio": "Portafólio",
     "resume": "Currículum",
-    "contact": "Contacto",
-    "switchToNuxt": "Cambiar para Nuxt / Vue 3",
-    "switchToNext": "Cambiar para Next.js / React"
+    "contact": "Contacto"
   },
   "home": {
     "myWork": "Mí Trabajo"
   },
   "about": {
     "readMore": "Leer Más",
-    "collapse": "Leer Menos",
-    "blurb": {
-      "p0": "Desarrollar experiencias mágicas para el usuario final es mi verdadera pasión. Busco constantemente nuevas tecnologías y me mantengo actualizado sobre los últimos marcos, lenguajes y tendencias.",
-      "p1": "Con un título en Ingeniería Informática y una maestría en Desarrollo de Juegos y Medios Interactivos, la educación superior me ha permitido mantenerme en la cima de mi juego y realizar un trabajo excepcional para cada uno de mis empleadores, tanto como empleado de tiempo completo como por contrato.",
-      "p2": "Mi experiencia técnica incluye competencia multiplataforma (Mac OS, Linux y Windows); experiencia con más de 13 lenguajes de programación compilados/interpretados (incluidos ES6, Typescript, Javascript, CSS3, HTML5, Phoenix/Elixir y PostgreSQL); y conocimiento avanzado de aplicaciones, herramientas, metodologías y mejores prácticas para desarrolladores (incluido desarrollo orientado a objetos, arquitectura cliente/servidor y automatización de pruebas)."
-    },
-    "testimonials": {
-      "title": "Testimonios",
-      "chris": {
-        "link": "https://www.linkedin.com/in/chrisebennett/",
-        "quote": "Trabajar con Jezz fue un placer. Su enfoque creativo y detallista fue muy valioso en el proceso de creación de productos en Wonderschool. Me pareció excepcional y gratificante trabajar con un ingeniero capaz de abordar todo el proceso de desarrollo y, al mismo tiempo, empatizar con las necesidades de los clientes.",
-        "author": "Chris Bennet",
-        "role": "CEO en Wonderschool, Inc.",
-        "connection": "Chris dirigió a Jezz na Wonderschool"
-      },
-      "klew": {
-        "link": "https://www.linkedin.com/in/klewwilliams/",
-        "quote1": "Jezz y yo estudiamos juntos en el Instituto Politécnico de Worcester para nuestra maestría en Medios Interactivos y Desarrollo de Videojuegos, donde colaboramos en proyectos.",
-        "quote2": "Jezz es un trabajador excepcional y una persona excepcional. Posee una amplia gama de talentos, en particular ingeniería, escritura, diseño y crítica, y es un pensador profundo con quien es fácil colaborar y le apasiona la positividad, la autenticidad y la moralidad en el trabajo.",
-        "quote3": "Lo mejor de Jezz como trabajador es su talento innato, que ha perfeccionado con la práctica, y su profundo enfoque en generar cambios positivos en su comunidad y su sector con ese talento y esa práctica. Busca aprender de los demás, comprender la teoría que sustenta su trabajo y superarse a sí mismo. Esto refleja el lema de WPI: \"Teoría y Práctica\", que Jezz ha ejemplificado fielmente en sus proyectos académicos y personales.",
-        "author": "Klew Williams",
-        "role": "Designer de UX en Finalize, Inc.",
-        "connection": "Jezz y Klew fueron estudiantes de maestria juntos en Worcester Polytechnic Institute"
-      },
-      "chaima": {
-        "link": "https://www.linkedin.com/in/chaima-jemmali-732a7655/",
-        "quote": "Jezz no solo es un excelente programador con habilidades técnicas que abarcan múltiples lenguajes, plataformas y motores, sino que también es un pensador creativo y diseñador en constante búsqueda de nuevas ideas y proyectos. Como aprendiz activo, se enfrenta continuamente a nuevos retos para desarrollar sus habilidades y adquirir otras nuevas.",
-        "author": "Chaima Jemmali",
-        "role": "Candidata / Pesquisadora de PhD en Northeastern University",
-        "connection": "Jezz y Chaima fueron estudiantes de maestria juntos en Worcester Polytechnic Institute"
-      }
-    }
+    "collapse": "Leer Menos"
   },
   "projects": {
     "project": "Projecto",
@@ -57,76 +22,7 @@
     "tryLiveDemo": "Ver Demo",
     "watchVideo": "Ver Vídeo",
     "onBehance": "Ver en Behance",
-    "onGitHub": "Ver en GitHub",
-    "roles": {
-      "designerAi": "Designer / Desarrollador IA",
-      "frontEnd": "Desarrollador Front-End",
-      "fullStack": "Desarrollador Full Stack",
-      "fullStackAi": "Desarrollador Full Stack / IA",
-      "colaboradorindependiente": "Colaborador Independiente",
-      "leadEngineerGameDesigner": "Desarrollador Principal y Game Designer",
-      "seniorFullStack": "Desarrollador Full Stack Senior",
-      "softwareEngineer": "Ingeniero de Software"
-    },
-    "companies": {
-      "celestialBodies": "Campamento Celestial Bodies",
-      "independentProject": "Projecto Independiente"
-    },
-    "items": {
-      "multiverse": {
-        "name": "Playa: Multiverso",
-        "description": "Una simulación virtual, con distanciamiento social, de todo lo que ocurriría en Playa en 2020"
-      },
-      "chatbot": {
-        "name": "Chatbot IA",
-        "description": "Un asistente desarrollado con el modelo de lenguaje a gran escala Qwen 2.5 de Alibaba Cloud"
-      },
-      "climatempo": {
-        "name": "Climatempo",
-        "description": "La aplicación líder de pronóstico del tiempo multiplataforma en Brasil"
-      },
-      "dell": {
-        "name": "Dell Game Educativo",
-        "description": "Experiencia gamificada de Dell para educar sobre su aplicación de implementación de servidores perimetrales"
-      },
-      "thermofisher": {
-        "description": "La aplicación de presentación de la tecnología de Medicina de Precisión de Thermo Fisher Scientific"
-      },
-      "abbott": {
-        "description": "Exhibición de ventas B2B para las soluciones de laboratorio Transformation, de Abbott Diagnostics"
-      },
-      "strikeapose": {
-        "description": "Un juego distópico, rítmico, y de acción-aventura; pero fashion"
-      },
-      "kaon": {
-        "description": "Kaon crea tecnología y plataformas de vanguardia que permiten a las empresas globales simplificar sus complejas historias, al alcance de cada consumidor"
-      },
-      "dxma": {
-        "name": "Premios DxMA 2016",
-        "description": "El catálogo digital de la ceremonia de entrega de premios DxMA a las mejores aplicaciones B2B"
-      },
-      "f5": {
-        "description": "Una aplicación que muestra las mejores prácticas de F5 Networks en ciberseguridad y computación en la nube"
-      },
-      "hyundai": {
-        "description": "Aplicación de marketing de Hyundai para el lanzamiento de sus líneas HB20 y HB20s en Brasil"
-      },
-      "photobooth": {
-        "description": "Una aplicación web que toma una foto cuando sonríes; incluye aprendizaje automático, IA y Material Design"
-      },
-      "haystack": {
-        "description": "Implementación de un proyecto de juego para una tesis de maestría, prueba de concepto"
-      },
-      "cocacola": {
-        "description": "La app oficial de Coca-Cola FM para SmartTVs en Latinoamérica"
-      },
-      "pong4x": {
-        "description": "Juego de prueba de concepto que eleva el clásico Pong a un nuevo nivel de experiencia multijugador innovador y frenético"
-      },
-      "bandip": {
-        "description": "La aplicación líder de TV Bandeirantes para streaming de video a pedido multiplataforma OTT en Brasil"
-      }
-    }
+    "onGitHub": "Ver en GitHub"
   },
   "contact": {
     "pleaseWait": "Aguarde, processando...",

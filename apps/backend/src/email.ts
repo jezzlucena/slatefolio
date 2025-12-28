@@ -13,11 +13,11 @@ const transporter = nodemailer.createTransport({
 async function sendEmail(req, res) {
   const mailOptions = {
     from: process.env.SMTP_FROM_EMAIL,
-    to: process.env.SMTP_TO_EMAIL,
-    subject: 'Contact from jezzlucena.com',
+    to: process.env.CONTACT_EMAIL,
+    subject: `Contact from ${process.env.WEB_NAME}`,
     text: `Hello!
 
-You received an entry on the contact form at jezzlucena.com, or one of the apps.
+You received an entry on the contact form at ${process.env.WEB_NAME}.
 
 Source: ${req.body.source}
 
@@ -31,7 +31,7 @@ Subject: ${req.body.subject}
 Message: ${req.body.message}
 
 Kind regards,
-Jezz Lucena`,
+${process.env.WEB_NAME}`,
     replyTo: req.body.email,
   };
 
