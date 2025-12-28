@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import styles from './ProjectForm.module.scss';
 
