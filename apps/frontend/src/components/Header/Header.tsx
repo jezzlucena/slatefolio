@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import Logo from "../Logo/Logo";
 import SacredGeometry from "../SacredGeometry/SacredGeometry";
