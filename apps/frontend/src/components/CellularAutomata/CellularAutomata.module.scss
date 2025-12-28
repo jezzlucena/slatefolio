@@ -5,7 +5,7 @@
   height: 100%;
   overflow: hidden;
   cursor: pointer;
-  background: #000;
+  background: linear-gradient(180deg, #000 0%, #0a0a0a 50%, #000 100%);
 }
 
 .canvas {
@@ -18,5 +18,3 @@
 @keyframes fadeIn {
   to { opacity: 1; }
 }
-
-

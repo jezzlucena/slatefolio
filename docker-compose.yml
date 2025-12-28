@@ -47,6 +47,9 @@ services:
         ENVIRONMENT: production
         FRONTEND_PORT: ${FRONTEND_PORT}
     environment:
+      # Server-side API URL (internal Docker network)
+      BACKEND_URL: http://backend:5050
+      # Client-side API URL (browser requests)
       NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
       NEXT_PUBLIC_SOURCE: ${NEXT_PUBLIC_SOURCE}
       NEXT_PUBLIC_SMTP_ENABLED: ${NEXT_PUBLIC_SMTP_ENABLED}

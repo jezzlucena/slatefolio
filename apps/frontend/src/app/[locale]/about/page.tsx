@@ -129,7 +129,7 @@ export default function About() {
         </div>
 
         <div className={ styles.testimonials }>
-          <Heading>{t("testimonials.title")}</Heading>
+          <Heading>{t("testimonials")}</Heading>
 
           <div className={styles.container}>
             {isLoadingTestimonials ? (

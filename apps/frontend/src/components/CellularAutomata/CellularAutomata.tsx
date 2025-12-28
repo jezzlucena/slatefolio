@@ -6,17 +6,11 @@ import styles from './CellularAutomata.module.scss';
 import useWindowScroll from '../../hooks/useWindowScroll';
 import useTabActive from '../../hooks/useTabActive';
 
-interface Cell {
-  state: number; // 0-1 continuous state
-  nextState: number;
-}
-
-const COLS = 40;
-const ROWS = 25;
+const CELL_SIZE = 8;
 
 /**
- * Organic cellular automata covering the viewport
- * Smooth Game of Life variant with continuous states
+ * Elementary Cellular Automata (Rule 110 / Rule 30 hybrid)
+ * Creates beautiful cascading patterns from top to bottom
  */
 export default function CellularAutomata() {
   const { scrollY } = useWindowScroll();
@@ -24,139 +18,132 @@ export default function CellularAutomata() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
-  const gridRef = useRef<Cell[][]>([]);
+  const rowsRef = useRef<boolean[][]>([]);
   const lastUpdateRef = useRef<number>(0);
+  const ruleRef = useRef<number>(110); // Famous Rule 110
   const [mousePos, setMousePos] = useState({ x: -1, y: -1 });
   const [isHovering, setIsHovering] = useState(false);
 
-  // Initialize grid with random organic pattern
-  useEffect(() => {
-    const grid: Cell[][] = [];
-    for (let y = 0; y < ROWS; y++) {
-      grid[y] = [];
-      for (let x = 0; x < COLS; x++) {
-        // Create organic clusters
-        const centerX = COLS / 2;
-        const centerY = ROWS / 2;
-        const dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-        const noise = Math.random();
-        
-        // Higher chance of life near center, creating organic blob
-        const probability = Math.max(0, 0.4 - dist * 0.02) + noise * 0.2;
-        const state = Math.random() < probability ? 0.5 + Math.random() * 0.5 : 0;
-        
-        grid[y][x] = { state, nextState: state };
-      }
-    }
-    gridRef.current = grid;
+  // Get the next cell state based on elementary CA rules
+  const getNextState = useCallback((left: boolean, center: boolean, right: boolean, rule: number) => {
+    const pattern = (left ? 4 : 0) + (center ? 2 : 0) + (right ? 1 : 0);
+    return ((rule >> pattern) & 1) === 1;
   }, []);
 
-  // Get cell neighbors with wrapping
-  const getNeighborSum = useCallback((grid: Cell[][], x: number, y: number) => {
-    let sum = 0;
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        if (dx === 0 && dy === 0) continue;
-        const nx = (x + dx + COLS) % COLS;
-        const ny = (y + dy + ROWS) % ROWS;
-        sum += grid[ny][nx].state;
-      }
-    }
-    return sum;
-  }, []);
-
-  // Smooth Game of Life rules
-  const computeNextState = useCallback((state: number, neighborSum: number) => {
-    // Continuous rules inspired by SmoothLife
-    const birth = neighborSum > 2.2 && neighborSum < 3.5;
-    const survive = neighborSum > 1.8 && neighborSum < 4.2;
+  // Generate next row based on previous row
+  const generateNextRow = useCallback((prevRow: boolean[], rule: number): boolean[] => {
+    const cols = prevRow.length;
+    const nextRow: boolean[] = [];
     
-    if (state > 0.5) {
-      // Alive
-      if (survive) {
-        return Math.min(1, state + 0.05); // Grow stronger
-      } else {
-        return state * 0.85; // Fade
-      }
-    } else {
-      // Dead
-      if (birth) {
-        return Math.min(0.8, state + 0.2); // Born
-      } else if (neighborSum > 0.5) {
-        return Math.min(0.3, state + neighborSum * 0.02); // Slight influence
-      }
-      return state * 0.95; // Decay
+    for (let i = 0; i < cols; i++) {
+      const left = prevRow[(i - 1 + cols) % cols];
+      const center = prevRow[i];
+      const right = prevRow[(i + 1) % cols];
+      nextRow.push(getNextState(left, center, right, rule));
     }
-  }, []);
+    
+    return nextRow;
+  }, [getNextState]);
 
-  // Update simulation
-  const updateGrid = useCallback(() => {
-    const grid = gridRef.current;
-    if (!grid.length) return;
+  // Initialize with random seed row
+  const initializeGrid = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    // Compute next states
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        const neighborSum = getNeighborSum(grid, x, y);
-        grid[y][x].nextState = computeNextState(grid[y][x].state, neighborSum);
-      }
+    const cols = Math.ceil(canvas.width / CELL_SIZE);
+    const maxRows = Math.ceil(canvas.height / CELL_SIZE) + 1;
+
+    // Create initial row with sparse random seeds
+    const firstRow: boolean[] = [];
+    for (let i = 0; i < cols; i++) {
+      // Sparse seeding - only ~15% chance of being alive
+      firstRow.push(Math.random() < 0.15);
     }
 
-    // Apply next states
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        grid[y][x].state = grid[y][x].nextState;
-      }
+    // Pre-generate all rows
+    const rows: boolean[][] = [firstRow];
+    for (let r = 1; r < maxRows; r++) {
+      rows.push(generateNextRow(rows[r - 1], ruleRef.current));
     }
-  }, [getNeighborSum, computeNextState]);
+
+    rowsRef.current = rows;
+  }, [generateNextRow]);
 
   // Render to canvas
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    const grid = gridRef.current;
-    if (!canvas || !ctx || !grid.length) return;
+    const rows = rowsRef.current;
+    if (!canvas || !ctx || !rows.length) return;
 
-    const cellW = canvas.width / COLS;
-    const cellH = canvas.height / ROWS;
+    const cols = rows[0].length;
 
-    // Clear with fade effect for trails
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    // Clear canvas
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw cells
-    for (let y = 0; y < ROWS; y++) {
-      for (let x = 0; x < COLS; x++) {
-        const cell = grid[y][x];
-        if (cell.state < 0.05) continue;
+    for (let y = 0; y < rows.length; y++) {
+      const row = rows[y];
+      for (let x = 0; x < cols; x++) {
+        if (!row[x]) continue;
 
-        const px = x * cellW;
-        const py = y * cellH;
+        const px = x * CELL_SIZE;
+        const py = y * CELL_SIZE;
 
-        // Hover effect
-        let hoverBoost = 0;
+        // Calculate hover glow effect
+        let brightness = 255;
+        let glowRadius = 0;
+        
         if (isHovering && mousePos.x >= 0) {
+          const cellCenterX = px + CELL_SIZE / 2;
+          const cellCenterY = py + CELL_SIZE / 2;
           const dist = Math.sqrt(
-            ((x + 0.5) * cellW - mousePos.x) ** 2 + 
-            ((y + 0.5) * cellH - mousePos.y) ** 2
+            (cellCenterX - mousePos.x) ** 2 + 
+            (cellCenterY - mousePos.y) ** 2
           );
-          hoverBoost = Math.max(0, 1 - dist / 80) * 0.3;
+          const hoverInfluence = Math.max(0, 1 - dist / 120);
+          glowRadius = hoverInfluence * 4;
+          brightness = Math.floor(200 + hoverInfluence * 55);
         }
 
-        const alpha = Math.min(1, cell.state + hoverBoost);
-        const brightness = Math.floor(180 + cell.state * 75 + hoverBoost * 50);
-        
-        ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${alpha})`;
-        
-        // Organic rounded rectangles
-        const padding = 1;
-        const radius = Math.min(cellW, cellH) * 0.3;
-        ctx.beginPath();
-        ctx.roundRect(px + padding, py + padding, cellW - padding * 2, cellH - padding * 2, radius);
-        ctx.fill();
+        // Draw glow if hovering near
+        if (glowRadius > 0) {
+          ctx.shadowColor = `rgba(255, 255, 255, 0.6)`;
+          ctx.shadowBlur = glowRadius;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+
+        // Draw cell as a crisp square
+        ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
+        const gap = 1;
+        ctx.fillRect(px + gap, py + gap, CELL_SIZE - gap * 2, CELL_SIZE - gap * 2);
       }
     }
+    
+    // Reset shadow
+    ctx.shadowBlur = 0;
   }, [isHovering, mousePos]);
+
+  // Scroll the pattern and generate new rows
+  const updateGrid = useCallback(() => {
+    const rows = rowsRef.current;
+    const canvas = canvasRef.current;
+    if (!rows.length || !canvas) return;
+
+    const maxRows = Math.ceil(canvas.height / CELL_SIZE) + 1;
+
+    // Remove first row and add new row at bottom
+    rows.shift();
+    const lastRow = rows[rows.length - 1];
+    rows.push(generateNextRow(lastRow, ruleRef.current));
+
+    // Ensure we don't exceed max rows
+    while (rows.length > maxRows) {
+      rows.shift();
+    }
+  }, [generateNextRow]);
 
   // Animation loop
   useEffect(() => {
@@ -166,8 +153,8 @@ export default function CellularAutomata() {
     }
 
     const animate = (timestamp: number) => {
-      // Update simulation every 120ms
-      if (timestamp - lastUpdateRef.current > 120) {
+      // Update every 80ms for smooth scrolling effect
+      if (timestamp - lastUpdateRef.current > 80) {
         lastUpdateRef.current = timestamp;
         updateGrid();
       }
@@ -192,12 +179,13 @@ export default function CellularAutomata() {
 
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
+      initializeGrid();
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [initializeGrid]);
 
   // Mouse handlers
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -210,32 +198,39 @@ export default function CellularAutomata() {
     });
   }, []);
 
-  // Click to seed life
+  // Click to change rule and reset
   const handleClick = useCallback((e: React.MouseEvent) => {
     const canvas = canvasRef.current;
-    const grid = gridRef.current;
-    if (!canvas || !grid.length) return;
+    if (!canvas) return;
 
+    // Get click position
     const rect = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
     const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    
+    // Inject new cells at click position
+    const rows = rowsRef.current;
+    if (!rows.length) return;
 
-    const cellW = canvas.width / COLS;
-    const cellH = canvas.height / ROWS;
-    const centerCol = Math.floor(clickX / cellW);
-    const centerRow = Math.floor(clickY / cellH);
-
-    // Seed a cluster of life around click point
-    const radius = 4;
+    const col = Math.floor(clickX / CELL_SIZE);
+    const row = Math.floor(clickY / CELL_SIZE);
+    
+    // Create a burst of new cells
+    const radius = 5;
     for (let dy = -radius; dy <= radius; dy++) {
       for (let dx = -radius; dx <= radius; dx++) {
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist > radius) continue;
-
-        const x = (centerCol + dx + COLS) % COLS;
-        const y = (centerRow + dy + ROWS) % ROWS;
-        const boost = (1 - dist / radius) * 0.8;
-        grid[y][x].state = Math.min(1, grid[y][x].state + boost);
+        
+        const r = row + dy;
+        const c = (col + dx + rows[0].length) % rows[0].length;
+        
+        if (r >= 0 && r < rows.length) {
+          // Higher chance of activation near center of burst
+          if (Math.random() < (1 - dist / radius) * 0.8) {
+            rows[r][c] = true;
+          }
+        }
       }
     }
   }, []);
@@ -258,5 +253,3 @@ export default function CellularAutomata() {
     </Link>
   );
 }
-
-

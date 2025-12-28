@@ -9,13 +9,14 @@ import Link from 'next/link';
 import Button from '@/components/Button/Button';
 import { getTranslations } from 'next-intl/server';
 
-// Use internal Docker network URL for server-side requests, fallback to localhost for local dev
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+// Server-side: use internal Docker network URL (BACKEND_URL)
+// Falls back to NEXT_PUBLIC_BACKEND_URL for local development without Docker
+const SERVER_API_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
 
-// Fetch project from API
+// Fetch project from API (server-side)
 async function getProject(key: string): Promise<Project | null> {
   try {
-    const response = await fetch(`${API_URL}/projects/${key}`, {
+    const response = await fetch(`${SERVER_API_URL}/projects/${key}`, {
       next: { revalidate: 60 }, // Cache for 60 seconds
     });
 
