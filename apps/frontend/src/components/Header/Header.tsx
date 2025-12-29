@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import Logo from "../Logo/Logo";
 import SacredGeometry from "../SacredGeometry/SacredGeometry";
@@ -14,7 +14,6 @@ import { LocalizedString } from "@/types/LocalizedString";
 type HeaderArt = 'logo' | 'sacred' | 'holy' | 'cellular';
 
 export default function Header() {
-  const t = useTranslations('common');
   const [headerArt, setHeaderArt] = useState<HeaderArt>('logo');
   const [isClient, setIsClient] = useState(false);
   const { profile } = useProfile();

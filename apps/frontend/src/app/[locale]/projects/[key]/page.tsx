@@ -37,7 +37,6 @@ export async function generateMetadata({
 }: {
   params: Promise<{ key: string; locale: string }>
 }) {
-  const t = await getTranslations();
   const { key, locale } = await params;
   const project = await getProject(key);
   const lang = locale as keyof LocalizedString;
