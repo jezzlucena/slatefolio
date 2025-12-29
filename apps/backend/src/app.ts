@@ -22,7 +22,7 @@ import { requireAuth } from './middleware/auth';
 const app = express();
 
 const whitelist = [
-  process.env.WEB_ORIGIN
+  process.env.HOST_ALLOWLIST.split(',')
 ];
 
 const corsOptions: cors.CorsOptions = {

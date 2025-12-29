@@ -22,6 +22,7 @@ services:
       WEB_NAME: ${WEB_NAME}
       WEB_ID: ${WEB_ID}
       WEB_ORIGIN: ${WEB_ORIGIN}
+      HOST_ALLOWLIST: ${HOST_ALLOWLIST}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_SECURE: ${SMTP_SECURE}
