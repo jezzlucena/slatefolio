@@ -22,7 +22,7 @@ export default function Portfolio() {
   useEffect(() => {
     const name = profile?.name[locale] || profile?.name?.en;
     if (typeof document !== 'undefined') {
-      document.title = `Slatefolio${name ? ` - ${name}` : ''}`;
+      document.title = `${name ? `${name}'s ` : ''}Portfolio`;
     }
   }, [profile, locale]);
 

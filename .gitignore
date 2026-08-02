@@ -22,3 +22,6 @@ yarn-error.log*
 
 # Migration/populator scripts (contain data, run manually)
 apps/backend/scripts/
+
+# Docker development environment overrides
+docker-compose.override.yml
