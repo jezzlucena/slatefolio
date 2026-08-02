@@ -23,7 +23,7 @@ COPY apps/frontend/package.json ./apps/frontend/
 
 # Install dependencies (frozen lockfile for reproducible builds)
 WORKDIR /app/apps/frontend
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile --dangerously-allow-all-builds
 
 # Copy frontend source (node_modules excluded via .dockerignore)
 COPY apps/frontend/ ./

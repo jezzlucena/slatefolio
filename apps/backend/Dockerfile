@@ -15,7 +15,7 @@ COPY apps/backend/package.json ./apps/backend/
 
 # Install dependencies (frozen lockfile for reproducible builds)
 WORKDIR /app/apps/backend
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile --dangerously-allow-all-builds
 
 # Copy backend source (node_modules excluded via .dockerignore)
 COPY apps/backend/ ./
