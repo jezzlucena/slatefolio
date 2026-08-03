@@ -1,6 +1,12 @@
 packages:
   - 'apps/*'
 
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  '@swc/core': set this to true or false
+  sharp: set this to true or false
+  unrs-resolver: set this to true or false
+
 catalog:
   # Shared dependencies
   typescript: ^5.8.2
@@ -67,3 +73,5 @@ catalog:
   sharp: ^0.33.5
   "@types/multer": ^1.4.12
 
+minimumReleaseAgeExclude:
+  - next-masonry@0.1.2

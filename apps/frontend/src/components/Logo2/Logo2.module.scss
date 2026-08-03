@@ -1,0 +1,115 @@
+.svg {
+  height: 50vh;
+  width: auto;
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 50px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+
+  .line, .circle, .node, .core {
+    opacity: 0;
+    fill: none;
+    pointer-events: stroke;
+    transition: stroke var(--dur, 2.4s) ease,
+      fill var(--dur, 2.4s) ease,
+      opacity var(--dur, 2.4s) ease;
+    transition-delay: var(--d, 0s);
+  }
+
+  .line {
+    stroke: var(--c);
+    stroke-width: 4.7;
+  }
+
+  .circle {
+    stroke: var(--c);
+    stroke-width: 4.7;
+  }
+
+  .node {
+    fill: var(--c);
+    stroke: none;
+    pointer-events: none;
+  }
+
+  .casing {
+    stroke: black;
+    stroke-width: 14.7;
+    stroke-linecap: round;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .core {
+    stroke: var(--c);
+    stroke-width: 4.7;
+    stroke-linecap: round;
+  }
+
+  .cube {
+    transform-box: view-box;
+    transform-origin: 500 500;
+    transform: rotate(var(--cube-rot, 225deg));
+    transition: transform 5s ease-in-out;
+    transition-delay: 0.4s;
+  }
+
+  // Phase 0: aurora — the full mandala blooms in its own colors
+  &[data-phase='0'] {
+    .line { opacity: 0.5; }
+    .circle { opacity: 0.85; }
+    .node { opacity: 1; }
+    .core { opacity: 1; }
+  }
+
+  // Phase 1: constellation — a white starmap, geometry as linework
+  &[data-phase='1'] {
+    .line { opacity: 0.14; stroke: white; }
+    .circle { opacity: 0.55; stroke: white; }
+    .node { opacity: 1; fill: white; }
+    .core { opacity: 0.9; stroke: white; }
+  }
+
+  // Phase 2: ember — everything dims but the impossible cube glows gold
+  &[data-phase='2'] {
+    .line { opacity: 0.12; }
+    .circle { opacity: 0.2; }
+    .node { opacity: 0.35; }
+    .core { opacity: 1; stroke: #f5c15c; }
+  }
+
+  // Phase 3: void — the figure dissolves before blooming again
+  &[data-phase='3'] {
+    .line, .circle, .node, .core { opacity: 0; }
+  }
+
+  .line:hover, .circle:hover, .core:hover {
+    stroke: white;
+    opacity: 1;
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}
+
+@media (max-width: 480px) {
+  .svg {
+    height: auto;
+    width: 80vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg .line, .svg[data-phase] .line,
+  .svg .circle, .svg[data-phase] .circle,
+  .svg .node, .svg[data-phase] .node,
+  .svg .core, .svg[data-phase] .core,
+  .svg .cube {
+    transition: none;
+  }
+
+  .svg .line, .svg[data-phase] .line { opacity: 0.5; stroke: var(--c); }
+  .svg .circle, .svg[data-phase] .circle { opacity: 0.85; stroke: var(--c); }
+  .svg .node, .svg[data-phase] .node { opacity: 1; fill: var(--c); }
+  .svg .core, .svg[data-phase] .core { opacity: 1; stroke: var(--c); }
+}

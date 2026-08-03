@@ -1,0 +1,114 @@
+.svg {
+  height: 50vh;
+  width: auto;
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 50px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+
+  .seed, .core {
+    opacity: 0;
+    transition: fill var(--dur, 2s) ease,
+      stroke var(--dur, 2s) ease,
+      opacity var(--dur, 2s) ease;
+    transition-delay: var(--d, 0s);
+  }
+
+  .seed {
+    fill: var(--c);
+    stroke: none;
+  }
+
+  .casing {
+    stroke: black;
+    stroke-width: 30;
+    stroke-linecap: round;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .core {
+    stroke: var(--c);
+    stroke-width: 15;
+    stroke-linecap: round;
+    fill: none;
+    pointer-events: stroke;
+  }
+
+  .field {
+    transform-box: view-box;
+    transform-origin: 500 500;
+    transition: transform 6.5s ease-in-out;
+    transition-delay: 0.3s;
+  }
+
+  .tribar {
+    transform-box: view-box;
+    transform-origin: 500 500;
+    transform: rotate(var(--tri-rot, 0deg));
+    transition: transform 5s ease-in-out;
+    transition-delay: 0.4s;
+  }
+
+  // Phase 0: bloom — the sunflower head opens in aurora colors
+  &[data-phase='0'] {
+    .seed { opacity: 0.9; }
+    .core { opacity: 1; }
+  }
+
+  // Phase 1: starfield — the spiral becomes a white star cluster
+  &[data-phase='1'] {
+    .seed { opacity: 0.55; fill: white; }
+    .core { opacity: 0.9; stroke: white; }
+  }
+
+  // Phase 2: ember — the field dims while the tribar glows gold
+  &[data-phase='2'] {
+    .seed { opacity: 0.12; }
+    .core { opacity: 1; stroke: #f5c15c; }
+  }
+
+  // Phase 3: void — the figure dissolves before blooming again
+  &[data-phase='3'] {
+    .seed, .core { opacity: 0; }
+  }
+
+  .seed:hover {
+    fill: white;
+    opacity: 1;
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+
+  // Bars highlight as whole beams. Bar 0 (.barA) and the patch are bound to
+  // the same hover state — hovering either highlights both, so the over-pass
+  // never splits into two colors and betrays the patch.
+  .bar:hover .core,
+  .patch:hover .core,
+  .barA:hover ~ .patch .core,
+  .tribar:has(.patch:hover) .barA .core {
+    stroke: white;
+    opacity: 1;
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}
+
+@media (max-width: 480px) {
+  .svg {
+    height: auto;
+    width: 80vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg .seed, .svg[data-phase] .seed,
+  .svg .core, .svg[data-phase] .core,
+  .svg .field, .svg .tribar {
+    transition: none;
+  }
+
+  .svg .seed, .svg[data-phase] .seed { opacity: 0.9; fill: var(--c); }
+  .svg .core, .svg[data-phase] .core { opacity: 1; stroke: var(--c); }
+}

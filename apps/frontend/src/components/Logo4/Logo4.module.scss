@@ -1,0 +1,143 @@
+.svg {
+  height: 50vh;
+  width: auto;
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 50px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+
+  .petal, .ring, .core {
+    opacity: 0;
+    fill: none;
+    pointer-events: stroke;
+    transition: stroke var(--dur, 2s) ease,
+      opacity var(--dur, 2s) ease;
+    transition-delay: var(--d, 0s);
+  }
+
+  .petal {
+    stroke: var(--c);
+    stroke-width: 3.4;
+  }
+
+  .ring {
+    stroke: var(--c);
+    stroke-width: 2.6;
+  }
+
+  .casing {
+    stroke: black;
+    stroke-width: 30;
+    stroke-linecap: round;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .core {
+    stroke: var(--c);
+    stroke-width: 15;
+    stroke-linecap: round;
+  }
+
+  .rose {
+    transform-box: view-box;
+    transform-origin: 500 500;
+    transform: rotate(var(--twist, 0deg));
+    transition: transform 6.5s ease-in-out;
+    transition-delay: 0.3s;
+  }
+
+  .shape {
+    transition: transform 5s ease-in-out;
+    transition-delay: 0.4s;
+  }
+
+  .shapeTri { transform: translate(var(--tri-t, 0px, 0px)); }
+  .shapeSquare { transform: translate(var(--sq-t, 0px, 0px)); }
+  .shapeCirc { transform: translate(var(--circ-t, 0px, 0px)); }
+
+  // Each patch pair belongs to one square/circle seating. Patches vanish the
+  // moment the forms start drifting (the knot unweaves) and the new seating's
+  // patches fade in only after the forms settle (the knot locks again).
+  .patches {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 0s 1s;
+  }
+
+  @each $pair in '01', '02', '10', '12', '20', '21' {
+    &[data-combo='#{$pair}'] .patches[data-pair='#{$pair}'] {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1.2s ease 5.4s, visibility 0s 5.4s;
+    }
+  }
+
+  // Phase 0: bloom — the rose window opens in aurora colors
+  &[data-phase='0'] {
+    .petal { opacity: 0.55; }
+    .ring { opacity: 0.7; }
+    .core { opacity: 1; }
+  }
+
+  // Phase 1: tracery — white leading, like a cathedral window at night
+  &[data-phase='1'] {
+    .petal { opacity: 0.2; stroke: white; }
+    .ring { opacity: 0.6; stroke: white; }
+    .core { opacity: 0.9; stroke: white; }
+  }
+
+  // Phase 2: ember — the rose dims while the knot glows gold
+  &[data-phase='2'] {
+    .petal { opacity: 0.12; }
+    .ring { opacity: 0.15; }
+    .core { opacity: 1; stroke: #f5c15c; }
+  }
+
+  // Phase 3: void — the figure dissolves before blooming again
+  &[data-phase='3'] {
+    .petal, .ring, .core { opacity: 0; }
+  }
+
+  .petal:hover, .ring:hover {
+    stroke: white;
+    opacity: 1;
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+
+  // Forms highlight whole. The square and its patches are bound to the same
+  // hover state — hovering either highlights both, so no crossing can ever
+  // split into two colors and betray a patch.
+  .shape:hover .core,
+  .patches:hover .core,
+  .shapeSquare:hover ~ .patches .core,
+  .knot:has(.patches:hover) .shapeSquare .core {
+    stroke: white;
+    opacity: 1;
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}
+
+@media (max-width: 480px) {
+  .svg {
+    height: auto;
+    width: 80vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg .petal, .svg[data-phase] .petal,
+  .svg .ring, .svg[data-phase] .ring,
+  .svg .core, .svg[data-phase] .core,
+  .svg .rose, .svg .shape,
+  .svg .patches, .svg[data-combo] .patches[data-pair] {
+    transition: none;
+  }
+
+  .svg .petal, .svg[data-phase] .petal { opacity: 0.55; stroke: var(--c); }
+  .svg .ring, .svg[data-phase] .ring { opacity: 0.7; stroke: var(--c); }
+  .svg .core, .svg[data-phase] .core { opacity: 1; stroke: var(--c); }
+}
