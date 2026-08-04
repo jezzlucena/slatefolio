@@ -1,5 +1,6 @@
 
 @use "sass:math";
+@use "sass:list";
 
 .svg {
   height: 50vh;
@@ -37,12 +38,19 @@
 	}
 }
 
+// Aurora palette anchors shared with the sibling logos:
+// teal, cyan, violet, purple, magenta, pink, orange, gold
+$auroraHues: 172, 195, 258, 285, 318, 345, 12, 42;
+
 @for $i from 1 to 464 {
 	$delay: math.div(math.round((($i * 0.005) + math.div(math.random(), 2)) * 100), 100);
-	$randomColor: rgb(math.random(255), math.random(255), math.random(255));
+	$duration: math.div(math.round((0.8 + math.random() * 1.2) * 100), 100);
+	$hue: list.nth($auroraHues, math.random(list.length($auroraHues))) - 10 + math.random(20);
+	$randomColor: hsl($hue, (60 + math.random(30)) * 1%, (45 + math.random(25)) * 1%);
 
 	.use:nth-child(#{$i}) {
 		transition-delay: #{$delay}s, #{$delay}s, #{$delay}s;
+		transition-duration: #{$duration}s, #{$duration}s, #{$duration}s;
 		stroke: $randomColor;
 		fill: $randomColor;
 	}

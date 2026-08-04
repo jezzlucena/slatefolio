@@ -8,13 +8,12 @@ import Logo3 from "../Logo3/Logo3";
 import Logo4 from "../Logo4/Logo4";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
+import { LOGO_COOKIE } from "./logoRotation";
 import { useProfile } from "@/stores/profileStore";
 import { LocalizedString } from "@/types/LocalizedString";
 
 /** The rotation order: one logo per full page load */
 const LOGOS = [Logo, Logo2, Logo3, Logo4];
-
-export const LOGO_COOKIE = 'logo-index';
 
 interface HeaderProps {
   /** Which logo to show this load — read from the cookie by the server layout */

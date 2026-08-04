@@ -6,11 +6,45 @@ import useWindowScroll from "../../hooks/useWindowScroll";
 import styles from "./Logo.module.scss"
 import useTabActive from "../../hooks/useTabActive";
 
-const SVG_STYLE_CYCLES = [
-  'opacity: 1;',
-  'opacity: 1; fill: white; stroke: black;',
-  'opacity: 1; fill: black;',
-  'opacity: 0;'
+/** Aurora gradient stops as [hue, saturation, lightness] — teal, violet, magenta, gold */
+const AURORA_STOPS: [number, number, number][] = [
+  [172, 78, 55],
+  [258, 84, 66],
+  [318, 80, 62],
+  [402, 92, 60],
+];
+
+const auroraAt = (t: number): string => {
+  const pos = Math.min(Math.max(t, 0), 1) * (AURORA_STOPS.length - 1);
+  const i = Math.min(Math.floor(pos), AURORA_STOPS.length - 2);
+  const frac = pos - i;
+  const [h1, s1, l1] = AURORA_STOPS[i];
+  const [h2, s2, l2] = AURORA_STOPS[i + 1];
+  const h = Math.round((h1 + (h2 - h1) * frac) % 360);
+  const s = Math.round(s1 + (s2 - s1) * frac);
+  const l = Math.round(l1 + (l2 - l1) * frac);
+  return `hsl(${h}, ${s}%, ${l}%)`;
+};
+
+const VIEWBOX_HEIGHT = 1362;
+
+/**
+ * Style phases the mosaic cycles through. String phases apply to every
+ * triangle alike (properties left out fall back to each triangle's own color
+ * from the stylesheet); function phases are computed per triangle from its
+ * position in the figure.
+ */
+const SVG_STYLE_CYCLES: (string | ((x: number, y: number) => string))[] = [
+  'opacity: 1;',                                 // aurora: every triangle in its own color
+  (_x, y) => {                                   // gradient: the chaos organizes itself —
+    const color = auroraAt(y / VIEWBOX_HEIGHT);  // teal apex flowing to a gold base
+    return `opacity: 1; fill: ${color}; stroke: ${color};`;
+  },
+  'opacity: 1; fill: white; stroke: black;',     // porcelain: white tiles, black seams
+  'opacity: 1; fill: transparent;',              // stained glass: colored outlines only
+  'opacity: 1; fill: black;',                    // ink: black tiles, colored seams
+  'opacity: 1; fill: #f5c15c; stroke: #221a08;', // ember: molten gold
+  'opacity: 0;'                                  // void: dissolve, then bloom again
 ];
 
 /** 
@@ -38,7 +72,9 @@ export default function Logo() {
       const style = SVG_STYLE_CYCLES[cycleIndex];
 
       for (const elm of triangles) {
-        elm.setAttribute('style', style)
+        elm.setAttribute('style', typeof style === 'string'
+          ? style
+          : style(Number(elm.getAttribute('x')) || 0, Number(elm.getAttribute('y')) || 0))
       };
 
       cycleIndex = (cycleIndex + 1) % SVG_STYLE_CYCLES.length;

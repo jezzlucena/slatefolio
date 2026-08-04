@@ -4,7 +4,8 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { routing } from '@/i18n/routing';
-import Header, { LOGO_COOKIE } from "@/components/Header/Header";
+import Header from "@/components/Header/Header";
+import { LOGO_COOKIE } from "@/components/Header/logoRotation";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 export default async function RootLayout({
