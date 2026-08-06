@@ -24,9 +24,9 @@
 			opacity: 1 !important;
 			fill: white !important;
 			stroke: white !important;
-			z-index: 99;
-			transition-delay: 0s, 0s, 0s;
-			transition-duration: 0s, 0s, 0s;
+			z-index: 99 !important;
+			transition-delay: 0s, 0s, 0s !important;
+			transition-duration: 0s, 0s, 0s !important;
 		}
   }
 }
@@ -43,13 +43,11 @@
 $auroraHues: 172, 195, 258, 285, 318, 345, 12, 42;
 
 @for $i from 1 to 464 {
-	$delay: math.div(math.round((($i * 0.005) + math.div(math.random(), 2)) * 100), 100);
-	$duration: math.div(math.round((0.8 + math.random() * 1.2) * 100), 100);
+	$duration: math.div(math.round((1.8 + math.random() * 1.2) * 100), 100);
 	$hue: list.nth($auroraHues, math.random(list.length($auroraHues))) - 10 + math.random(20);
 	$randomColor: hsl($hue, (60 + math.random(30)) * 1%, (45 + math.random(25)) * 1%);
 
-	.use:nth-child(#{$i}) {
-		transition-delay: #{$delay}s, #{$delay}s, #{$delay}s;
+	.use[data-index="#{$i}"] {
 		transition-duration: #{$duration}s, #{$duration}s, #{$duration}s;
 		stroke: $randomColor;
 		fill: $randomColor;
