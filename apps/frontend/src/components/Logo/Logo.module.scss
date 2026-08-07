@@ -18,7 +18,9 @@
     stroke-width: 4px;
 
 		&.shimmer {
-			animation: goldShimmer 2.2s ease-in-out once;
+			// `1` = run the glint a single time ("once" is not valid CSS and
+			// breaks css-loader's animation-name localization)
+			animation: goldShimmer 2.2s ease-in-out 1;
 		}
 	opacity: 0;
 
