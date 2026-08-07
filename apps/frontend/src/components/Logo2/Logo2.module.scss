@@ -49,7 +49,7 @@
 
   .cube {
     transform-box: view-box;
-    transform-origin: 500 500;
+    transform-origin: 500px 500px;
     transform: rotate(var(--cube-rot, 225deg));
     transition: transform 5s ease-in-out;
     transition-delay: 0.4s;

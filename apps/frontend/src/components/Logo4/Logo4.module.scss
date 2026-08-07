@@ -42,7 +42,7 @@
 
   .rose {
     transform-box: view-box;
-    transform-origin: 500 500;
+    transform-origin: 500px 500px;
     transform: rotate(var(--twist, 0deg));
     transition: transform 6.5s ease-in-out;
     transition-delay: 0.3s;

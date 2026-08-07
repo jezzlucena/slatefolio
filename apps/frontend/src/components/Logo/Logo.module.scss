@@ -4,13 +4,11 @@
 
 .svg {
   height: 50vh;
-	width: auto;
+  width: auto;
   position: absolute;
   left: 50%;
   top: calc(50% - 50px);
   transform: translate(-50%, -50%);
-	background-image: url('/assets/img/logo.png');
-  background-size: contain;
 
   .use {
     fill: white;
@@ -18,17 +16,30 @@
     transition: 1s fill ease, 1s stroke ease, 1s opacity ease;
     stroke: black;
     stroke-width: 4px;
-		opacity: 0;
 
-		&:hover, &:global(.hovered) {
-			opacity: 1 !important;
-			fill: white !important;
-			stroke: white !important;
-			z-index: 99 !important;
-			transition-delay: 0s, 0s, 0s !important;
-			transition-duration: 0s, 0s, 0s !important;
+		&.shimmer {
+			animation: goldShimmer 2.2s ease-in-out once;
 		}
+	opacity: 0;
+
+	&:hover, &:global(.hovered) {
+		opacity: 1 !important;
+		fill: white !important;
+		stroke: white !important;
+		z-index: 99 !important;
+		transition-delay: 0s, 0s, 0s !important;
+		transition-duration: 0s, 0s, 0s !important;
+	}
   }
+}
+
+// Traveling glint for the molten-gold phase. Keep the duration in sync with
+// SHIMMER_DURATION in Logo.tsx, which staggers each tile's animation-delay.
+@keyframes goldShimmer {
+	0%, 100% { fill: #f5c15c; }
+	40% { fill: #d99b33; }
+	50% { fill: #fff3cf; }
+	62% { fill: #f9d284; }
 }
 
 @media (max-width: 480px) {
