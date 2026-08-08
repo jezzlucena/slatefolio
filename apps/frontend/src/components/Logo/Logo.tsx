@@ -189,10 +189,21 @@ export default function Logo() {
     }
   }, []);
 
-  const handleGlowMove = (event: React.MouseEvent<SVGSVGElement>) => {
-    cursor.current = [event.clientX, event.clientY];
-    hoveredFace.current = (event.target as Element).closest('g[data-role="face"]');
+  const glowAt = (clientX: number, clientY: number, target: Element | null) => {
+    cursor.current = [clientX, clientY];
+    hoveredFace.current = target?.closest('g[data-role="face"]') ?? null;
     if (!glowFrame.current) glowFrame.current = requestAnimationFrame(applyGlow);
+  };
+
+  const handleGlowMove = (event: React.MouseEvent<SVGSVGElement>) =>
+    glowAt(event.clientX, event.clientY, event.target as Element);
+
+  const handleGlowTouch = (event: React.TouchEvent<SVGSVGElement>) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    // A touch event's target stays wherever the finger first landed, so
+    // hit-test the finger's current position instead
+    glowAt(touch.clientX, touch.clientY, document.elementFromPoint(touch.clientX, touch.clientY));
   };
 
   const handleGlowLeave = () => {
@@ -271,12 +282,23 @@ export default function Logo() {
 
   return (
     <Link href="/">
-      <svg className={styles.svg} ref={svg} onMouseMove={handleGlowMove} onMouseLeave={handleGlowLeave} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1571 1362">
+      <svg
+        className={styles.svg}
+        ref={svg}
+        onMouseMove={handleGlowMove}
+        onMouseLeave={handleGlowLeave}
+        onTouchStart={handleGlowTouch}
+        onTouchMove={handleGlowTouch}
+        onTouchEnd={handleGlowLeave}
+        onTouchCancel={handleGlowLeave}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1571 1362"
+      >
         <defs>
-            <clipPath id="aClip"><path id="a" d="M0,0l28.36-49.65h-56.72Zm0-99.3,28.36,49.65h-56.72Z"/></clipPath>
-            <clipPath id="bClip"><path id="b" d="M0,0l-57.2,0,28.36,49.12Zm-86.051,49.68,28.846-49.4,28.36,49.12Z"/></clipPath>
-            <clipPath id="cClip"><path id="c" d="M0,0l28.881,49.45,28.3-49.26Zm86.059,49.65-57.181-.2,28.3-49.26Z"/></clipPath>
-            <clipPath id="dClip"><path id="d" d="M0,0l-57.2-0.2l28.3-49.3l0,0z"/></clipPath>
+            <clipPath id="aClip"><path id="a" d="M0,0l28.36-49.65h-56.72Zm0-99.3,28.36,49.65h-56.72Z" shape-rendering="geometricPrecision"/></clipPath>
+            <clipPath id="bClip"><path id="b" d="M0,0l-57.4,0,28.36,49.12Zm-86.08,49.68,28.846-49.4,28.36,49.12Z" shape-rendering="geometricPrecision"/></clipPath>
+            <clipPath id="cClip"><path id="c" d="M0,0l28.881,49.45,28.3-49.26Zm86.059,49.65-57.181-.2,28.3-49.26Z" shape-rendering="geometricPrecision"/></clipPath>
+            <clipPath id="dClip"><path id="d" d="M0,0l-57.2,0l29.2-49.3l0,0z" shape-rendering="geometricPrecision"/></clipPath>
         </defs>
         <g data-role="face">
           <g data-role="stripe">
