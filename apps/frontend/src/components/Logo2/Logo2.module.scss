@@ -1,5 +1,8 @@
 .svg {
-  height: 50vh;
+  // As tall as the header allows: the header is 100vh - 147px and the logo's
+  // center sits 50px above its middle, so 100vh - 247px is the exact maximum
+  // height that stays inside; 90vw guards narrow viewports (square aspect)
+  height: min(calc(100vh - 247px), 90vw);
   width: auto;
   position: absolute;
   left: 50%;
@@ -89,13 +92,6 @@
     opacity: 1;
     transition-duration: 0s;
     transition-delay: 0s;
-  }
-}
-
-@media (max-width: 480px) {
-  .svg {
-    height: auto;
-    width: 80vw;
   }
 }
 

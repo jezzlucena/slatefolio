@@ -1,0 +1,172 @@
+// A field of regular tetrahedra with edge $side, viewed from directly above.
+//
+// Geometry of one cell (scene coords: x right, y down, z toward the viewer):
+//   base vertices  B1 = (0, 0, 0)   B2 = ($side, 0, 0)   B3 = ($side/2, $tri-height, 0)
+//   apex           A  = ($side/2, $tri-height/3, 244.949px)   [$side * sqrt(2/3) above the centroid]
+//
+// Each visible face is an equilateral CSS triangle laid flat with its base
+// edge on one side of B1-B2-B3, then folded up toward the viewer by the
+// base-to-face angle of a regular tetrahedron, arccos(-1/3) = 109.4712deg.
+// The unfold entrance rotates faces B and C about the slanted edge they share
+// with the previous face — rotate3d axes below are those edges' unit vectors
+// ((A - B2)/$side and (A - B3)/$side).
+//
+// Cells other than the seed enter through .peelA instead of the fade: their
+// first face starts pressed flat against the parent tetrahedron's face across
+// the shared ground edge (rotateX(-70.5288deg) puts its apex exactly on the
+// parent's apex) and peels outward to its own resting slope. Logo6.tsx places
+// each cell with an in-plane translate+rotate so B1->B2 lies on that shared
+// edge, and staggers every cell via --cell-delay.
+
+$side: 300px;
+$tri-height: 259.8076px; // $side * sqrt(3) / 2
+$fold: 109.4712deg;
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  // Far enough back that faces swinging toward the camera don't balloon:
+  // magnification tops out around 1.18x instead of the 1.4x that a 900px
+  // perspective gave
+  perspective: 4000px;
+  // The vanishing point rests above the seed tetrahedron and chases the
+  // pointer (Logo6.tsx feeds --origin-x/--origin-y from pointermove); the
+  // transition makes it glide rather than snap, and eases it back to rest
+  // when the pointer leaves and the variables are removed.
+  perspective-origin: var(--origin-x, 50%) var(--origin-y, calc(50% - 50px));
+  transition: perspective-origin 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $side;
+  height: $tri-height;
+  transform-origin: 0 0; // cells rotate about their local B1
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $side;
+  height: $tri-height;
+  // Triangle inset ~1px per face so the black backdrop shows through as a
+  // 2px seam between faces. The inset is anisotropic because the ~70.5deg
+  // tilt forshortens the face's slope axis 3x in the top-down projection:
+  // base edge inset 3px, slant edges 1.13px, both appearing as 1px on screen.
+  clip-path: polygon(150px 2.27px, 296.96px 256.81px, 3.04px 256.81px);
+  transform-origin: 0 0;
+  backface-visibility: visible;
+  background-color: #f5c15c;
+  opacity: 0;
+}
+
+// Seed entrance: the very first face simply fades in
+.faceA {
+  transform: rotateX(-$fold) translateY(-$tri-height);
+  filter: brightness(1.05);
+  animation:
+    fadeInA 0.3s ease-out var(--cell-delay, 0s) both,
+    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 3.8s) infinite;
+}
+
+// Spawned-cell entrance: the first face peels outward from the parent's face
+// across the shared ground edge (starts a hair off the exact pressed angle so
+// the two coplanar faces don't z-fight)
+.peelA {
+  transform: rotateX(-$fold) translateY(-$tri-height);
+  filter: brightness(1.05);
+  animation:
+    peelA 0.3s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0s) both,
+    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 3.8s) infinite;
+}
+
+.faceB {
+  transform: translate3d($side, 0, 0) rotate3d(-0.5, 0.288675, 0.816497, 0deg) rotate(120deg) rotateX(-$fold) translateY(-$tri-height);
+  filter: brightness(0.9);
+  animation:
+    unfoldB 0.3s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.3s) both,
+    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 4.72s) infinite;
+}
+
+.faceC {
+  transform: translate3d($side * 0.5, $tri-height, 0) rotate3d(0, -0.57735, 0.816497, 0deg) rotate(240deg) rotateX(-$fold) translateY(-$tri-height);
+  filter: brightness(0.78);
+  animation:
+    unfoldC 0.3s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.6s) both,
+    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 5.55s) infinite;
+}
+
+@keyframes fadeInA {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes peelA {
+  0% {
+    opacity: 0;
+    transform: rotateX(-74deg) translateY(-$tri-height);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(-$fold) translateY(-$tri-height);
+  }
+}
+
+// The from/to transforms share an identical function list, so the browser
+// interpolates just the rotate3d angle: the unfold hinges on the shared edge.
+@keyframes unfoldB {
+  0% {
+    opacity: 0;
+    transform: translate3d($side, 0, 0) rotate3d(-0.5, 0.288675, 0.816497, 172deg - $fold) rotate(120deg) rotateX(-$fold) translateY(-$tri-height);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d($side, 0, 0) rotate3d(-0.5, 0.288675, 0.816497, 0deg) rotate(120deg) rotateX(-$fold) translateY(-$tri-height);
+  }
+}
+
+@keyframes unfoldC {
+  0% {
+    opacity: 0;
+    transform: translate3d($side * 0.5, $tri-height, 0) rotate3d(0, -0.57735, 0.816497, 172deg - $fold) rotate(240deg) rotateX(-$fold) translateY(-$tri-height);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d($side * 0.5, $tri-height, 0) rotate3d(0, -0.57735, 0.816497, 0deg) rotate(240deg) rotateX(-$fold) translateY(-$tri-height);
+  }
+}
+
+// Same golden ramp as the mosaic logo's glint; the per-cell delays stagger it
+// across the field so the light hops from tetrahedron to tetrahedron.
+@keyframes shimmer {
+  0%, 100% { background-color: #f5c15c; }
+  40% { background-color: #d99b33; }
+  50% { background-color: #fff3cf; }
+  62% { background-color: #f9d284; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper {
+    perspective-origin: 50% calc(50% - 50px);
+    transition: none;
+  }
+
+  .faceA, .peelA, .faceB, .faceC {
+    animation: none;
+    opacity: 1;
+  }
+}

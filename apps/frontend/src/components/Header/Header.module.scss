@@ -8,6 +8,45 @@
     background-color: black;
   }
 
+  .logoStage {
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    transition: opacity 0.35s ease; // keep in sync with FADE_MS in Header.tsx
+
+    &.faded {
+      opacity: 0;
+    }
+  }
+
+  .arrow {
+    position: absolute;
+    top: calc(50% - 50px); // the logos' shared vertical center
+    transform: translateY(-50%);
+    z-index: 2;
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 56px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+
+    &:hover, &:focus-visible {
+      color: white;
+    }
+
+    &.left {
+      left: 8px;
+    }
+
+    &.right {
+      right: 8px;
+    }
+  }
+
   &.relative {
     position: relative;
     background-color: transparent;
