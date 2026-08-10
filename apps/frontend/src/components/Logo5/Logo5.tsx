@@ -7,7 +7,7 @@ import styles from "./Logo5.module.scss"
 const SIDE = 300;
 const TRI_HEIGHT = SIDE * Math.sqrt(3) / 2;
 /** Seconds between a tetrahedron starting and its neighbors peeling off */
-const GENERATION_DELAY = 0.6;
+const GENERATION_DELAY = 0.3;
 /** Safety cap for very large viewports */
 const MAX_CELLS = 400;
 
@@ -126,7 +126,7 @@ function buildCells(w: number, h: number): Cell[] {
         x: b[0],
         y: b[1],
         theta: Math.atan2(a[1] - b[1], a[0] - b[0]),
-        delay: node.delay + GENERATION_DELAY + jitter(`${key}|${Math.round(b[0])},${Math.round(b[1])}`) * 0.5,
+        delay: node.delay + GENERATION_DELAY + jitter(`${key}|${Math.round(b[0])},${Math.round(b[1])}`) * 0.1,
         isSeed: false,
       });
     }

@@ -81,7 +81,7 @@ $fold: 109.4712deg;
   transform: rotateX(-$fold) translateY(-$tri-height);
   filter: brightness(1.05);
   animation:
-    peelA 0.3s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0s) both,
+    peelA 0.15s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0s) both,
     shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 3.8s) infinite;
 }
 
@@ -89,7 +89,7 @@ $fold: 109.4712deg;
   transform: translate3d($side, 0, 0) rotate3d(-0.5, 0.288675, 0.816497, 0deg) rotate(120deg) rotateX(-$fold) translateY(-$tri-height);
   filter: brightness(0.9);
   animation:
-    unfoldB 0.3s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.3s) both,
+    unfoldB 0.15s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.15s) both,
     shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 4.72s) infinite;
 }
 
@@ -97,7 +97,7 @@ $fold: 109.4712deg;
   transform: translate3d($side * 0.5, $tri-height, 0) rotate3d(0, -0.57735, 0.816497, 0deg) rotate(240deg) rotateX(-$fold) translateY(-$tri-height);
   filter: brightness(0.78);
   animation:
-    unfoldC 0.3s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.6s) both,
+    unfoldC 0.15s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.3s) both,
     shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 5.55s) infinite;
 }
 

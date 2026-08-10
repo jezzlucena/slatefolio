@@ -7,6 +7,8 @@ import Logo2 from "../Logo2/Logo2";
 import Logo3 from "../Logo3/Logo3";
 import Logo4 from "../Logo4/Logo4";
 import Logo5 from "../Logo5/Logo5";
+import Logo6 from "../Logo6/Logo6";
+import Logo7 from "../Logo7/Logo7";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
 import { LOGO_COOKIE } from "./logoRotation";
@@ -14,7 +16,7 @@ import { useProfile } from "@/stores/profileStore";
 import { LocalizedString } from "@/types/LocalizedString";
 
 /** The rotation order: one logo per full page load */
-const LOGOS = [Logo, Logo2, Logo3, Logo4, Logo5];
+const LOGOS = [Logo, Logo2, Logo3, Logo4, Logo5, Logo6, Logo7];
 
 interface HeaderProps {
   /** Which logo to show this load — read from the cookie by the server layout */

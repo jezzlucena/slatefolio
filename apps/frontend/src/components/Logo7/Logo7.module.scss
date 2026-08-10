@@ -1,0 +1,112 @@
+// Vega field — after Victor Vasarely's Vega series: a polychromatic checker
+// grid warped by a spherical bulge, rendered as actual 3D instead of painted
+// illusion.
+//
+// One registered trio drives everything: --bump-x/--bump-y (the bulge's
+// position, unitless wrapper px, set by Logo7.tsx and *transitioned* so the
+// bulge glides) and --amp (its height, *animated* here: a ramp-in, then an
+// endless breathe). Each tile knows its own center (--tx/--ty) and computes
+// a gaussian falloff with CSS exp():
+//   g = exp(-(dx^2 + dy^2) / (2 * sigma^2))        sigma = 260px
+// which lifts it toward the viewer (translateZ), tilts it like a point on a
+// sphere's surface (rotateX/Y from the gaussian's gradient), and swells its
+// disc — the Vega signature, circles growing inside the bulge.
+
+@property --bump-x {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --bump-y {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --amp {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+$tile: 90px; // 2px shy of the 92px pitch: the family's black seams
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  // The bulge chases the pointer with weight instead of snapping
+  transition:
+    --bump-x 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    --bump-y 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  // Amplitude ramps in after the entrance bloom, then breathes forever
+  animation:
+    ampIn 1.4s ease-out 2.2s both,
+    breathe 6.5s ease-in-out 3.6s infinite alternate;
+}
+
+.tile {
+  position: absolute;
+  width: $tile;
+  height: $tile;
+  // overflow is a grouping property, but this tile's children are coplanar
+  // 2D — flattening changes nothing, and it clips the swelling disc
+  overflow: hidden;
+  --dx: calc(var(--tx, 0) - var(--bump-x));
+  --dy: calc(var(--ty, 0) - var(--bump-y));
+  --g: calc(exp((var(--dx) * var(--dx) + var(--dy) * var(--dy)) / -135200));
+  transform:
+    translateZ(calc(var(--amp) * var(--g) * 1px))
+    rotateY(calc(var(--dx) * var(--g) * -0.035deg))
+    rotateX(calc(var(--dy) * var(--g) * 0.035deg));
+  animation: flipIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards;
+}
+
+.disc {
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  // Circles swell as the bulge passes under them; at the apex of a full
+  // breath the disc just about fills its tile
+  transform: scale(calc(1 + var(--amp) * var(--g) * 0.005));
+  filter: invert(0);
+  transition: filter 0.3s ease;
+}
+
+// Op-art inversion under the pointer
+.tile:hover .disc {
+  filter: invert(1);
+}
+
+@keyframes ampIn {
+  from { --amp: 0; }
+  to { --amp: 55; }
+}
+
+@keyframes breathe {
+  from { --amp: 55; }
+  to { --amp: 105; }
+}
+
+// Radial entrance bloom. fill: backwards only — when the animation ends the
+// transform releases to the live bulge expression above (amp is still ~0
+// then, so there's no snap); fill: both would pin tiles flat forever.
+@keyframes flipIn {
+  from {
+    opacity: 0;
+    transform: rotateY(85deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrapper, .tile, .disc {
+    animation: none;
+    transition: none;
+  }
+}

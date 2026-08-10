@@ -1,0 +1,222 @@
+// A wall of isometric golden cubes that unfolds from the top-right corner,
+// ported from the Transformation_ADN demo's .cubes-mask transition.
+//
+// Each cube is three 200px faces inside a rotateX(-35deg) rotateY(-45deg)
+// context (no perspective element, so the projection is isometric). Closed,
+// the three coplanar faces sit folded 270deg behind a top or right hinge;
+// opening swings the assembly in, then the left face folds out -90deg around
+// its left edge and the bottom face -90deg around its bottom edge. The demo
+// drove this with jQuery timers toggling transitions; here every element is
+// a keyframe animation offset by the cube's --delay custom property.
+//
+// Faces are split into a hinge (full 200px box: fold transform + exact
+// transform-origin) and a plate (inset 1px: color + shimmer), so abutting
+// plates show a 2px black seam like Logo5 without shifting any hinge line.
+
+$face: 200px;
+$cube-w: 282.843px; // silhouette width, $face * sqrt(2) — cubes tile edge-to-edge
+$cube-h: 325px;
+// Per-plate inset. Two abutting plates form the seam, the isometric
+// projection forshortens in-plane distances by ~0.816, and the wall is
+// scaled 1.14 — so a 2px on-screen seam needs 2 / (2 * 0.816 * 1.14) each.
+$gap: 1.1px;
+$swing: 0.3s; // one fold movement
+$gold-base: #f5c15c;
+$gold-bright: #fff3cf;
+$gold-dark: #d99b33;
+$gold-mid: #f9d284;
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+// The demo's empirical framing: slightly blown up and nudged so the wall's
+// ragged top/right edges sit outside the viewport
+.wall {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform-origin: top right;
+  transform: scale(1.14) translate(139px, -80px);
+}
+
+.line {
+  position: absolute;
+  right: 0;
+  white-space: nowrap;
+
+  &.lineOffset {
+    right: -141.421px; // interlock alternate rows by half a silhouette
+  }
+}
+
+// NO opacity/filter/animation-of-either here, ever: .cube is part of the 3D
+// chain (preserve-3d down to the hinges) so the selection flip rotates the
+// actual cube geometry. Any grouping property would flatten it back into a
+// card-flip of a 2D snapshot. The entrance fade lives on the .plate leaves.
+.cube {
+  display: inline-block;
+  position: relative;
+  width: $cube-w;
+  height: $cube-h;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  // Same function list as the selected inline transform (see Logo6.tsx), so
+  // the transition interpolates each function — a real swing to center and a
+  // real Y-flip — instead of falling back to matrix decomposition.
+  // perspective(none) at rest: a finite base perspective would distort the
+  // isometric projection of every idle cube now that the subtree is 3D.
+  transform: translate(0, 0) scale(1) perspective(none) rotateY(0deg);
+  transition: transform 0.6s ease;
+
+  // .returning keeps the elevation while a dismissed cube glides home;
+  // Logo6.tsx clears it on the transform transitionend
+  &.selected,
+  &.returning {
+    z-index: 3;
+  }
+}
+
+// Lift the selected cube's whole row above the interlocked neighbors
+.line:has(.selected),
+.line:has(.returning) {
+  z-index: 3;
+}
+
+// Isometric camera per cube, anchored to the cube's top-right like the demo
+.iso {
+  position: absolute;
+  top: 22px;
+  right: -30px;
+  transform-style: preserve-3d;
+  transform: rotateX(-35deg) rotateY(-45deg);
+}
+
+// The three-face assembly; swings in from behind its hinge edge.
+// No opacity here, ever — see the note on .cube.
+.content {
+  width: $face;
+  height: $face;
+  transform-style: preserve-3d;
+
+  &.fromTop {
+    transform-origin: top;
+    animation: openFromTop $swing ease calc(var(--delay, 0s) + 0.05s) both;
+  }
+
+  &.fromLeft {
+    transform-origin: right;
+    animation: openFromRight $swing ease calc(var(--delay, 0s) + 0.05s) both;
+  }
+}
+
+.hinge {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.faceLeft {
+  transform-origin: bottom left;
+  animation: foldLeft $swing ease calc(var(--delay, 0s) + 0.05s + $swing) both;
+}
+
+.faceBottom {
+  transform-origin: bottom;
+  animation: foldBottom $swing ease calc(var(--delay, 0s) + 0.05s) both;
+}
+
+.plate {
+  position: absolute;
+  inset: $gap;
+  background-color: $gold-base;
+  backface-visibility: visible;
+  transition: filter 0.4s ease;
+}
+
+// Whiten via filter: it transitions smoothly and doesn't fight the shimmer's
+// background-color animation (desaturate, then blow out any gold shade).
+// NOTE: the base .plate filters below list saturate(1) first for a reason —
+// filter lists only interpolate when their function sequences match; a bare
+// brightness() base against this saturate()+brightness() would flip discretely
+.cube:hover .plate,
+.cube.selected .plate {
+  filter: saturate(0) brightness(6);
+}
+
+// Per-face shading like Logo5's facets; shimmer durations differ per face
+// (the demo's 24/17/13s) so the glints drift in and out of phase organically.
+// --shimmer-delay is subtracted (a negative delay starts the loop mid-cycle)
+// so each cube shows a different glint phase from the moment it appears
+.faceRight .plate {
+  filter: saturate(1) brightness(1.05);
+  animation:
+    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
+    shimmer 24s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
+}
+
+.faceLeft .plate {
+  filter: saturate(1) brightness(0.9);
+  animation:
+    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
+    shimmer 17s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
+}
+
+.faceBottom .plate {
+  filter: saturate(1) brightness(0.78);
+  animation:
+    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
+    shimmer 13s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
+}
+
+// On the plate leaves, where opacity can't flatten any 3D context
+@keyframes plateFade {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes openFromTop {
+  from { transform: rotateX(270deg); }
+  to { transform: rotateX(0deg); }
+}
+
+@keyframes openFromRight {
+  from { transform: rotateY(270deg); }
+  to { transform: rotateY(0deg); }
+}
+
+@keyframes foldLeft {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(-90deg); }
+}
+
+@keyframes foldBottom {
+  from { transform: rotateX(0deg); }
+  to { transform: rotateX(-90deg); }
+}
+
+// The demo's face_shimmer envelope, re-tuned to the slatefolio gold ramp
+@keyframes shimmer {
+  0%, 100% { background-color: $gold-base; }
+  30% { background-color: $gold-bright; }
+  50% { background-color: $gold-base; }
+  70% { background-color: $gold-dark; }
+  90% { background-color: $gold-mid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cube, .content, .faceLeft, .faceBottom, .plate {
+    animation: none;
+  }
+
+  .faceLeft {
+    transform: rotateY(-90deg);
+  }
+
+  .faceBottom {
+    transform: rotateX(-90deg);
+  }
+}
