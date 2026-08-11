@@ -40,6 +40,7 @@ Self-host your portfolio with Docker, manage your projects through an intuitive 
 ### Prerequisites
 
 - [Docker](https://www.docker.com/get-started) and Docker Compose
+- [Node.js](https://nodejs.org/) 20+ and [pnpm](https://pnpm.io/) (for local development)
 - A domain (for production) or localhost (for development)
 
 ### 1. Clone the Repository
@@ -59,16 +60,19 @@ cp .env.example .env  # if available, or create manually
 
 See [Configuration](#configuration) for all environment variables.
 
-### 3. Start with Docker Compose
+### 3. Start the App
 
 **Development (with hot-reloading):**
 ```bash
-docker compose up -d
+pnpm install
+pnpm dev
 ```
+
+This starts MongoDB in Docker (the `mongo` service from `docker-compose.yml`) and runs the frontend and backend natively in watch mode, with hot-reloading.
 
 **Production:**
 ```bash
-docker compose -f docker-compose.yml up -d
+docker compose up -d
 ```
 
 ### 4. Access the Application
@@ -228,26 +232,41 @@ slatefolio/
 │       │   └── types/        # TypeScript types
 │       ├── messages/     # i18n translations
 │       └── public/       # Static assets
-├── docker-compose.yml        # Production compose
-├── docker-compose.override.yml  # Development overrides
+├── docker-compose.yml    # Production compose
+├── package.json          # Root workspace scripts (pnpm dev)
 └── pnpm-workspace.yaml   # Monorepo config
 ```
 
 ## Development
 
-### Local Development with Docker
+### Local Development
+
+Development runs the apps natively (instant hot-reloading, local `node_modules`
+for your editor) and only uses Docker for MongoDB:
 
 ```bash
-# Start all services (with hot-reloading)
-docker compose up -d
+# One-time setup
+pnpm install
 
-# View logs
-docker compose logs -f
+# Start MongoDB (Docker) + frontend and backend in watch mode
+pnpm dev
 
-# Rebuild after dependency changes
+# Stop the apps with Ctrl-C; Mongo keeps running in the background
+pnpm mongo:stop   # stop the Mongo container when you're done
+```
+
+`pnpm dev` loads the root `.env` (via dotenv-cli) and passes it to both apps —
+the same variables Docker Compose injects in production. The frontend runs
+`next dev --turbopack` and the backend runs `tsx watch`, so both reload on
+save. Data persists in the `mongo_data` Docker volume either way.
+
+### Full Production Stack Locally
+
+To test the production build pipeline end to end:
+
+```bash
 docker compose up -d --build
-
-# Stop all services
+docker compose logs -f
 docker compose down
 ```
 

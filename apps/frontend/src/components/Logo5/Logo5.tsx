@@ -4,12 +4,14 @@ import Link from "next/link"
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import styles from "./Logo5.module.scss"
 
-const SIDE = 300;
+const SIDE = 180;
 const TRI_HEIGHT = SIDE * Math.sqrt(3) / 2;
-/** Seconds between a tetrahedron starting and its neighbors peeling off */
-const GENERATION_DELAY = 0.3;
-/** Safety cap for very large viewports */
-const MAX_CELLS = 400;
+/** Seconds between a tetrahedron starting and its neighbors peeling off
+ * (shorter than the 300px-tile era: smaller tiles mean more generations
+ * to the viewport edge, and this keeps the total fill time similar) */
+const GENERATION_DELAY = 0.2;
+/** Safety cap for very large viewports (180px tiles need ~750 to fill 4K) */
+const MAX_CELLS = 800;
 
 /** How far (px) the pointer chain reaction reaches */
 const PULSE_RADIUS = 550;
@@ -25,6 +27,15 @@ const ORIGIN_FACTOR = -0.35;
 
 /** Must match the wrapper's perspective in Logo5.module.scss */
 const PERSPECTIVE = 4000;
+
+/** How far (px) a selected tetrahedron rises toward the camera. The
+ * perspective magnifies it by PERSPECTIVE / (PERSPECTIVE - SELECT_Z), so
+ * 2200px turns a 180px tile into a ~400px centerpiece. */
+const SELECT_Z = 2200;
+
+/** Pointer travel (px) between down and up beyond which the release is a
+ * drag (rotating the selected tetrahedron), not a tap that dismisses it */
+const DRAG_PX = 8;
 /**
  * Faces tilt 70.53deg from the ground, so they turn edge-on (then backface)
  * once the local view ray tilts past 90 - 70.53 = 19.47deg. Ray tilt is
@@ -35,31 +46,68 @@ const PERSPECTIVE = 4000;
  */
 const MAX_RAY_TILT = Math.tan(17 * Math.PI / 180);
 
+/**
+ * Palette: the aurora gradient from Logo.tsx — teal, violet, magenta, gold
+ * stops as [hue, saturation, lightness] — flowing top to bottom across the
+ * viewport, exactly like the mosaic's gradient phase (teal apex to gold
+ * base). Each tetrahedron samples the gradient at its centroid's height; its
+ * three faces read as shades of that color via the per-face brightness
+ * filters in Logo5.module.scss, and the shimmer glints around it.
+ */
+const AURORA_STOPS: [number, number, number][] = [
+  [172, 78, 55], // teal
+  [258, 84, 66], // violet
+  [318, 80, 62], // magenta
+  [402, 92, 60], // gold (402 = 42 + 360, so the hue keeps rising smoothly)
+];
+
+/** Piecewise-linear sample of the aurora at t in [0, 1] — a port of
+ * Logo.tsx's auroraAt */
+const auroraAt = (t: number): string => {
+  const pos = Math.min(Math.max(t, 0), 1) * (AURORA_STOPS.length - 1);
+  const i = Math.min(Math.floor(pos), AURORA_STOPS.length - 2);
+  const frac = pos - i;
+  const [h1, s1, l1] = AURORA_STOPS[i];
+  const [h2, s2, l2] = AURORA_STOPS[i + 1];
+  const h = Math.round((h1 + (h2 - h1) * frac) % 360);
+  const s = Math.round(s1 + (s2 - s1) * frac);
+  const l = Math.round(l1 + (l2 - l1) * frac);
+  return `hsl(${h}, ${s}%, ${l}%)`;
+};
+
 type Cell = {
   key: string;
   x: number;
   y: number;
   deg: number;
-  delay: number;
+  /** The cell's color: the aurora gradient sampled at its centroid's height */
+  color: string;
   /**
-   * Phase offset for the glint loop. Deliberately NOT derived from `delay`:
-   * the growth wave advances ~1.6s per ring, more than half the 2.7s shimmer
-   * period, so keying the shimmer to it aliases into a phantom wave that
-   * sweeps back inward (wagon-wheel effect). A gentle radial gradient —
-   * well under half a period per ring — reads as one outward ripple.
+   * Unfold start time. Also drives the shimmer phase (see Logo5.module.scss):
+   * each cell's glint loop starts a fixed beat after its own unfold, so the
+   * shimmer sweeps outward as the same wave the growth traced. Safe from
+   * wagon-wheel aliasing because the delay advances ~0.2-0.3s per ring,
+   * well under half the 2.7s shimmer period.
    */
-  shimmer: number;
+  delay: number;
   isSeed: boolean;
   /** Footprint centroid, for pointer distance checks */
   cx: number;
   cy: number;
 };
 
-/** Deterministic 0..1 jitter so delays feel organic yet survive re-renders */
-const jitter = (key: string) => {
+/** Deterministic 0..1 hash so delay jitter feels organic yet survives
+ * re-renders and resizes (the multiply-xorshift finalizer decorrelates
+ * near-identical keys — same helper as Logo6's) */
+const rand01 = (key: string): number => {
   let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
-  return ((h >>> 0) % 1000) / 1000;
+  for (let i = 0; i < key.length; i++) h = (Math.imul(h, 31) + key.charCodeAt(i)) | 0;
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x45d9f3b);
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x45d9f3b);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
 };
 
 /**
@@ -93,7 +141,7 @@ function buildCells(w: number, h: number): Cell[] {
     const cx = (v0[0] + v1[0] + v2[0]) / 3;
     const cy = (v0[1] + v1[1] + v2[1]) / 3;
     // Identify the cell by its lattice coordinates relative to the seed
-    // (centroids sit exactly on a 75px x SIDE*sqrt(3)/6 grid), NOT by rounded
+    // (centroids sit exactly on a SIDE/4 x SIDE*sqrt(3)/6 grid), NOT by rounded
     // pixels: pixel centroids land on .5 boundaries whenever the viewport
     // width is odd, so float noise from different BFS paths rounded the same
     // triangle to different keys — duplicate cells stacked on one spot,
@@ -111,9 +159,8 @@ function buildCells(w: number, h: number): Cell[] {
       x: node.x,
       y: node.y,
       deg: Math.round(node.theta * 180 / Math.PI),
+      color: auroraAt(cy / h),
       delay: node.delay,
-      shimmer: (Math.hypot(cx - w / 2, cy - h / 2) / Math.hypot(w / 2, h / 2)) * 2.7
-        + jitter(`shimmer|${key}`) * 0.4,
       isSeed: node.isSeed,
       cx,
       cy,
@@ -126,7 +173,7 @@ function buildCells(w: number, h: number): Cell[] {
         x: b[0],
         y: b[1],
         theta: Math.atan2(a[1] - b[1], a[0] - b[0]),
-        delay: node.delay + GENERATION_DELAY + jitter(`${key}|${Math.round(b[0])},${Math.round(b[1])}`) * 0.1,
+        delay: node.delay + GENERATION_DELAY + rand01(`${key}|${Math.round(b[0])},${Math.round(b[1])}`) * 0.1,
         isSeed: false,
       });
     }
@@ -136,21 +183,39 @@ function buildCells(w: number, h: number): Cell[] {
 }
 
 /**
- * A field of golden tetrahedra seen from directly above, built from CSS
- * triangles on 3D transforms. The seed tetrahedron assembles origami-style
+ * A field of aurora-tinted tetrahedra seen from directly above, built from
+ * CSS triangles on 3D transforms. The seed tetrahedron assembles origami-style
  * in the center; then each neighbor's first face peels outward over their
  * shared ground edge, folds itself into a tetrahedron, and spawns its own
  * neighbors — until the viewport is tiled with shimmering tetrahedra.
- * Base faces are never visible from above, so they aren't drawn.
+ *
+ * Clicking a tetrahedron lifts it front and center (a translate3d glide up
+ * the z axis); while selected it rotates to follow the pointer (or a touch
+ * drag), and a tap or click anywhere sends it gliding back. The base face
+ * exists only for this — a rotated tetrahedron would show a hollow shell
+ * without it — so it is only mounted while its cell is selected or
+ * gliding home.
  */
 export default function Logo5() {
   const wrapper = useRef<HTMLDivElement>(null);
   const [cells, setCells] = useState<Cell[]>([]);
-  const sceneRefs = useRef(new Map<string, HTMLDivElement>());
+  const solidRefs = useRef(new Map<string, HTMLDivElement>());
+  /** The lifted tetrahedron: its key, in-plane rotation (for screen-aligned
+   * spin axes), and the inline transform that centers it */
+  const [selected, setSelected] = useState<{ key: string; deg: number; transform: string } | null>(null);
+  // Dismissed but still gliding home; keeps the cell above the field
+  const [returning, setReturning] = useState<string | null>(null);
+  /** Where the current press started, to tell taps from rotation drags */
+  const downAt = useRef<[number, number] | null>(null);
 
   useEffect(() => {
     const compute = () => {
       if (!wrapper.current) return;
+      setSelected(null);
+      setReturning(null);
+      // The cells are rebuilt but keyed elements are reused, so any inline
+      // pointer rotation must not survive into the new layout
+      for (const el of solidRefs.current.values()) el.style.removeProperty('transform');
       setCells(buildCells(wrapper.current.clientWidth, wrapper.current.clientHeight));
     };
     compute();
@@ -169,7 +234,7 @@ export default function Logo5() {
     for (const cell of cells) {
       const dist = Math.hypot(cell.cx - x, cell.cy - y);
       if (dist > PULSE_RADIUS) continue;
-      const el = sceneRefs.current.get(cell.key);
+      const el = solidRefs.current.get(cell.key);
       if (!el) continue;
       const strength = 1 - dist / PULSE_RADIUS;
       // Flash the faces, not the scene: a filter is a grouping property that
@@ -241,35 +306,135 @@ export default function Logo5() {
     el.style.removeProperty('--origin-y');
   };
 
+  /** True when the pointer traveled since pointerdown — a rotation drag
+   * releasing, not a tap */
+  const wasDrag = (e: React.MouseEvent) =>
+    !!downAt.current && Math.hypot(e.clientX - downAt.current[0], e.clientY - downAt.current[1]) > DRAG_PX;
+
+  /** Send the selected tetrahedron gliding home: the scene transitions back
+   * to its lattice transform, the solid untwists to its stylesheet identity */
+  const dismiss = () => {
+    if (!selected) return;
+    solidRefs.current.get(selected.key)?.style.removeProperty('transform');
+    setReturning(selected.key);
+    setSelected(null);
+  };
+
+  /**
+   * Rotate the lifted tetrahedron with the pointer: its position maps to a
+   * full spin across the viewport width and a base-revealing tilt across the
+   * height. The two outer rotates conjugate away the cell's in-plane lattice
+   * rotation, so the spin axes read screen-aligned for every cell. Mutates
+   * the style directly — the .solid transition supplies the glide.
+   */
+  const rotateSelected = (clientX: number, clientY: number) => {
+    if (!selected) return;
+    const el = solidRefs.current.get(selected.key);
+    const rect = wrapper.current?.getBoundingClientRect();
+    if (!el || !rect) return;
+    const spin = (((clientX - rect.left) / rect.width - 0.5) * 360).toFixed(1);
+    // Negative: dragging down pulls the near side down (grabbing the solid),
+    // rather than cranking it away like a wheel
+    const tilt = (((clientY - rect.top) / rect.height - 0.5) * -180).toFixed(1);
+    el.style.transform =
+      `rotate(${-selected.deg}deg) rotateX(${tilt}deg) rotateY(${spin}deg) rotate(${selected.deg}deg)`;
+  };
+
+  /**
+   * Select a tetrahedron: lift it SELECT_Z toward the camera and center it.
+   * The magnified centroid must land at the viewport center, and perspective
+   * scales positions away from the resting perspective-origin (50px above
+   * center), so the pre-projection target is pulled toward that origin.
+   * A click while anything is selected dismisses instead.
+   */
+  const handleCellClick = (e: React.MouseEvent, cell: Cell) => {
+    // The field lives inside a Link — selection clicks must not navigate
+    e.preventDefault();
+    e.stopPropagation();
+    if (wasDrag(e)) return;
+    if (selected) {
+      dismiss();
+      return;
+    }
+    const rect = wrapper.current?.getBoundingClientRect();
+    if (!rect) return;
+    releasePointer(); // park the vanishing point while inspecting
+    const mag = PERSPECTIVE / (PERSPECTIVE - SELECT_Z);
+    const originY = rect.height / 2 - 50; // rest perspective-origin (see SCSS)
+    const targetX = rect.width / 2;
+    const targetY = originY + (rect.height / 2 - originY) / mag;
+    setSelected({
+      key: cell.key,
+      deg: cell.deg,
+      transform: `translate3d(${(cell.x + targetX - cell.cx).toFixed(1)}px, ${(cell.y + targetY - cell.cy).toFixed(1)}px, ${SELECT_Z}px) rotate(${cell.deg}deg)`,
+    });
+  };
+
+  /** Taps on the seams/background dismiss if something is selected,
+   * otherwise fall through to the Link's navigation */
+  const handleWrapperClick = (e: React.MouseEvent) => {
+    if (!selected) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (!wasDrag(e)) dismiss();
+  };
+
   return (
     <Link href="/">
       <div
         className={styles.wrapper}
         ref={wrapper}
-        onPointerDown={e => pulseFrom(e.clientX, e.clientY)}
-        onPointerMove={e => followPointer(e.clientX, e.clientY)}
+        // While a tetrahedron is selected, touch drags rotate it instead of
+        // scrolling the page
+        style={{ touchAction: selected ? 'none' : undefined }}
+        onClick={handleWrapperClick}
+        onPointerDown={e => {
+          downAt.current = [e.clientX, e.clientY];
+          if (!selected) pulseFrom(e.clientX, e.clientY);
+        }}
+        onPointerMove={e => selected
+          ? rotateSelected(e.clientX, e.clientY)
+          : followPointer(e.clientX, e.clientY)}
         onPointerLeave={releasePointer}
         onPointerCancel={releasePointer}
       >
-        {cells.map(cell => (
-          <div
-            key={cell.key}
-            className={styles.scene}
-            ref={el => {
-              if (el) sceneRefs.current.set(cell.key, el);
-              else sceneRefs.current.delete(cell.key);
-            }}
-            style={{
-              transform: `translate3d(${cell.x}px, ${cell.y}px, 0) rotate(${cell.deg}deg)`,
-              '--cell-delay': `${cell.delay.toFixed(2)}s`,
-              '--shimmer-delay': `${cell.shimmer.toFixed(2)}s`,
-            } as CSSProperties}
-          >
-            <div className={`${styles.face} ${cell.isSeed ? styles.faceA : styles.peelA}`} />
-            <div className={`${styles.face} ${styles.faceB}`} />
-            <div className={`${styles.face} ${styles.faceC}`} />
-          </div>
-        ))}
+        {cells.map(cell => {
+          const isSelected = selected?.key === cell.key;
+          return (
+            <div
+              key={cell.key}
+              className={`${styles.scene}${isSelected ? ` ${styles.selected}` : ''}${returning === cell.key ? ` ${styles.returning}` : ''}`}
+              style={{
+                transform: isSelected
+                  ? selected.transform
+                  : `translate3d(${cell.x}px, ${cell.y}px, 0) rotate(${cell.deg}deg)`,
+                '--cell-delay': `${cell.delay.toFixed(2)}s`,
+                '--cell-color': cell.color,
+              } as CSSProperties}
+              onClick={e => handleCellClick(e, cell)}
+              onTransitionEnd={e => {
+                // Only the scene's own glide home, not bubbled face effects
+                if (e.target === e.currentTarget && e.propertyName === 'transform')
+                  setReturning(cur => (cur === cell.key ? null : cur));
+              }}
+            >
+              <div
+                className={styles.solid}
+                ref={el => {
+                  if (el) solidRefs.current.set(cell.key, el);
+                  else solidRefs.current.delete(cell.key);
+                }}
+              >
+                {(isSelected || returning === cell.key) && (
+                  <div className={`${styles.face} ${styles.faceBase}`} />
+                )}
+                <div className={`${styles.face} ${cell.isSeed ? styles.faceA : styles.peelA}`} />
+                <div className={`${styles.face} ${styles.faceB}`} />
+                <div className={`${styles.face} ${styles.faceC}`} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </Link>
   )

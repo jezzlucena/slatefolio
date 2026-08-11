@@ -11,33 +11,68 @@ import styles from "./Logo6.module.scss"
 const COL_PITCH = 282.843;
 /** Vertical advance per row: 200 * (cos35deg + sin35deg * cos45deg) */
 const ROW_PITCH = 244.949;
-/** The wall is blown up slightly, so fewer cubes cover the viewport */
-const SCALE = 1.14;
-/** Safety cap for very large viewports */
-const MAX_CUBES = 400;
+/** The wall is scaled well down so lots of small cubes fit the viewport
+ * (must match the .wall transform in Logo6.module.scss) */
+const SCALE = 0.4;
+/** Safety cap for very large viewports (~113px cubes need ~900 to fill 4K) */
+const MAX_CUBES = 900;
 
 /**
- * The demo's cascade: rows open top to bottom, columns from the right, with
- * a slight extra beat on every other row — the wall peels from the top-right.
+ * The cascade: rows open top to bottom, columns from the right, with a
+ * slight extra beat on every other row — the wall peels from the top-right.
+ * The column beat MUST stay exactly three fold beats (3 * $swing in
+ * Logo6.module.scss): each cube unfolds top -> right -> left at one $swing
+ * per fold, and its left-hand neighbor's top face peels off this cube's
+ * left face the beat after it lands — so the wall reads as one continuous
+ * chain of unfolds. The shimmer loops key off this delay too, so the glint
+ * travels as the same wave.
  */
 const cubeDelay = (row: number, colsFromRight: number) =>
-  0.25 * row + 0.12 * ((row + 1) % 2) + 0.4 * colsFromRight;
-
-/** Deterministic mix of hinge orientations, stable across re-renders */
-const orientation = (row: number, col: number): 'top' | 'left' =>
-  (row * 7 + col * 13) % 3 === 0 ? 'top' : 'left';
+  0.25 * row + 0.06 * ((row + 1) % 2) + 0.36 * colsFromRight;
 
 /**
- * Per-cube shimmer phase, 0..12s: hash-scattered (NOT a spatial gradient) so
- * adjacent cubes sit at very different points of their glint loops
+ * Palette: the hues of the mosaic logo's cycle-0 fills — indigo (#c arm),
+ * violet (#b arm), green (#a arm) — plus the shimmer's gold. Each cube wears
+ * one hue picked at random, in a randomly lightened or darkened shade; its
+ * three faces read as shades of it via the per-face depth filters.
  */
-const shimmerPhase = (row: number, col: number) =>
-  ((row * 73 + col * 131) % 97) / 97 * 12;
+const CUBE_HUES: [number, number, number][] = [
+  [48, 65, 168],  // indigo (#3041a8)
+  [115, 0, 227],  // violet (#7300e3)
+  [0, 200, 0],    // green (#00c800)
+  [245, 193, 92], // gold (#f5c15c)
+];
+
+/** Deterministic 0..1 hash so each cube's hue survives re-renders/resizes.
+ * The multiply-xorshift finalizer matters: a plain polynomial hash gives
+ * near-consecutive values for keys that differ only in their trailing
+ * digits (`hue|0,1` vs `hue|0,2`), which bucketizes whole rows into one
+ * hue; avalanching decorrelates neighboring cubes. */
+const rand01 = (key: string): number => {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (Math.imul(h, 31) + key.charCodeAt(i)) | 0;
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x45d9f3b);
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x45d9f3b);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+};
+
+/** A random shade of a random palette hue for the cube at (row, col):
+ * darkened up to 25% or lightened up to 45% of the way to white */
+const cubeColor = (row: number, col: number): string => {
+  const rgb = CUBE_HUES[Math.floor(rand01(`hue|${row},${col}`) * CUBE_HUES.length)];
+  const v = rand01(`shade|${row},${col}`) * 0.7 - 0.25;
+  const target = v < 0 ? 0 : 255;
+  const [r, g, b] = rgb.map(c => Math.round(c + (target - c) * Math.abs(v)));
+  return `rgb(${r}, ${g}, ${b})`;
+};
 
 type Line = {
   top: number;
   offset: boolean;
-  cubes: { delay: number; shimmer: number; from: 'top' | 'left' }[];
+  cubes: { delay: number; color: string }[];
 };
 
 function buildLines(w: number, h: number): Line[] {
@@ -52,26 +87,25 @@ function buildLines(w: number, h: number): Line[] {
     offset: i % 2 === 1,
     cubes: Array.from({ length: cols }, (_, j) => ({
       delay: cubeDelay(i, cols - j),
-      shimmer: shimmerPhase(i, j),
-      from: orientation(i, j),
+      color: cubeColor(i, j),
     })),
   }));
 }
 
 /**
- * One isometric cube corner: three faces that unfold into place. The whole
- * three-face assembly starts folded 270deg behind its top or right hinge and
- * swings in; then the left face folds out around its left edge and the
- * bottom face around its bottom edge. Each face is a full-size hinge (which
- * carries the fold and its exact transform-origin) holding an inset plate
- * (which carries the gold and the shimmer), so the 2px seams between plates
- * never disturb the fold geometry.
+ * One isometric cube corner: three faces that unfold into place, origami
+ * style. The top face swings in around its right edge (peeling off the spot
+ * where the previous cube's left face just landed) while it fades in; the
+ * right face peels off the top face around their shared edge; the left face
+ * peels off the right face around theirs — and the next cube's top face
+ * peels off it in turn. Each face carries an inset ::after plate (the gold
+ * and the shimmer), so the 2px seams between plates never disturb the fold
+ * geometry — see Logo6.module.scss for the hinge math.
  */
 type CubeProps = {
-  from: 'top' | 'left';
   delay: number;
-  /** Phase offset for the glint loops, decorrelated from neighbors */
-  shimmer: number;
+  /** The cube's hue: a random shade of a random CUBE_HUES entry */
+  color: string;
   selected: boolean;
   /** Still gliding back after deselection — keeps the cube above the wall */
   returning: boolean;
@@ -82,13 +116,13 @@ type CubeProps = {
   onSettled: () => void;
 };
 
-function Cube({ from, delay, shimmer, selected, returning, selectedTransform, onClick, onSettled }: CubeProps) {
+function Cube({ delay, color, selected, returning, selectedTransform, onClick, onSettled }: CubeProps) {
   return (
     <div
       className={`${styles.cube}${selected ? ` ${styles.selected}` : ''}${returning ? ` ${styles.returning}` : ''}`}
       style={{
         '--delay': `${delay.toFixed(2)}s`,
-        '--shimmer-delay': `${shimmer.toFixed(2)}s`,
+        '--cube-color': color,
         ...(selected && selectedTransform ? { transform: selectedTransform } : {}),
       } as CSSProperties}
       onClick={onClick}
@@ -98,10 +132,10 @@ function Cube({ from, delay, shimmer, selected, returning, selectedTransform, on
       }}
     >
       <div className={styles.iso}>
-        <div className={`${styles.content} ${from === 'top' ? styles.fromTop : styles.fromLeft}`}>
-          <div className={`${styles.hinge} ${styles.faceRight}`}><div className={styles.plate} /></div>
-          <div className={`${styles.hinge} ${styles.faceLeft}`}><div className={styles.plate} /></div>
-          <div className={`${styles.hinge} ${styles.faceBottom}`}><div className={styles.plate} /></div>
+        <div className={styles.content}>
+          <div className={`${styles.face} ${styles.top}`}/>
+          <div className={`${styles.face} ${styles.right}`}/>
+          <div className={`${styles.face} ${styles.left}`}/>
         </div>
       </div>
     </div>
@@ -109,10 +143,11 @@ function Cube({ from, delay, shimmer, selected, returning, selectedTransform, on
 }
 
 /**
- * A wall of golden isometric cubes that unfolds cube by cube from the
- * top-right corner until it covers the viewport, then shimmers — a faithful
- * port of the cubes-mask transition from Transformation_ADN, rebuilt with
- * per-cube animation delays instead of scripted timers.
+ * A wall of isometric cubes, dressed in the mosaic logo's cycle-0 ramps,
+ * that unfolds cube by cube from the top-right corner until it covers the
+ * viewport, then shimmers — a port of the cubes-mask transition from
+ * Transformation_ADN, rebuilt with per-cube animation delays instead of
+ * scripted timers.
  */
 export default function Logo6() {
   const wrapper = useRef<HTMLDivElement>(null);
@@ -175,7 +210,7 @@ export default function Logo6() {
   // Keep the transform's function list identical to the .cube base transform
   // so the transition interpolates each function instead of matrix-morphing
   const selectedTransform = selected
-    ? `translate(${selected.dx.toFixed(1)}px, ${selected.dy.toFixed(1)}px) scale(1.8) perspective(4000px) rotateX(180deg)`
+    ? `translate(${selected.dx.toFixed(1)}px, ${selected.dy.toFixed(1)}px) scale(3) perspective(4000px) rotateY(180deg)`
     : undefined;
 
   return (
@@ -193,9 +228,8 @@ export default function Logo6() {
                 return (
                   <Cube
                     key={j}
-                    from={cube.from}
                     delay={cube.delay}
-                    shimmer={cube.shimmer}
+                    color={cube.color}
                     selected={selected?.id === id}
                     returning={returning === id}
                     selectedTransform={selectedTransform}

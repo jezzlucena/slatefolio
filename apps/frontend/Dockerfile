@@ -17,8 +17,9 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-# Copy workspace config, lockfile, and frontend package.json
-COPY pnpm-workspace.yaml pnpm-lock.yaml ./
+# Copy workspace config, root manifest, lockfile, and frontend package.json
+# (the root package.json is required for the frozen-lockfile importer check)
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY apps/frontend/package.json ./apps/frontend/
 
 # Install dependencies (frozen lockfile for reproducible builds)

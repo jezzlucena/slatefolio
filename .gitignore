@@ -5,6 +5,12 @@ node_modules
 
 dist
 
+# next.js build output
+apps/frontend/.next
+
+# local dev uploads (Docker uses the uploads_data volume instead)
+apps/backend/uploads
+
 # misc
 .DS_Store
 *.pem

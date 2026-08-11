@@ -295,10 +295,10 @@ export default function Logo() {
         viewBox="0 0 1571 1362"
       >
         <defs>
-            <clipPath id="aClip"><path id="a" d="M0,0l28.36-49.65h-56.72Zm0-99.3,28.36,49.65h-56.72Z" shape-rendering="geometricPrecision"/></clipPath>
-            <clipPath id="bClip"><path id="b" d="M0,0l-57.4,0,28.36,49.12Zm-86.08,49.68,28.846-49.4,28.36,49.12Z" shape-rendering="geometricPrecision"/></clipPath>
-            <clipPath id="cClip"><path id="c" d="M0,0l28.881,49.45,28.3-49.26Zm86.059,49.65-57.181-.2,28.3-49.26Z" shape-rendering="geometricPrecision"/></clipPath>
-            <clipPath id="dClip"><path id="d" d="M0,0l-57.2,0l29.2-49.3l0,0z" shape-rendering="geometricPrecision"/></clipPath>
+            <clipPath id="aClip"><path id="a" d="M0,0l28.36-49.65h-56.72Zm0-99.3,28.36,49.65h-56.72Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="bClip"><path id="b" d="M0,0l-57.4,0,28.36,49.12Zm-86.08,49.68,28.846-49.4,28.36,49.12Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="cClip"><path id="c" d="M0,0l28.881,49.45,28.3-49.26Zm86.059,49.65-57.181-.2,28.3-49.26Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="dClip"><path id="d" d="M0,0l-57.2,0l29.2-49.3l0,0z" shapeRendering="geometricPrecision"/></clipPath>
         </defs>
         <g data-role="face">
           <g data-role="stripe">

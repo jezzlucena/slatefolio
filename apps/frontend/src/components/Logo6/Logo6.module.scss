@@ -1,30 +1,39 @@
-// A wall of isometric golden cubes that unfolds from the top-right corner,
-// ported from the Transformation_ADN demo's .cubes-mask transition.
+// A wall of isometric cubes, each wearing a random shade of a random hue
+// from the mosaic logo's palette (see CUBE_HUES in Logo6.tsx), that unfolds
+// from the top-right corner — ported from Transformation_ADN's .cubes-mask
+// transition.
 //
-// Each cube is three 200px faces inside a rotateX(-35deg) rotateY(-45deg)
-// context (no perspective element, so the projection is isometric). Closed,
-// the three coplanar faces sit folded 270deg behind a top or right hinge;
-// opening swings the assembly in, then the left face folds out -90deg around
-// its left edge and the bottom face -90deg around its bottom edge. The demo
-// drove this with jQuery timers toggling transitions; here every element is
-// a keyframe animation offset by the cube's --delay custom property.
+// Each cube is three 200px faces inside a rotateX(145deg) rotateY(-45deg)
+// context (no perspective element, so the projection is isometric), showing
+// the corner from above: top, left and right faces.
 //
-// Faces are split into a hinge (full 200px box: fold transform + exact
-// transform-origin) and a plate (inset 1px: color + shimmer), so abutting
-// plates show a 2px black seam like Logo5 without shifting any hinge line.
+// Entrance, per cube (origami chain, one $swing beat per fold):
+//   1. the top face swings in around its right edge — peeling off the spot
+//      where the previous cube's left face just landed — while fading in;
+//   2. the right face peels off the top face around their shared edge;
+//   3. the left face peels off the right face around theirs — and one beat
+//      later the next cube's top face peels off IT (the TSX column beat is
+//      exactly 3 * $swing), so the wall reads as one continuous chain.
+// Each fold composes two rotations with a transform-origin on the corner
+// point both hinge axes pass through; from-angles start 2deg shy of pressed
+// flat so momentarily-coplanar faces don't z-fight (like Logo5's peel).
+//
+// Faces carry an inset ::after plate (color + shimmer), so abutting plates
+// show a 2px black seam like Logo5 without shifting any hinge line.
 
 $face: 200px;
 $cube-w: 282.843px; // silhouette width, $face * sqrt(2) — cubes tile edge-to-edge
 $cube-h: 325px;
 // Per-plate inset. Two abutting plates form the seam, the isometric
 // projection forshortens in-plane distances by ~0.816, and the wall is
-// scaled 1.14 — so a 2px on-screen seam needs 2 / (2 * 0.816 * 1.14) each.
-$gap: 1.1px;
-$swing: 0.3s; // one fold movement
+// scaled 0.4 — so a 2px on-screen seam needs 2 / (2 * 0.816 * 0.4) each.
+$gap: 3.06px;
+// One fold beat. The chain reading depends on the TSX column beat staying
+// exactly 3 * $swing — change them together (see cubeDelay in Logo6.tsx).
+$swing: 0.12s;
+// Fallback plate color (the demo's gold) for when the per-face --top-color /
+// --right-color / --left-color variables from Logo6.tsx are missing
 $gold-base: #f5c15c;
-$gold-bright: #fff3cf;
-$gold-dark: #d99b33;
-$gold-mid: #f9d284;
 
 .wrapper {
   position: absolute;
@@ -32,14 +41,15 @@ $gold-mid: #f9d284;
   overflow: hidden;
 }
 
-// The demo's empirical framing: slightly blown up and nudged so the wall's
-// ragged top/right edges sit outside the viewport
+// Scaled down (must match SCALE in Logo6.tsx) so more, smaller cubes cover
+// the viewport, and nudged so the wall's ragged top/right edges sit outside
+// it. The nudge is in pre-scale units — it tracks the scale automatically.
 .wall {
   position: absolute;
   top: 0;
   right: 0;
   transform-origin: top right;
-  transform: scale(1.14) translate(139px, -80px);
+  transform: scale(0.4) translate(139px, -80px);
 }
 
 .line {
@@ -91,84 +101,108 @@ $gold-mid: #f9d284;
   top: 22px;
   right: -30px;
   transform-style: preserve-3d;
-  transform: rotateX(-35deg) rotateY(-45deg);
+  transform: rotateX(145deg) rotateY(-45deg);
 }
 
-// The three-face assembly; swings in from behind its hinge edge.
-// No opacity here, ever — see the note on .cube.
+// The three-face assembly. No opacity here, ever — see the note on .cube.
 .content {
   width: $face;
   height: $face;
   transform-style: preserve-3d;
-
-  &.fromTop {
-    transform-origin: top;
-    animation: openFromTop $swing ease calc(var(--delay, 0s) + 0.05s) both;
-  }
-
-  &.fromLeft {
-    transform-origin: right;
-    animation: openFromRight $swing ease calc(var(--delay, 0s) + 0.05s) both;
-  }
 }
 
-.hinge {
+.face {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-}
+  // The cube's one hue (from Logo6.tsx); the per-face brightness filters
+  // below turn it into three shades, and the shimmer keyframes glint around
+  // the same variable, so the loop tints itself to whatever the cube wears
+  --plate: var(--cube-color, #{$gold-base});
 
-.faceLeft {
-  transform-origin: bottom left;
-  animation: foldLeft $swing ease calc(var(--delay, 0s) + 0.05s + $swing) both;
-}
+  &::after {
+    content: '';
+    position: absolute;
+    inset: $gap;
+    background-color: var(--plate);
+    backface-visibility: visible;
+    // The 1s delay only ever plays on the way OUT of the lit state: hovered
+    // and selected plates zero it, so cubes light up instantly but stay lit
+    // for a second after the pointer moves on
+    transition: filter 0.4s ease 1s;
+  }
 
-.faceBottom {
-  transform-origin: bottom;
-  animation: foldBottom $swing ease calc(var(--delay, 0s) + 0.05s) both;
-}
+  // Per-face shading like Logo5's facets; shimmer durations differ per face
+  // (the demo's 24/17/13s) so the glints drift in and out of phase organically.
+  // Each glint loop starts a fixed 1s after the cube's own unfold (--delay), so
+  // the shimmer sweeps across the wall as the same top-right-to-bottom-left
+  // wave the entrance cascade traced — a chain effect, not scattered twinkling.
+  //
+  // Fold geometry: every face's base transform is its resting pose; the peel
+  // keyframes share the base's exact function list (so only the hinge angle
+  // interpolates) and the transform-origin is the one corner point that both
+  // rotation axes pass through. Plate fades are timed to each face's own fold.
 
-.plate {
-  position: absolute;
-  inset: $gap;
-  background-color: $gold-base;
-  backface-visibility: visible;
-  transition: filter 0.4s ease;
+  // Beat 1: swings in around its right edge, from an upright pose one face
+  // over — the spot where the previous cube's left face just landed — while
+  // fading in
+  &.top {
+    transform-origin: bottom right;
+    transform: rotateX(-90deg) rotateY(0deg);
+    animation: peelTop $swing ease calc(var(--delay, 0s) + 0.05s) both;
+
+    &::after {
+      filter: saturate(1) brightness(0.78);
+      animation:
+        plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
+        shimmer 13s ease-in-out calc(var(--delay, 0s) + 1s) infinite;
+    }
+  }
+
+  // Beat 2: starts pressed flat against the top face and peels down around
+  // their shared edge (the right face's bottom edge) into the content plane
+  &.right {
+    transform-origin: bottom;
+    transform: rotateX(0deg);
+    animation: peelRight $swing ease calc(var(--delay, 0s) + 0.05s + $swing) both;
+
+    &::after {
+      filter: saturate(1) brightness(1.05);
+      animation:
+        plateFade $swing ease calc(var(--delay, 0s) + 0.05s + $swing) both,
+        shimmer 24s ease-in-out calc(var(--delay, 0s) + 1s) infinite;
+    }
+  }
+
+  // Beat 3: starts pressed flat against the right face (the content plane is
+  // rotateY(0)) and peels around their shared vertical edge to close the
+  // corner — one beat later the next cube's top face peels off this face
+  &.left {
+    transform-origin: bottom left;
+    transform: rotateY(-90deg);
+    animation: peelLeft $swing ease calc(var(--delay, 0s) + 0.05s + 2 * $swing) both;
+
+    &::after {
+      filter: saturate(1) brightness(0.9);
+      animation:
+        plateFade $swing ease calc(var(--delay, 0s) + 0.05s + 2 * $swing) both,
+        shimmer 4.7s ease-in-out calc(var(--delay, 0s) + 1s) infinite;
+    }
+  }
 }
 
 // Whiten via filter: it transitions smoothly and doesn't fight the shimmer's
-// background-color animation (desaturate, then blow out any gold shade).
+// background-color animation (desaturate, then blow out any base shade).
 // NOTE: the base .plate filters below list saturate(1) first for a reason —
 // filter lists only interpolate when their function sequences match; a bare
 // brightness() base against this saturate()+brightness() would flip discretely
-.cube:hover .plate,
-.cube.selected .plate {
-  filter: saturate(0) brightness(6);
-}
-
-// Per-face shading like Logo5's facets; shimmer durations differ per face
-// (the demo's 24/17/13s) so the glints drift in and out of phase organically.
-// --shimmer-delay is subtracted (a negative delay starts the loop mid-cycle)
-// so each cube shows a different glint phase from the moment it appears
-.faceRight .plate {
-  filter: saturate(1) brightness(1.05);
-  animation:
-    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
-    shimmer 24s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
-}
-
-.faceLeft .plate {
-  filter: saturate(1) brightness(0.9);
-  animation:
-    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
-    shimmer 17s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
-}
-
-.faceBottom .plate {
-  filter: saturate(1) brightness(0.78);
-  animation:
-    plateFade $swing ease calc(var(--delay, 0s) + 0.05s) both,
-    shimmer 13s ease-in-out calc(var(--delay, 0s) + 1s - var(--shimmer-delay, 0s)) infinite;
+.cube:hover,
+.cube.selected {
+  .face::after {
+    filter: saturate(0) brightness(6);
+    transition-delay: 0s;
+    transition-duration: 0s;
+  }
 }
 
 // On the plate leaves, where opacity can't flatten any 3D context
@@ -178,45 +212,40 @@ $gold-mid: #f9d284;
   100% { opacity: 1; }
 }
 
-@keyframes openFromTop {
-  from { transform: rotateX(270deg); }
+// Each peel interpolates only its hinge angle: the from/to transforms share
+// an identical function list, so the browser rotates about the shared edge
+// instead of matrix-morphing.
+@keyframes peelTop {
+  from { transform: rotateX(-90deg) rotateY(-88deg); }
+  to { transform: rotateX(-90deg) rotateY(0deg); }
+}
+
+@keyframes peelRight {
+  from { transform: rotateX(-88deg); }
   to { transform: rotateX(0deg); }
 }
 
-@keyframes openFromRight {
-  from { transform: rotateY(270deg); }
-  to { transform: rotateY(0deg); }
-}
-
-@keyframes foldLeft {
-  from { transform: rotateY(0deg); }
+@keyframes peelLeft {
+  from { transform: rotateY(-2deg); }
   to { transform: rotateY(-90deg); }
 }
 
-@keyframes foldBottom {
-  from { transform: rotateX(0deg); }
-  to { transform: rotateX(-90deg); }
-}
-
-// The demo's face_shimmer envelope, re-tuned to the slatefolio gold ramp
+// The demo's face_shimmer envelope, glinting around each plate's own base
+// color (--plate is set per face). The mixes mirror the original gold ramp's
+// relationships: a bright flash, a dip below base, and a soft afterglow.
 @keyframes shimmer {
-  0%, 100% { background-color: $gold-base; }
-  30% { background-color: $gold-bright; }
-  50% { background-color: $gold-base; }
-  70% { background-color: $gold-dark; }
-  90% { background-color: $gold-mid; }
+  0%, 100% { background-color: var(--plate, $gold-base); }
+  30% { background-color: color-mix(in oklab, var(--plate, $gold-base), white 62%); }
+  50% { background-color: var(--plate, $gold-base); }
+  70% { background-color: color-mix(in oklab, var(--plate, $gold-base), black 22%); }
+  90% { background-color: color-mix(in oklab, var(--plate, $gold-base), white 22%); }
 }
 
+// The faces' base transforms already hold the resting cube, so dropping the
+// animations lands everything in place (plates default to opacity 1)
 @media (prefers-reduced-motion: reduce) {
-  .cube, .content, .faceLeft, .faceBottom, .plate {
+  .face,
+  .face::after {
     animation: none;
-  }
-
-  .faceLeft {
-    transform: rotateY(-90deg);
-  }
-
-  .faceBottom {
-    transform: rotateX(-90deg);
   }
 }

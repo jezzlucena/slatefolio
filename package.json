@@ -1,0 +1,12 @@
+{
+  "name": "slatefolio",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose up -d mongo && dotenv -e .env -- pnpm --parallel -r run dev",
+    "mongo": "docker compose up -d mongo",
+    "mongo:stop": "docker compose stop mongo"
+  },
+  "devDependencies": {
+    "dotenv-cli": "catalog:"
+  }
+}

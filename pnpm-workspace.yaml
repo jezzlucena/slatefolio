@@ -2,10 +2,11 @@ packages:
   - 'apps/*'
 
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  '@swc/core': set this to true or false
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
 
 catalog:
   # Shared dependencies
@@ -63,6 +64,8 @@ catalog:
   lodash: ^4.17.21
   deepmerge: ^4.3.1
   ts-node: ^10.9.2
+  tsx: ^4.20.3
+  dotenv-cli: ^8.0.0
 
   # Markdown editor
   "@uiw/react-md-editor": ^4.0.5

@@ -2,7 +2,7 @@
 //
 // Geometry of one cell (scene coords: x right, y down, z toward the viewer):
 //   base vertices  B1 = (0, 0, 0)   B2 = ($side, 0, 0)   B3 = ($side/2, $tri-height, 0)
-//   apex           A  = ($side/2, $tri-height/3, 244.949px)   [$side * sqrt(2/3) above the centroid]
+//   apex           A  = ($side/2, $tri-height/3, 146.9694px)   [$side * sqrt(2/3) above the centroid]
 //
 // Each visible face is an equilateral CSS triangle laid flat with its base
 // edge on one side of B1-B2-B3, then folded up toward the viewer by the
@@ -18,8 +18,8 @@
 // each cell with an in-plane translate+rotate so B1->B2 lies on that shared
 // edge, and staggers every cell via --cell-delay.
 
-$side: 300px;
-$tri-height: 259.8076px; // $side * sqrt(3) / 2
+$side: 180px;
+$tri-height: 155.8846px; // $side * sqrt(3) / 2
 $fold: 109.4712deg;
 
 .wrapper {
@@ -46,6 +46,32 @@ $fold: 109.4712deg;
   height: $tri-height;
   transform-origin: 0 0; // cells rotate about their local B1
   transform-style: preserve-3d;
+  // Carries the selection glide: Logo5.tsx swaps the inline transform's
+  // translate3d z between 0 and SELECT_Z (same function list, so each
+  // function interpolates)
+  transition: transform 0.6s ease;
+  // Hit-testing lives on the clip-shaped faces: the scene's own rectangle
+  // overlaps its neighbors' triangles and would steal their clicks
+  pointer-events: none;
+
+  // .returning keeps the elevation while a dismissed cell glides home;
+  // Logo5.tsx clears it on the transform transitionend
+  &.selected,
+  &.returning {
+    z-index: 3;
+  }
+}
+
+// The tetrahedron as a rigid body: the pointer-driven rotation of a selected
+// cell lands here, about the solid's center of mass (footprint centroid,
+// one quarter of the apex height up: $side/2, $tri-height/3, $side*sqrt(2/3)/4)
+.solid {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 90px 51.9615px 36.7423px;
+  transition: transform 0.3s ease-out;
+  pointer-events: none; // same overlap reasoning as .scene
 }
 
 .face {
@@ -58,11 +84,39 @@ $fold: 109.4712deg;
   // 2px seam between faces. The inset is anisotropic because the ~70.5deg
   // tilt forshortens the face's slope axis 3x in the top-down projection:
   // base edge inset 3px, slant edges 1.13px, both appearing as 1px on screen.
-  clip-path: polygon(150px 2.27px, 296.96px 256.81px, 3.04px 256.81px);
+  clip-path: polygon(90px 2.27px, 176.96px 152.88px, 3.04px 152.88px);
   transform-origin: 0 0;
   backface-visibility: visible;
-  background-color: #f5c15c;
+  // The cell's one aurora hue (from Logo5.tsx); the per-face brightness
+  // filters below turn it into three shades, and the shimmer keyframes glint
+  // around the same variable, so the loop tints itself to the cell's color
+  background-color: var(--cell-color, #f5c15c);
   opacity: 0;
+  pointer-events: auto; // the clip-path bounds the hit area to the triangle
+  cursor: pointer;
+}
+
+// The underside, at z=0 under the three slanted faces. Logo5.tsx mounts it
+// only while its tetrahedron is selected (or gliding home) — from above the
+// slant faces cover it entirely; it exists so the rotating solid reads as
+// closed. The shared clip-path triangle points apex-up while the footprint
+// points apex-down, so it flips 180deg in-plane about the rect center.
+// Shaded darkest — the face the light never reaches — and shimmering like
+// its siblings, mid-cycle from the start (negative delay) since it mounts
+// long after their loops began.
+.faceBase {
+  // Its own clip, a uniform 0.5px perpendicular inset (vertices pull 1px
+  // along their bisectors): the shared .face inset is sized for the slant
+  // faces' ~3x foreshortening and at full size it read as a moat around the
+  // base. It sits exactly at z=0 — no z-fight is possible because the slant
+  // faces' painted pixels start 3px up their slopes and the rim insets keep
+  // every painted edge apart.
+  clip-path: polygon(90px 1px, 179.13px 155.39px, 0.87px 155.39px);
+  transform-origin: center;
+  transform: rotate(180deg) translateZ(1px);
+  filter: brightness(0.6);
+  opacity: 1;
+  animation: shimmer 2.7s ease-in-out -0.9s infinite;
 }
 
 // Seed entrance: the very first face simply fades in
@@ -71,7 +125,7 @@ $fold: 109.4712deg;
   filter: brightness(1.05);
   animation:
     fadeInA 0.3s ease-out var(--cell-delay, 0s) both,
-    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 3.8s) infinite;
+    shimmer 2.7s ease-in-out calc(var(--cell-delay, 0s) + 3.8s) infinite;
 }
 
 // Spawned-cell entrance: the first face peels outward from the parent's face
@@ -82,7 +136,7 @@ $fold: 109.4712deg;
   filter: brightness(1.05);
   animation:
     peelA 0.15s cubic-bezier(0.22, 1, 0.36, 1) var(--cell-delay, 0s) both,
-    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 3.8s) infinite;
+    shimmer 2.7s ease-in-out calc(var(--cell-delay, 0s) + 3.8s) infinite;
 }
 
 .faceB {
@@ -90,7 +144,7 @@ $fold: 109.4712deg;
   filter: brightness(0.9);
   animation:
     unfoldB 0.15s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.15s) both,
-    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 4.72s) infinite;
+    shimmer 2.7s ease-in-out calc(var(--cell-delay, 0s) + 4.72s) infinite;
 }
 
 .faceC {
@@ -98,7 +152,7 @@ $fold: 109.4712deg;
   filter: brightness(0.78);
   animation:
     unfoldC 0.15s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--cell-delay, 0s) + 0.3s) both,
-    shimmer 2.7s ease-in-out calc(var(--shimmer-delay, 0s) + 5.55s) infinite;
+    shimmer 2.7s ease-in-out calc(var(--cell-delay, 0s) + 5.55s) infinite;
 }
 
 @keyframes fadeInA {
@@ -150,13 +204,16 @@ $fold: 109.4712deg;
   }
 }
 
-// Same golden ramp as the mosaic logo's glint; the per-cell delays stagger it
-// across the field so the light hops from tetrahedron to tetrahedron.
+// The mosaic logo's glint envelope — a dip below base, a bright flash, a
+// soft afterglow — glinting around each cell's own aurora hue. Each face's
+// loop is delayed by the cell's unfold delay (--cell-delay), so the glint
+// sweeps outward from the seed as the same wave the growth traced — a chain
+// reaction, not a scattered twinkle.
 @keyframes shimmer {
-  0%, 100% { background-color: #f5c15c; }
-  40% { background-color: #d99b33; }
-  50% { background-color: #fff3cf; }
-  62% { background-color: #f9d284; }
+  0%, 100% { background-color: var(--cell-color, #f5c15c); }
+  40% { background-color: color-mix(in oklab, var(--cell-color, #f5c15c), black 22%); }
+  50% { background-color: color-mix(in oklab, var(--cell-color, #f5c15c), white 62%); }
+  62% { background-color: color-mix(in oklab, var(--cell-color, #f5c15c), white 22%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -165,7 +222,12 @@ $fold: 109.4712deg;
     transition: none;
   }
 
-  .faceA, .peelA, .faceB, .faceC {
+  // Selection still works, it just snaps instead of gliding
+  .scene, .solid {
+    transition: none;
+  }
+
+  .faceBase, .faceA, .peelA, .faceB, .faceC {
     animation: none;
     opacity: 1;
   }
