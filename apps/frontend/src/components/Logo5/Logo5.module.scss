@@ -35,7 +35,6 @@ $fold: 109.4712deg;
   // transition makes it glide rather than snap, and eases it back to rest
   // when the pointer leaves and the variables are removed.
   perspective-origin: var(--origin-x, 50%) var(--origin-y, calc(50% - 50px));
-  transition: perspective-origin 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .scene {

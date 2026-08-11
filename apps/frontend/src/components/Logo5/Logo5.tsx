@@ -207,6 +207,18 @@ export default function Logo5() {
   const [returning, setReturning] = useState<string | null>(null);
   /** Where the current press started, to tell taps from rotation drags */
   const downAt = useRef<[number, number] | null>(null);
+  /** rAF throttle for pointermove: only the latest position is applied, once
+   * per frame — raw events can arrive several times per frame on 120Hz+
+   * pointers, each one re-measuring rects and retargeting transitions */
+  const pointerFrame = useRef(0);
+  const lastPointer = useRef<[number, number]>([0, 0]);
+
+  const cancelPointerFrame = () => {
+    if (pointerFrame.current) {
+      cancelAnimationFrame(pointerFrame.current);
+      pointerFrame.current = 0;
+    }
+  };
 
   useEffect(() => {
     const compute = () => {
@@ -220,7 +232,10 @@ export default function Logo5() {
     };
     compute();
     window.addEventListener('resize', compute);
-    return () => window.removeEventListener('resize', compute);
+    return () => {
+      window.removeEventListener('resize', compute);
+      cancelPointerFrame();
+    };
   }, []);
 
   /**
@@ -300,10 +315,25 @@ export default function Logo5() {
 
   /** Ease the vanishing point back to its resting spot above the seed */
   const releasePointer = () => {
+    // A queued frame must not re-apply the vars right after the release
+    cancelPointerFrame();
     const el = wrapper.current;
     if (!el) return;
     el.style.removeProperty('--origin-x');
     el.style.removeProperty('--origin-y');
+  };
+
+  /** One pointer effect per frame: the latest position drives either the
+   * selected tetrahedron's rotation or the vanishing-point chase */
+  const handlePointerMove = (clientX: number, clientY: number) => {
+    lastPointer.current = [clientX, clientY];
+    if (pointerFrame.current) return;
+    pointerFrame.current = requestAnimationFrame(() => {
+      pointerFrame.current = 0;
+      const [x, y] = lastPointer.current;
+      if (selected) rotateSelected(x, y);
+      else followPointer(x, y);
+    });
   };
 
   /** True when the pointer traveled since pointerdown — a rotation drag
@@ -315,6 +345,8 @@ export default function Logo5() {
    * to its lattice transform, the solid untwists to its stylesheet identity */
   const dismiss = () => {
     if (!selected) return;
+    // A queued rotation frame would re-twist the solid mid-glide home
+    cancelPointerFrame();
     solidRefs.current.get(selected.key)?.style.removeProperty('transform');
     setReturning(selected.key);
     setSelected(null);
@@ -392,9 +424,7 @@ export default function Logo5() {
           downAt.current = [e.clientX, e.clientY];
           if (!selected) pulseFrom(e.clientX, e.clientY);
         }}
-        onPointerMove={e => selected
-          ? rotateSelected(e.clientX, e.clientY)
-          : followPointer(e.clientX, e.clientY)}
+        onPointerMove={e => handlePointerMove(e.clientX, e.clientY)}
         onPointerLeave={releasePointer}
         onPointerCancel={releasePointer}
       >

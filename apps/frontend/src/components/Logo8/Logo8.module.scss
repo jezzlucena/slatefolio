@@ -1,0 +1,124 @@
+// The drawn wave template as divs: columns of overlapping circles whose
+// stacking order turns them into alternating crescents. Geometry (radius,
+// steps, column pitch) lives in Logo8.tsx; the circle diameter arrives as
+// the --d custom property so there's a single source of truth.
+
+// Diamond-plate texture over the waves: one on-screen tile of the SVG below
+$plate-tile: 44px;
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: black;
+  // Keep the hatch layers' difference blend confined to the logo's own
+  // stacking context so they can never blend with the page behind it
+  isolation: isolate;
+}
+
+// Diamond-plate stud layer above every wave column. The background is an
+// inline SVG tile: one pair of short round-capped strokes ('') rotated +45deg
+// at the tile center, and the perpendicular -45deg pair on the corners (drawn
+// at all four so the repeat is seamless) — a diagonal lattice of isolated
+// studs, neighbors perpendicular, none touching. Strokes are white and
+// mix-blend-mode: difference is the "subtract" wish: they read black over
+// white waves, white over black.
+// This layer must stay a direct sibling of the wave columns — wrapping it in
+// a positioned container would create a stacking context that isolates the
+// blend from the waves underneath.
+.hatch {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: difference;
+  // The stud tile is the MASK now — it defines where anything paints. The
+  // faint base color keeps every stud dimly present between waves.
+  background-color: rgba(255, 255, 255, 0.22);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg stroke='white' stroke-width='2' stroke-linecap='round' fill='none'%3E%3Cg transform='translate(24 24) rotate(45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(0 0) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(48 0) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(0 48) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(48 48) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  mask-size: $plate-tile $plate-tile;
+}
+
+// Two oversized gradient sheets drifting on opposing diagonals at different
+// speeds; the parent's stud mask clips them, so each stud's brightness is
+// the wave intensity passing under it — crossing waves of shimmer. The
+// translate distance per loop is exactly one gradient period projected onto
+// the x axis (period * sqrt(2)), so the drift tiles seamlessly. Transform
+// animations stay on the compositor: no per-frame repaints, no per-stud
+// elements.
+.shimmerWave {
+  position: absolute;
+  inset: -400px;
+}
+
+.waveA {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.85) 60px,
+    rgba(255, 255, 255, 0) 120px
+  );
+  animation: driftA 6s linear infinite;
+}
+
+.waveB {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.8) 90px,
+    rgba(255, 255, 255, 0) 180px
+  );
+  animation: driftB 9.5s linear infinite;
+}
+
+@keyframes driftA {
+  to { transform: translateX(169.71px); } // 120px period * sqrt(2)
+}
+
+@keyframes driftB {
+  to { transform: translateX(-254.56px); } // 180px period * sqrt(2), opposing
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmerWave {
+    animation: none;
+  }
+}
+
+// Striped backdrop behind every column (columns start at z-index 1)
+.stripes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.stripe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--d) / 2); // R: half the circle diameter
+}
+
+.column {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0; // circles center themselves on the column's x with negative margin
+}
+
+.circle {
+  position: absolute;
+  width: var(--d);
+  height: var(--d);
+  margin-left: calc(var(--d) / -2);
+  border-radius: 50%;
+}
+
+.white {
+  background-color: white;
+}
+
+.black {
+  background-color: black;
+}

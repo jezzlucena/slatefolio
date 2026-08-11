@@ -2,10 +2,12 @@
 	min-height: 180px;
   height: calc(100vh - 147px);
   left: 0; right: 0;
+  top: 0;
 
   &.fixed {
     position: fixed;
     background-color: black;
+    height: 100vh;
   }
 
   .logoStage {
@@ -24,19 +26,23 @@
     top: calc(50% - 50px); // the logos' shared vertical center
     transform: translateY(-50%);
     z-index: 2;
-    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    padding: 0 0 6px; // optical centering: the chevron glyphs sit low
     border: none;
-    padding: 8px 16px;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 56px;
+    border-radius: 50%;
+    // Frosted backdrop like the header's text bar, so the chevrons read on
+    // any logo — white waves included
+    color: rgba(255, 255, 255, 1);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+    font-size: 46px;
     line-height: 1;
     cursor: pointer;
     user-select: none;
-    transition: color 0.2s ease;
-
-    &:hover, &:focus-visible {
-      color: white;
-    }
+    transition: color 0.2s ease, background-color 0.2s ease;
 
     &.left {
       left: 8px;

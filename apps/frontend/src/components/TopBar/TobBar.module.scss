@@ -24,7 +24,8 @@
   text-transform: uppercase;
   font-size: 18px;
   border-bottom: 2px solid transparent;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(3px);
   transition: 1s border-bottom-color ease;
   color: white;
   z-index: 3;
