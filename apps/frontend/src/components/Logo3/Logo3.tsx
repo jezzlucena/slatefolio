@@ -147,7 +147,7 @@ const BEAM_STYLES = TRIBAR.map((_, i) => {
 });
 
 /**
- * Sibling of Logo2 in the same aesthetic: a golden-angle sunflower spiral
+ * Sibling in the logo family: a golden-angle sunflower spiral
  * of seeds with an impossible Penrose tribar woven over its heart. The seed
  * field swirls forward by one golden angle each cycle while the tribar
  * re-seats on a random sixth-turn.

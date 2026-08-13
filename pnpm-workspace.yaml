@@ -67,6 +67,10 @@ catalog:
   tsx: ^4.20.3
   dotenv-cli: ^8.0.0
 
+  # 3D
+  three: ^0.185.0
+  "@types/three": ^0.185.0
+
   # Markdown editor
   "@uiw/react-md-editor": ^4.0.5
   react-markdown: ^10.1.0

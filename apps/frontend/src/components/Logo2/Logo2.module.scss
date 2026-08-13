@@ -1,111 +1,231 @@
-.svg {
-  // As tall as the header allows: the header is 100vh - 147px and the logo's
-  // center sits 50px above its middle, so 100vh - 247px is the exact maximum
-  // height that stays inside; 90vw guards narrow viewports (square aspect)
-  height: min(calc(100vh - 247px), 90vw);
-  width: auto;
+/**
+ * Logo2 — drone flyover styles.
+ *
+ * Layout contract: the wrapper fills the Header's fixed 100vh .logoStage
+ * (position: absolute; inset: 0), and every HUD instrument is positioned to
+ * dodge the chrome that overlays the logo:
+ *   - the TopBar: fixed, full-width, ~62px tall (60px link line-height + 2px
+ *     border in TobBar.module.scss), z-index 3, across the very top;
+ *   - the Header's prev/next arrows: 60px circles at left/right 8px,
+ *     vertically at calc(50% - 50px) — the family's shared optical center;
+ *   - the frosted name/role bar (.header.relative .text): its container is
+ *     100vh - 147px tall, and the ~70px bar hangs 6vh above that container's
+ *     bottom — so from the VIEWPORT bottom it spans roughly the band
+ *     [147px + 6vh, 217px + 6vh]. Anything meant to clear it must sit
+ *     either above ~calc(6vh + 217px) or below ~calc(6vh + 147px).
+ *
+ * The instruments themselves are SVGs with fixed viewBoxes (hud.tsx); CSS
+ * only sizes and places them — the per-frame math never changes when these
+ * dimensions do.
+ */
+
+// Must match the Header arrows' top: calc(50% - 50px) — the shared optical
+// center every logo in the family aligns to.
+$optical-offset: 50px;
+
+// Must match the TopBar's rendered height: 60px .link line-height + 2px
+// border-bottom in TobBar.module.scss. The compass tape hangs below this.
+$topbar-height: 62px;
+
+// FPV mint-green phosphor. Every stroke/fill in hud.tsx uses currentColor,
+// so this one variable themes the whole instrument panel.
+$hud-color: rgba(150, 255, 200, 0.92);
+$hud-glow: drop-shadow(0 0 6px rgba(120, 255, 190, 0.35));
+
+.wrapper {
   position: absolute;
-  left: 50%;
-  top: calc(50% - 50px);
-  transform: translate(-50%, -50%);
+  inset: 0;
+  overflow: hidden;
+
+  // Whole instrument panel fades in once Logo2.tsx has painted the first
+  // frame and set data-ready (avoids flashing an unsized black canvas).
   opacity: 0;
+  transition: opacity 0.8s ease;
 
-  .line, .circle, .node, .core {
-    opacity: 0;
-    fill: none;
-    pointer-events: stroke;
-    transition: stroke var(--dur, 2.4s) ease,
-      fill var(--dur, 2.4s) ease,
-      opacity var(--dur, 2.4s) ease;
-    transition-delay: var(--d, 0s);
-  }
-
-  .line {
-    stroke: var(--c);
-    stroke-width: 4.7;
-  }
-
-  .circle {
-    stroke: var(--c);
-    stroke-width: 4.7;
-  }
-
-  .node {
-    fill: var(--c);
-    stroke: none;
-    pointer-events: none;
-  }
-
-  .casing {
-    stroke: black;
-    stroke-width: 14.7;
-    stroke-linecap: round;
-    fill: none;
-    pointer-events: none;
-  }
-
-  .core {
-    stroke: var(--c);
-    stroke-width: 4.7;
-    stroke-linecap: round;
-  }
-
-  .cube {
-    transform-box: view-box;
-    transform-origin: 500px 500px;
-    transform: rotate(var(--cube-rot, 225deg));
-    transition: transform 5s ease-in-out;
-    transition-delay: 0.4s;
-  }
-
-  // Phase 0: aurora — the full mandala blooms in its own colors
-  &[data-phase='0'] {
-    .line { opacity: 0.5; }
-    .circle { opacity: 0.85; }
-    .node { opacity: 1; }
-    .core { opacity: 1; }
-  }
-
-  // Phase 1: constellation — a white starmap, geometry as linework
-  &[data-phase='1'] {
-    .line { opacity: 0.14; stroke: white; }
-    .circle { opacity: 0.55; stroke: white; }
-    .node { opacity: 1; fill: white; }
-    .core { opacity: 0.9; stroke: white; }
-  }
-
-  // Phase 2: ember — everything dims but the impossible cube glows gold
-  &[data-phase='2'] {
-    .line { opacity: 0.12; }
-    .circle { opacity: 0.2; }
-    .node { opacity: 0.35; }
-    .core { opacity: 1; stroke: #f5c15c; }
-  }
-
-  // Phase 3: void — the figure dissolves before blooming again
-  &[data-phase='3'] {
-    .line, .circle, .node, .core { opacity: 0; }
-  }
-
-  .line:hover, .circle:hover, .core:hover {
-    stroke: white;
+  &[data-ready] {
     opacity: 1;
-    transition-duration: 0s;
-    transition-delay: 0s;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .svg .line, .svg[data-phase] .line,
-  .svg .circle, .svg[data-phase] .circle,
-  .svg .node, .svg[data-phase] .node,
-  .svg .core, .svg[data-phase] .core,
-  .svg .cube {
-    transition: none;
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  // CSS owns the display size; the drawing-buffer size is set separately by
+  // renderer.setSize(w, h, false) in Logo2.tsx — the `false` and these rules
+  // are two halves of the same contract, change them together.
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+
+  // Clicks fall straight through to the surrounding <Link href="/">.
+  pointer-events: none;
+
+  color: $hud-color;
+  font-family: myriad-cond, sans-serif;
+
+  // Direct children only: these are the instrument SVGs. Nested SVGs (POI
+  // marker arrows, the minimap overlay) manage their own layout — an
+  // unscoped `svg` here would yank them out of flow with position:absolute.
+  > svg {
+    position: absolute;
+    overflow: visible;
+    filter: $hud-glow;
   }
 
-  .svg .line, .svg[data-phase] .line { opacity: 0.5; stroke: var(--c); }
-  .svg .circle, .svg[data-phase] .circle { opacity: 0.85; stroke: var(--c); }
-  .svg .node, .svg[data-phase] .node { opacity: 1; fill: var(--c); }
-  .svg .core, .svg[data-phase] .core { opacity: 1; stroke: var(--c); }
+  text {
+    // No monospace font is loaded in this app (myriad/opensans only);
+    // tabular figures stop the readouts jittering as digits change.
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Artificial horizon: dead on the family's optical center. Sized so its
+// bottom edge (center + ~120px worst case) stays far above the name/role
+// bar, and well inboard of the 60px arrows + 8px inset on any viewport.
+.horizon {
+  left: 50%;
+  top: calc(50% - #{$optical-offset});
+  transform: translate(-50%, -50%);
+  width: min(28vmin, 240px);
+  aspect-ratio: 1;
+}
+
+// Heading tape: top center, hanging just below the TopBar, spanning half the
+// screen width. The aspect-ratio must match the viewBox in hud.tsx
+// (COMPASS_VIEW_W x 40) — CSS stretches the 180-degree window, never widens
+// it. The mask fades the tape ends to transparent so the strip dissolves
+// instead of stopping at a hard edge (the readout sits in the solid center).
+.compass {
+  top: calc(#{$topbar-height} + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50vw;
+  aspect-ratio: calc(540 / 56); // 40 of tape + the 16-unit POI lane below it
+  -webkit-mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent);
+}
+
+// Altitude tape: right side, same visual scale as the compass (50vh of tape
+// vs the compass's 50vw), bottom-anchored just above the name/role bar (bar
+// top ≈ 217px + 6vh from the viewport bottom + breathing room, see the
+// header comment). The height cap keeps the top edge below the TopBar on
+// short viewports: 94vh - 317px is the free band (100vh - topbar 62 -
+// 20 gap - (6vh + 235)). The aspect-ratio must match the viewBox in hud.tsx
+// (64 x ALT_VIEW_H); right: 88px keeps it inboard of the right arrow.
+// IMPORTANT: the height must stay definite (an <svg>'s default width is
+// 100%, so positioning by top+bottom alone makes the box explode to
+// full-viewport width and the aspect-ratio is ignored — that bug shipped).
+.altitude {
+  right: 88px;
+  bottom: calc(6vh + 233px);
+  height: min(50vh, calc(94vh - 317px));
+  aspect-ratio: calc(64 / 480);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+
+// Viewport POI markers: a full-bleed layer whose children track the POIs —
+// bare letter pinned on the POI center while it's in view, arrow + letter
+// on the screen border otherwise. updateHud writes transform + opacity per
+// frame — nothing here should transition them, or the markers would lag
+// the flight.
+.poiLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.poiMarker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: myriad-boldcond, sans-serif;
+  will-change: transform, opacity;
+}
+
+// The letter sits on a solid pin in the POI's color: a dark glyph on a
+// bright disc stays readable over any terrain AND for every POI hue (white
+// would wash out on the yellow/cyan pins).
+.poiBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 14px;
+  color: #0b1026; // the sky color — reads as "engraved" on the bright disc
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+}
+
+.poiArrow {
+  display: block;
+  width: 14px;
+  height: 14px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+}
+
+// Minimap: bottom-left, sitting on the same shelf as the altitude tape —
+// directly ABOVE the name/role bar (bar top ≈ 217px + 6vh from the viewport
+// bottom, see the header comment). The canvas is the terrain backdrop
+// (painted once, 96px — the browser smooths it up to display size); the SVG
+// overlay carries POI dots and the drone arrow in a 0..100 viewBox that
+// spans ±MINIMAP_RANGE world units (must-match: hud.tsx / the paint loop in
+// Logo2.tsx share that constant).
+.minimap {
+  position: absolute;
+  left: 20px;
+  bottom: calc(6vh + 233px);
+  width: min(20vmin, 150px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(150, 255, 200, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.minimapCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.85; // let a hint of the HUD's dark ground through — reads as a display, not a photo
+}
+
+.minimapOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// Phones and short landscape viewports: the chrome and tapes would collide;
+// keep only the horizon (its readouts still show attitude, the most legible
+// part of the artwork).
+@media (max-width: 640px), (max-height: 560px) {
+  .compass,
+  .altitude {
+    display: none;
+  }
+}
+
+// Reduced motion: the JS side renders exactly one static mid-flight frame
+// and never starts the loop; this block removes the fade so that frame is
+// simply there. The two halves together implement the contract.
+@media (prefers-reduced-motion: reduce) {
+  .wrapper {
+    transition: none;
+    opacity: 1;
+  }
 }

@@ -230,7 +230,7 @@ const SQ_STYLE = shapeStyle(0.98, 2);
 const CIRC_STYLE = shapeStyle(0.5, 3);
 
 /**
- * Third of the family after Logo2 and Logo3: a spirograph rose window of
+ * Fourth of the logo family: a spirograph rose window of
  * ellipse petals with the three primal forms — circle, square, triangle —
  * locked at its heart in an impossible cyclic weave. The rose creeps around
  * by an uneven number of petal-steps each cycle while the forms wander to a
