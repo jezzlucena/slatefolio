@@ -295,10 +295,10 @@ export default function Logo() {
         viewBox="0 0 1571 1362"
       >
         <defs>
-            <clipPath id="aClip"><path id="a" d="M0,0l28.36-49.65h-56.72Zm0-99.3,28.36,49.65h-56.72Z" shapeRendering="geometricPrecision"/></clipPath>
-            <clipPath id="bClip"><path id="b" d="M0,0l-57.4,0,28.36,49.12Zm-86.08,49.68,28.846-49.4,28.36,49.12Z" shapeRendering="geometricPrecision"/></clipPath>
-            <clipPath id="cClip"><path id="c" d="M0,0l28.881,49.45,28.3-49.26Zm86.059,49.65-57.181-.2,28.3-49.26Z" shapeRendering="geometricPrecision"/></clipPath>
-            <clipPath id="dClip"><path id="d" d="M0,0l-57.2,0l29.2-49.3l0,0z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="aClip"><path id="a" d="M0,0l28.5-49.36,-28.5-49.36,-28.5,49.36Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="bClip"><path id="b" d="M0,0l-57,0,-28.5,49.36,57,0Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="cClip"><path id="c" d="M0,0l28.5,49.36,57,0-28.5,-49.36Z" shapeRendering="geometricPrecision"/></clipPath>
+            <clipPath id="dClip"><path id="d" d="M0,0h-57l28.5-49.36Z" shapeRendering="geometricPrecision"/></clipPath>
         </defs>
         <g data-role="face">
           <g data-role="stripe">
@@ -842,7 +842,7 @@ export default function Logo() {
               <use className={styles.use} data-index="398" x="925.2" y="825.3" href="#c" fill="#8b96e2" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="399" x="953.3" y="873.9" href="#c" fill="#b8beee" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="400" x="981.4" y="922.5" href="#c" fill="#dbdff5" clipPath="url(#cClip)"/>
-              <use className={styles.use} data-index="401" x="784.8" y="582.4" href="#c" fill="#1b276e" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="401" x="785.3" y="583" href="#c" fill="#1b276e" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="402" x="812.9" y="631" href="#c" fill="#243287" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="403" x="841" y="679.6" href="#c" fill="#2f3fa0" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="404" x="869.1" y="728.1" href="#c" fill="#3d4db8" clipPath="url(#cClip)"/>
@@ -866,7 +866,7 @@ export default function Logo() {
               <use className={styles.use} data-index="420" x="897" y="679.5" href="#c" fill="#293793" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="421" x="925.1" y="728.1" href="#c" fill="#3746ae" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="423" x="870.8" y="534.9" href="#d" fill="#0b123f" clipPath="url(#dClip)"/>
-              <use className={styles.use} data-index="422" x="812.8" y="533.8" href="#c" fill="#0f184c" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="422" x="813.2" y="534.2" href="#c" fill="#0f184c" clipPath="url(#cClip)"/>
           </g>
           <g data-role="stripe">
               <use className={styles.use} data-index="424" x="1234.6" y="1165.6" href="#c" fill="#b2b9ed" clipPath="url(#cClip)"/>
@@ -886,7 +886,7 @@ export default function Logo() {
               <use className={styles.use} data-index="438" x="953.1" y="679.5" href="#c" fill="#24338d" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="439" x="981.2" y="728.1" href="#c" fill="#3343ac" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="442" x="898.7" y="486.2" href="#d" fill="#060b2c" clipPath="url(#dClip)"/>
-              <use className={styles.use} data-index="440" x="840.7" y="485.1" href="#c" fill="#090f38" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="440" x="841.3" y="485.8" href="#c" fill="#090f38" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="441" x="868.8" y="533.7" href="#c" fill="#0d1444" clipPath="url(#cClip)"/>
           </g>
           <g data-role="stripe">
@@ -906,10 +906,10 @@ export default function Logo() {
               <use className={styles.use} data-index="456" x="981" y="630.8" href="#c" fill="#1b2670" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="457" x="1009.1" y="679.4" href="#c" fill="#23328b" clipPath="url(#cClip)"/>
               <use className={styles.use} data-index="458" x="1037.2" y="728" href="#c" fill="#3041a8" clipPath="url(#cClip)"/>
-              <use className={styles.use} data-index="462" x="926.7" y="437.6" href="#d" fill="#030617" clipPath="url(#dClip)"/>
-              <use className={styles.use} data-index="459" x="868.7" y="436.5" href="#c" fill="#070b26" clipPath="url(#cClip)"/>
-              <use className={styles.use} data-index="460" x="896.8" y="485.1" href="#c" fill="#090f33" clipPath="url(#cClip)"/>
-              <use className={styles.use} data-index="461" x="924.9" y="533.7" href="#c" fill="#0e1440" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="459" x="926.7" y="437.6" href="#d" fill="#030617" clipPath="url(#dClip)"/>
+              <use className={styles.use} data-index="460" x="869.2" y="436.8" href="#c" fill="#070b26" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="461" x="896.8" y="485.1" href="#c" fill="#090f33" clipPath="url(#cClip)"/>
+              <use className={styles.use} data-index="462" x="924.9" y="533.7" href="#c" fill="#0e1440" clipPath="url(#cClip)"/>
           </g>
         </g>
       </svg>
