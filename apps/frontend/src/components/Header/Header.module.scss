@@ -73,6 +73,7 @@
       backdrop-filter: blur(10px);
       text-align: center;
       text-transform: uppercase;
+      transition: opacity 0.6s ease;
 
       .title {
         position: relative;
@@ -92,6 +93,14 @@
       }
     }
   }
+}
+
+// While this visitor is actively holding a Slyce paddle (player 1 or a
+// joined player 2), the frosted name/role bar fades out of the court.
+// Logo3.tsx toggles the body attribute; the game and this bar live in
+// sibling headers, so the body is the bridge.
+:global(body[data-slyce-playing]) .header.relative .text {
+  opacity: 0;
 }
 
 @media (max-width: 480px) {

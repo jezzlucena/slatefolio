@@ -46,5 +46,29 @@
   "error": {
     "error": "Erro",
     "goBack": "Voltar"
+  },
+  "slyce": {
+    "clickToStart": "Clique para começar...",
+    "paused": "Pausado",
+    "resume": "Continuar",
+    "instructions": "Instruções",
+    "restart": "Reiniciar",
+    "close": "Fechar",
+    "howToTitle": "Como jogar",
+    "howMove": "Mova o ponteiro (ou arraste) para controlar a raquete esquerda.",
+    "howSlice": "Rebata a bola com a raquete em movimento para cortá-la — o efeito curva a trajetória.",
+    "howWalls": "Uma bola com efeito acelera ou desacelera ao raspar na parede.",
+    "howSuper": "Dê um golpe bem rápido no contato para um SUPER SPIN: bola mais veloz, curva mais louca e rastro arco-íris.",
+    "howAi": "O adversário só prevê linhas retas. Curve suas rebatidas para vencê-lo.",
+    "howPause": "Clique em qualquer lugar para pausar.",
+    "clickToJoin": "Clique para entrar...",
+    "watchingLive": "Assistindo partida ao vivo",
+    "playerJoined": "Um rival entrou!",
+    "playerLeft": "O adversário saiu — a IA assume",
+    "promoted": "O adversário saiu — a partida é sua",
+    "promoteTitle": "O jogador 1 saiu",
+    "promoteAccept": "Continuar a partida",
+    "promoteDecline": "Continuar assistindo",
+    "matchEnded": "Partida encerrada"
   }
 }

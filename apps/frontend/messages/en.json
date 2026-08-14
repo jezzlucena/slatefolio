@@ -50,5 +50,29 @@
   "error": {
     "error": "Error",
     "goBack": "Go back home"
+  },
+  "slyce": {
+    "clickToStart": "Click to Start...",
+    "paused": "Paused",
+    "resume": "Resume",
+    "instructions": "Instructions",
+    "restart": "Restart",
+    "close": "Close",
+    "howToTitle": "How to Play",
+    "howMove": "Move the pointer (or drag) to control the left paddle.",
+    "howSlice": "Hit the ball while your paddle is moving to slice it — spin curves its flight.",
+    "howWalls": "A spinning ball speeds up or slows down when it grazes a wall.",
+    "howSuper": "Swipe really fast at contact for a SUPER SPIN: faster ball, wilder curve, rainbow trail.",
+    "howAi": "The opponent only predicts straight lines. Curve your shots to beat it.",
+    "howPause": "Click anywhere to pause.",
+    "clickToJoin": "Click to Join...",
+    "watchingLive": "Watching live match",
+    "playerJoined": "A challenger joined!",
+    "playerLeft": "Opponent left — AI takes over",
+    "promoted": "Opponent left — the match is yours",
+    "promoteTitle": "Player 1 left",
+    "promoteAccept": "Continue the match",
+    "promoteDecline": "Keep watching",
+    "matchEnded": "Match ended"
   }
 }

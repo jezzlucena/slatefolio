@@ -35,6 +35,10 @@ catalog:
   body-parser: ^1.20.2
   cookie-parser: ^1.4.7
 
+  # WebSocket (Slyce live matches)
+  ws: ^8.18.0
+  "@types/ws": ^8.18.1
+
   # WebAuthn
   "@simplewebauthn/server": ^11.0.0
   "@simplewebauthn/browser": ^11.0.0

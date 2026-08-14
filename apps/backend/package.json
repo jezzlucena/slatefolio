@@ -21,6 +21,7 @@
     "@types/jsonwebtoken": "catalog:",
     "@types/multer": "catalog:",
     "@types/nodemailer": "catalog:",
+    "@types/ws": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
     "ts-node": "catalog:",
@@ -41,6 +42,7 @@
     "mongoose": "catalog:",
     "multer": "catalog:",
     "nodemailer": "catalog:",
-    "sharp": "catalog:"
+    "sharp": "catalog:",
+    "ws": "catalog:"
   }
 }

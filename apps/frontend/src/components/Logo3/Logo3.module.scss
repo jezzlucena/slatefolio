@@ -1,110 +1,180 @@
-.svg {
-  // As tall as the header allows: the header is 100vh - 147px and the logo's
-  // center sits 50px above its middle, so 100vh - 247px is the exact maximum
-  // height that stays inside; 90vw guards narrow viewports (square aspect)
-  height: min(calc(100vh - 247px), 90vw);
-  width: auto;
+/* Slyce — pong header artwork. The canvas owns all drawing; CSS only
+ * places it, fades it in, and sets the input affordances. */
+
+.wrapper {
   position: absolute;
-  left: 50%;
-  top: calc(50% - 50px);
-  transform: translate(-50%, -50%);
+  inset: 0;
+  overflow: hidden;
+  cursor: crosshair; // the pointer is the controller, not a hand/link
+  touch-action: pan-y; // page scroll stays alive on touch; Logo3.tsx
+  //                      preventDefault()s only left-half drags while playing
   opacity: 0;
+  transition: opacity 0.8s ease;
 
-  .seed, .core {
-    opacity: 0;
-    transition: fill var(--dur, 2s) ease,
-      stroke var(--dur, 2s) ease,
-      opacity var(--dur, 2s) ease;
-    transition-delay: var(--d, 0s);
-  }
-
-  .seed {
-    fill: var(--c);
-    stroke: none;
-  }
-
-  .casing {
-    stroke: black;
-    stroke-width: 30;
-    stroke-linecap: round;
-    fill: none;
-    pointer-events: none;
-  }
-
-  .core {
-    stroke: var(--c);
-    stroke-width: 15;
-    stroke-linecap: round;
-    fill: none;
-    pointer-events: stroke;
-  }
-
-  .field {
-    transform-box: view-box;
-    transform-origin: 500px 500px;
-    transition: transform 6.5s ease-in-out;
-    transition-delay: 0.3s;
-  }
-
-  .tribar {
-    transform-box: view-box;
-    transform-origin: 500px 500px;
-    transform: rotate(var(--tri-rot, 0deg));
-    transition: transform 5s ease-in-out;
-    transition-delay: 0.4s;
-  }
-
-  // Phase 0: bloom — the sunflower head opens in aurora colors
-  &[data-phase='0'] {
-    .seed { opacity: 0.9; }
-    .core { opacity: 1; }
-  }
-
-  // Phase 1: starfield — the spiral becomes a white star cluster
-  &[data-phase='1'] {
-    .seed { opacity: 0.55; fill: white; }
-    .core { opacity: 0.9; stroke: white; }
-  }
-
-  // Phase 2: ember — the field dims while the tribar glows gold
-  &[data-phase='2'] {
-    .seed { opacity: 0.12; }
-    .core { opacity: 1; stroke: #f5c15c; }
-  }
-
-  // Phase 3: void — the figure dissolves before blooming again
-  &[data-phase='3'] {
-    .seed, .core { opacity: 0; }
-  }
-
-  .seed:hover {
-    fill: white;
+  &[data-ready] {
     opacity: 1;
-    transition-duration: 0s;
-    transition-delay: 0s;
-  }
-
-  // Bars highlight as whole beams. Bar 0 (.barA) and the patch are bound to
-  // the same hover state — hovering either highlights both, so the over-pass
-  // never splits into two colors and betrays the patch.
-  .bar:hover .core,
-  .patch:hover .core,
-  .barA:hover ~ .patch .core,
-  .tribar:has(.patch:hover) .barA .core {
-    stroke: white;
-    opacity: 1;
-    transition-duration: 0s;
-    transition-delay: 0s;
   }
 }
 
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  // CSS owns the display size; the DPR-scaled backing store is set in
+  // Logo3.tsx's onResize — two halves of one contract (same as Logo2).
+}
+
+/* Attract-mode CTA. DOM (not canvas bitmap font) so next-intl can localize
+ * it — same reason the pause menu below is DOM. Blinks with steps() like an
+ * arcade "PRESS START". */
+.cta {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 15px;
+  white-space: nowrap;
+  text-shadow: 2px 2px 0 #000;
+  animation: cta-blink 1.4s steps(1) infinite;
+}
+
+@keyframes cta-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.25;
+  }
+}
+
+/* Live-match chrome: the "watching" badge (spectators/joiners) and the
+ * transient multiplayer toast (player joined/left, match ended). Both are
+ * passive labels — clicks fall through to the game surface. */
+.badge {
+  position: absolute;
+  top: 84px; // just under the TopBar + top wall
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #f43f3f; // the classic LIVE dot
+    animation: cta-blink 1.2s steps(1) infinite;
+  }
+}
+
+.notice {
+  position: absolute;
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  pointer-events: none;
+  background: #000;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Pause menu / instructions modal. The sim loop is fully stopped while
+ * these show (Logo3.tsx menuPaused), so the canvas behind holds its exact
+ * frame — trail, speedlines, callout and all. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: default;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 250px;
+  max-width: min(560px, calc(100vw - 48px));
+  padding: 26px 34px;
+  background: #000;
+  border: 4px solid #fff; // sharp 8-bit chrome — no radius, no blur
+  box-shadow: 8px 8px 0 rgba(255, 255, 255, 0.18);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+
+  button {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    background: #000;
+    color: #fff;
+    border: 3px solid #fff;
+    padding: 10px 16px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: #fff;
+      color: #000;
+      outline: none;
+    }
+  }
+}
+
+.panelTitle {
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  margin-bottom: 6px;
+  opacity: 0.9;
+}
+
+.instructions ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  list-style: square;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.85;
+  display: grid;
+  gap: 8px;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .svg .seed, .svg[data-phase] .seed,
-  .svg .core, .svg[data-phase] .core,
-  .svg .field, .svg .tribar {
+  .wrapper {
     transition: none;
+    cursor: default;
+    // Logo3.tsx renders one static composed frame and never starts the loop.
   }
 
-  .svg .seed, .svg[data-phase] .seed { opacity: 0.9; fill: var(--c); }
-  .svg .core, .svg[data-phase] .core { opacity: 1; stroke: var(--c); }
+  .cta {
+    animation: none;
+  }
 }

@@ -57,6 +57,9 @@ catalogs:
     '@types/three':
       specifier: ^0.185.0
       version: 0.185.4
+    '@types/ws':
+      specifier: ^8.18.1
+      version: 8.18.1
     '@uiw/react-md-editor':
       specifier: ^4.0.5
       version: 4.0.11
@@ -147,6 +150,9 @@ catalogs:
     typescript-eslint:
       specifier: ^8.27.0
       version: 8.50.1
+    ws:
+      specifier: ^8.18.0
+      version: 8.21.3
 
 importers:
 
@@ -197,6 +203,9 @@ importers:
       sharp:
         specifier: 'catalog:'
         version: 0.33.5
+      ws:
+        specifier: 'catalog:'
+        version: 8.21.3
     devDependencies:
       '@eslint/js':
         specifier: 'catalog:'
@@ -219,6 +228,9 @@ importers:
       '@types/nodemailer':
         specifier: 'catalog:'
         version: 6.4.21
+      '@types/ws':
+        specifier: 'catalog:'
+        version: 8.18.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)(supports-color@7.2.0)
@@ -1659,6 +1671,9 @@ packages:
 
   '@types/whatwg-url@11.0.5':
     resolution: {integrity: sha512-coYR071JRaHa+xoEvvYqvnIHaVqaYrLPbsufM9BF63HkwI5Lgmy2QR8Q5K/lYDYo5AK82wOvSOS0UsLTpTG7uQ==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@typescript-eslint/eslint-plugin@8.50.1':
     resolution: {integrity: sha512-PKhLGDq3JAg0Jk/aK890knnqduuI/Qj+udH7wCf0217IGi4gt+acgCyPVe79qoT+qKUvHMDQkwJeKW9fwl8Cyw==}
@@ -3973,6 +3988,18 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -5490,6 +5517,10 @@ snapshots:
   '@types/whatwg-url@11.0.5':
     dependencies:
       '@types/webidl-conversions': 7.0.3
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 25.0.3
 
   '@typescript-eslint/eslint-plugin@8.50.1(@typescript-eslint/parser@8.50.1(eslint@9.39.2(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
@@ -8568,6 +8599,8 @@ snapshots:
       isexe: 2.0.0
 
   word-wrap@1.2.5: {}
+
+  ws@8.21.3: {}
 
   xtend@4.0.2: {}
 

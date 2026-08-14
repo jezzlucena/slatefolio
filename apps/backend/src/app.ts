@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
@@ -17,6 +18,7 @@ import uploadController from './controllers/upload';
 import resumeController from './controllers/resume';
 import autocompleteController from './controllers/autocomplete';
 import metaController from './controllers/meta';
+import attachSlyceGateway from './slyce';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -105,9 +107,13 @@ app.delete('/admin/resumes/:id', requireAuth, resumeController.deleteResume);
 // Connect to database and start server
 const startServer = async () => {
   await connectDB();
-  
+
   const port = process.env.BACKEND_PORT || 5050;
-  app.listen(port, () => {
+  // Explicit http server so the Slyce WebSocket gateway (live pong matches,
+  // see slyce.ts) can ride the same port as the REST API.
+  const server = http.createServer(app);
+  attachSlyceGateway(server);
+  server.listen(port, () => {
     console.log(`Backend server running on port ${port}`);
   });
 };

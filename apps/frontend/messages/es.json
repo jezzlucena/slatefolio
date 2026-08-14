@@ -46,5 +46,29 @@
   "error": {
     "error": "Error",
     "goBack": "Volver"
+  },
+  "slyce": {
+    "clickToStart": "Haz clic para empezar...",
+    "paused": "Pausa",
+    "resume": "Continuar",
+    "instructions": "Instrucciones",
+    "restart": "Reiniciar",
+    "close": "Cerrar",
+    "howToTitle": "Cómo jugar",
+    "howMove": "Mueve el puntero (o arrastra) para controlar la paleta izquierda.",
+    "howSlice": "Golpea la bola con la paleta en movimiento para cortarla: el efecto curva su vuelo.",
+    "howWalls": "Una bola con efecto se acelera o se frena al rozar una pared.",
+    "howSuper": "Barre muy rápido en el contacto para un SUPER SPIN: bola más veloz, curva más salvaje y estela arcoíris.",
+    "howAi": "El rival solo predice líneas rectas. Curva tus tiros para vencerlo.",
+    "howPause": "Haz clic en cualquier parte para pausar.",
+    "clickToJoin": "Haz clic para unirte...",
+    "watchingLive": "Viendo partida en vivo",
+    "playerJoined": "¡Se unió un rival!",
+    "playerLeft": "Tu rival se fue — la IA toma el control",
+    "promoted": "Tu rival se fue — la partida es tuya",
+    "promoteTitle": "El jugador 1 se fue",
+    "promoteAccept": "Continuar la partida",
+    "promoteDecline": "Seguir mirando",
+    "matchEnded": "Partida terminada"
   }
 }

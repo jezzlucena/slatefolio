@@ -12,11 +12,13 @@ import Logo7 from "../Logo7/Logo7";
 import Logo8 from "../Logo8/Logo8";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
-import { LOGO_COOKIE } from "./logoRotation";
+import { useSearchParams } from "next/navigation";
+import { LOGO_COOKIE, LOGO_THEMES } from "./logoRotation";
 import { useProfile } from "@/stores/profileStore";
 import { LocalizedString } from "@/types/LocalizedString";
 
-/** The rotation order: one logo per full page load */
+/** The rotation order: one logo per full page load.
+ * Order must match LOGO_THEMES in logoRotation.ts (the ?logo= deep links). */
 const LOGOS = [Logo, Logo2, Logo3, Logo4, Logo5, Logo6, Logo7, Logo8];
 
 interface HeaderProps {
@@ -30,9 +32,22 @@ const FADE_MS = 350;
 export default function Header({ logoIndex = 0 }: HeaderProps) {
   const { profile } = useProfile();
   const locale = useLocale() as keyof LocalizedString;
-  const [index, setIndex] = useState(logoIndex);
+  // Deep link: ?logo=<theme> (see LOGO_THEMES) picks a logo directly,
+  // overriding the rotation cookie. Safe to read here without a Suspense
+  // boundary: the layout's cookies() call keeps every route dynamic, and
+  // the same params are available during SSR — no flash, no mismatch.
+  const searchParams = useSearchParams();
+  const themeParam = searchParams.get('logo')?.toLowerCase() ?? null;
+  const themeIndex = themeParam ? LOGO_THEMES.indexOf(themeParam) : -1;
+  const [index, setIndex] = useState(themeIndex >= 0 ? themeIndex : logoIndex);
   const [visible, setVisible] = useState(true);
   const fadeTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Client-side navigations can change the param after mount; an unknown or
+  // absent theme leaves the current rotation alone.
+  useEffect(() => {
+    if (themeIndex >= 0) setIndex(themeIndex);
+  }, [themeIndex]);
 
   const CurrentLogo = LOGOS[((index % LOGOS.length) + LOGOS.length) % LOGOS.length];
 
