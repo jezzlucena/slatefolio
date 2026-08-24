@@ -1,0 +1,254 @@
+// Glitch transmission — the family's aurora palette broadcast as a test card
+// of vertical bars, then corrupted: horizontal scan bands tear sideways on
+// independent clocks, the color channels drift apart at each tear, quantized
+// macroblocks flash over the picture, and the whole feed rides under
+// scanlines, crawling static and a VHS tracking band.
+//
+// Channel-split math (the piece's core trick): every band paints the SAME
+// bars image twice, decomposed by background-blend-mode —
+//   ::before  multiply(bars, #f00) = (R, 0, 0)   the red channel
+//   ::after   multiply(bars, #0ff) = (0, G, B)   green+blue, composited with
+//                                                mix-blend-mode: screen
+// and screen((R,0,0), (0,G,B)) = (R,G,B): while the two layers align, the
+// picture reconstructs EXACTLY; offsetting them a few px yields true
+// chromatic aberration, not a painted imitation. Each band's transform makes
+// it a stacking context, so the screen blend can't leak past the band.
+//
+// Alignment invariant: every band shares the same `inset: 0 -$overscan`
+// left edge, and the bars gradient repeats on a fixed px period, so all
+// bands show the same continuous image whenever their transforms are 0.
+//
+// Overscan budget — a band's edge must never enter the viewport:
+//   max tear |--jx|  250px   (buildSlices in Logo9.tsx)
+//   click jolt       120px   (JOLT_AMP in Logo9.tsx)
+//   sync-loss shift   24px   (syncLoss below)
+//   channel split      9px   (max --split + 1px resting fringe)
+//   ------------------------ 403px  <  $overscan
+$overscan: 420px;
+
+// One period of the test card (760px), irregular bar widths on purpose — a
+// clean even rhythm would read as wallpaper, not a damaged broadcast. Hues
+// are the aurora anchors (172 195 258 285 318 345 12 42) plus white slivers
+// and a black gap for luminance contrast, which the channel split needs to
+// show its fringes.
+$bars: repeating-linear-gradient(90deg,
+  hsl(172, 84%, 52%) 0 96px,
+  hsl(195, 90%, 58%) 96px 150px,
+  #f2f2f2 150px 176px,
+  hsl(258, 80%, 58%) 176px 268px,
+  hsl(285, 78%, 50%) 268px 316px,
+  #0a0a0a 316px 344px,
+  hsl(318, 85%, 56%) 344px 452px,
+  hsl(345, 88%, 58%) 452px 512px,
+  hsl(12, 90%, 56%) 512px 600px,
+  hsl(42, 95%, 56%) 600px 668px,
+  #f2f2f2 668px 684px,
+  hsl(195, 85%, 34%) 684px 760px,
+);
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #050505;
+}
+
+// Whole-picture horizontal sync loss, rarely: the field (not the wrapper —
+// the wrapper is the clip box and must not move) lurches and recovers.
+.field {
+  position: absolute;
+  inset: 0;
+  animation: syncLoss 13s steps(1, end) infinite;
+}
+
+.slice {
+  position: absolute;
+  // All bands share this left edge — the alignment invariant above
+  inset: 0 (-$overscan);
+  top: auto;
+  overflow: hidden; // tears end in hard horizontal cuts, and clip the split layers
+  // steps(1, end) everywhere: values snap between keyframes — digital damage,
+  // never a slide
+  animation: tear var(--gt) steps(1, end) var(--gd) infinite;
+}
+
+.slice::before,
+.slice::after {
+  content: '';
+  position: absolute;
+  inset: 0 -24px; // covers its own ±split shift under the band's clip
+  background-image: $bars;
+  background-blend-mode: multiply; // the channel decomposition — see header
+}
+
+.slice::before {
+  background-color: #f00; // keeps (R, 0, 0)
+  animation: splitR var(--gt) steps(1, end) var(--gd) infinite;
+}
+
+.slice::after {
+  background-color: #0ff; // keeps (0, G, B)
+  mix-blend-mode: screen; // recombines with ::before into the full image
+  animation: splitL var(--gt) steps(1, end) var(--gd) infinite;
+}
+
+// The tear: hold, jump by the band's own --jx, overcorrect, recover. The
+// split keyframes below use the same percentages so the fringe blooms exactly
+// while the band is displaced. All transform lists are a single translateX so
+// the browser interpolates the value, never matrix-morphs.
+@keyframes tear {
+  0%, 79% { transform: translateX(0px); }
+  80%, 85% { transform: translateX(calc(var(--jx) * 1px)); }
+  86%, 90% { transform: translateX(calc(var(--jx) * -0.35px)); }
+  91%, 100% { transform: translateX(0px); }
+}
+
+// At rest the channels sit ±1px apart — a faint permanent CRT fringe
+@keyframes splitR {
+  0%, 79% { transform: translateX(-1px); }
+  80%, 90% { transform: translateX(calc(var(--split) * -1px)); }
+  91%, 100% { transform: translateX(-1px); }
+}
+
+@keyframes splitL {
+  0%, 79% { transform: translateX(1px); }
+  80%, 90% { transform: translateX(calc(var(--split) * 1px)); }
+  91%, 100% { transform: translateX(1px); }
+}
+
+@keyframes syncLoss {
+  0%, 89% { transform: translateX(0px); }
+  90%, 91% { transform: translateX(-24px); }
+  92%, 93% { transform: translateX(18px); }
+  94%, 100% { transform: translateX(0px); }
+}
+
+.blocks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+// Macroblocks spend most of each cycle invisible and strobe on briefly.
+// Opacity is safe here: this is a flat 2D stack, no preserve-3d chain to
+// flatten (the repo-wide grouping-property rule).
+.block {
+  position: absolute;
+  opacity: 0;
+  animation: blockFlash var(--bt) steps(1, end) var(--bd) infinite;
+}
+
+@keyframes blockFlash {
+  0%, 88% { opacity: 0; }
+  89%, 93% { opacity: 1; }
+  94%, 100% { opacity: 0; }
+}
+
+// VHS tracking band: a soft bright bar drifting down the frame forever.
+// Travel check: starts at top -28% (of frame height H), height 24%H, ends at
+// -28% + 5.6 * 24% = 106.4%H — fully off both edges.
+.roll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -28%;
+  height: 24%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    transparent,
+    rgba(255, 255, 255, 0.08) 42%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.08) 58%,
+    transparent,
+  );
+  animation: roll 6.5s linear infinite;
+}
+
+@keyframes roll {
+  from { transform: translateY(0%); }
+  to { transform: translateY(560%); }
+}
+
+// Broadcast static: one turbulence tile, teleported (steps, never slid)
+// through scattered offsets so it flickers like snow instead of scrolling
+.noise {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  animation: crawl 0.5s steps(1, end) infinite;
+}
+
+@keyframes crawl {
+  0% { background-position: 0 0; }
+  25% { background-position: -96px 48px; }
+  50% { background-position: 144px -72px; }
+  75% { background-position: -48px -144px; }
+  100% { background-position: 96px 120px; }
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+    rgba(0, 0, 0, 0.28) 0 1px,
+    transparent 1px 3px,
+  );
+}
+
+// CRT power-on entrance: black screen, a white line strikes across, floods
+// vertically, then the flash and the black cover fade to reveal the feed.
+// Both keyframe sets keep a constant scale(x, y) function list.
+.boot {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: #000;
+  animation: bootFade 1.15s ease-out forwards;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    animation: bootLine 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+@keyframes bootFade {
+  0%, 55% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes bootLine {
+  0% { opacity: 1; transform: scale(0.002, 0.004); }
+  38% { opacity: 1; transform: scale(1, 0.004); }
+  62% { opacity: 0.9; transform: scale(1, 1); }
+  100% { opacity: 0; transform: scale(1, 1); }
+}
+
+// Motion off: the intact test card with its faint resting fringe, no boot
+// flash, no strobes (blocks rest at opacity 0)
+@media (prefers-reduced-motion: reduce) {
+  .field,
+  .slice,
+  .slice::before,
+  .slice::after,
+  .block,
+  .roll,
+  .noise {
+    animation: none;
+  }
+
+  .boot {
+    display: none;
+  }
+}

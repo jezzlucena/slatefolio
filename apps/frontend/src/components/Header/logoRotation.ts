@@ -19,4 +19,5 @@ export const LOGO_THEMES = [
   'origami', // Logo6 — isometric cube wall unfolding
   'vasarely', // Logo7 — checkerboard warped by a gaussian bulge
   'crescent', // Logo8 — crescent columns in blend-mode difference
+  'glitch', // Logo9 — torn-broadcast aurora test card
 ];
