@@ -1,6 +1,6 @@
 .form {
-  background: white;
-  border: 2px solid black;
+  background: var(--background);
+  border: 2px solid var(--foreground);
   padding: 30px;
 }
 
@@ -15,15 +15,15 @@
 .sectionTitle {
   font-family: myriad-boldcond, sans-serif;
   font-size: 20px;
-  color: black;
+  color: var(--foreground);
   margin: 0 0 10px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--border-softer);
 }
 
 .sectionDescription {
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   margin: 0 0 20px 0;
 }
 
@@ -36,7 +36,7 @@
   font-family: opensans, sans-serif;
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: var(--text-strong);
   margin-bottom: 8px;
 }
 
@@ -46,18 +46,18 @@
   padding: 12px 14px;
   font-family: opensans, sans-serif;
   font-size: 14px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-soft);
   transition: 0.2s border-color ease;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: black;
+    border-color: var(--foreground);
   }
 
   &:disabled {
-    background: #f5f5f5;
-    color: #888;
+    background: var(--surface-2);
+    color: var(--text-subtle);
   }
 }
 
@@ -68,7 +68,7 @@
 
 .hint {
   font-size: 12px;
-  color: #888;
+  color: var(--text-subtle);
   margin-top: 5px;
 }
 
@@ -89,7 +89,7 @@
   width: 30px;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-muted);
   padding-top: 14px;
 }
 
@@ -101,7 +101,7 @@
 // Tabs for localized content
 .tabs {
   display: flex;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--border-soft);
   margin-bottom: 20px;
 }
 
@@ -112,7 +112,7 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: #f5f5f5;
+  background: var(--surface-2);
   border: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -123,16 +123,16 @@
   gap: 8px;
 
   &:hover {
-    background: #e8e8e8;
+    background: var(--surface-3);
   }
 
   &.activeTab {
-    background: white;
-    border-bottom-color: black;
+    background: var(--background);
+    border-bottom-color: var(--foreground);
   }
 
   &.completeTab {
-    color: #16a34a;
+    color: var(--success);
   }
 }
 
@@ -142,9 +142,9 @@
 
 .tabContent {
   padding: 20px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-soft);
   border-top: none;
-  background: #fafafa;
+  background: var(--surface-2);
   margin-bottom: 20px;
 }
 
@@ -152,8 +152,8 @@
   display: inline-block;
   font-size: 10px;
   font-weight: 600;
-  background: black;
-  color: white;
+  background: var(--foreground);
+  color: var(--background);
   padding: 2px 6px;
   margin-left: 6px;
   vertical-align: middle;
@@ -172,11 +172,11 @@
   font-size: 13px;
 
   &.complete {
-    color: #16a34a;
+    color: var(--success);
   }
 
   &.incomplete {
-    color: #dc2626;
+    color: var(--danger);
   }
 }
 
@@ -193,27 +193,27 @@
   align-items: center;
   gap: 10px;
   padding: 15px;
-  background: #f0f0f0;
-  border: 1px solid #ddd;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
 }
 
 .copyLabel {
   font-size: 13px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .copySelect {
   padding: 8px 12px;
   font-size: 13px;
   font-family: opensans, sans-serif;
-  border: 2px solid #ddd;
-  background: white;
+  border: 2px solid var(--border-soft);
+  background: var(--background);
   cursor: pointer;
   transition: 0.2s border-color ease;
 
   &:focus {
     outline: none;
-    border-color: black;
+    border-color: var(--foreground);
   }
 }
 
@@ -223,15 +223,15 @@
   font-family: myriad-boldcond, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   cursor: pointer;
   transition: 0.2s all ease;
 
   &:hover:not(:disabled) {
-    background: white;
-    color: black;
+    background: var(--background);
+    color: var(--foreground);
   }
 
   &:disabled {
@@ -250,8 +250,8 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border: 2px solid black;
+  background: var(--background);
+  border: 2px solid var(--foreground);
   border-top: none;
   max-height: 250px;
   overflow-y: auto;
@@ -259,7 +259,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 0.3);
+  box-shadow: 4px 4px 0 -1px var(--shadow-soft);
 }
 
 .suggestionItem {
@@ -268,7 +268,7 @@
   font-size: 14px;
   font-family: opensans, sans-serif;
   transition: 0.15s background-color ease;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-softer);
 
   &:last-child {
     border-bottom: none;
@@ -276,11 +276,11 @@
 
   &:hover,
   &.selected {
-    background-color: #f0f0f0;
+    background-color: var(--surface-2);
   }
 
   &.selected {
-    background-color: #e0e0e0;
+    background-color: var(--surface-3);
     font-weight: 600;
   }
 }
@@ -291,15 +291,15 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px 12px;
-  border: 2px solid #ddd;
-  background: white;
+  border: 2px solid var(--border-soft);
+  background: var(--background);
   min-height: 48px;
   align-items: center;
   transition: 0.2s border-color ease;
   cursor: text;
 
   &:focus-within {
-    border-color: black;
+    border-color: var(--foreground);
   }
 }
 
@@ -308,8 +308,8 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: black;
-  color: white;
+  background: var(--foreground);
+  color: var(--background);
   font-size: 13px;
   font-family: opensans, sans-serif;
   font-weight: 500;
@@ -317,7 +317,7 @@
   transition: 0.15s all ease;
 
   &:hover {
-    background: #333;
+    background: var(--text-strong);
   }
 }
 
@@ -328,17 +328,17 @@
   width: 16px;
   height: 16px;
   padding: 0;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--overlay);
   border: none;
   border-radius: 50%;
-  color: white;
+  color: var(--background);
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
   transition: 0.15s background-color ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--overlay-strong);
   }
 }
 
@@ -353,7 +353,7 @@
   background: transparent;
 
   &::placeholder {
-    color: #999;
+    color: var(--text-subtle);
   }
 }
 
@@ -369,15 +369,15 @@
   padding: 12px 14px;
   font-family: opensans, sans-serif;
   font-size: 14px;
-  border: 2px solid #ddd;
-  background: white;
+  border: 2px solid var(--border-soft);
+  background: var(--background);
   cursor: pointer;
   transition: 0.2s border-color ease;
   min-width: 200px;
 
   &:focus {
     outline: none;
-    border-color: black;
+    border-color: var(--foreground);
   }
 }
 
@@ -392,18 +392,18 @@
   padding: 12px 14px;
   font-family: opensans, sans-serif;
   font-size: 14px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-soft);
   transition: 0.2s border-color ease;
 
   &:focus {
     outline: none;
-    border-color: black;
+    border-color: var(--foreground);
   }
 }
 
 .aspectRatioHint {
   font-size: 12px;
-  color: #888;
+  color: var(--text-subtle);
   white-space: nowrap;
 }
 
@@ -416,9 +416,9 @@
 .preview {
   width: 200px;
   height: 130px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-soft);
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--surface-2);
 
   img,
   video {
@@ -439,9 +439,9 @@
 }
 
 .uploadButton {
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 10px 20px;
   font-size: 13px;
   font-family: opensans, sans-serif;
@@ -449,8 +449,8 @@
   transition: 0.2s all ease;
 
   &:hover:not(:disabled) {
-    background: white;
-    color: black;
+    background: var(--background);
+    color: var(--foreground);
   }
 
   &:disabled {
@@ -461,8 +461,8 @@
 
 .clearButton {
   background: transparent;
-  color: #dc2626;
-  border: 2px solid #dc2626;
+  color: var(--danger);
+  border: 2px solid var(--danger);
   padding: 10px 16px;
   font-size: 13px;
   font-family: opensans, sans-serif;
@@ -470,31 +470,31 @@
   transition: 0.2s all ease;
 
   &:hover {
-    background: #dc2626;
-    color: white;
+    background: var(--danger);
+    color: var(--background);
   }
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 14px;
   margin-bottom: 20px;
   padding: 15px;
-  background: #fef2f2;
-  border: 2px solid #fecaca;
+  background: var(--danger-bg);
+  border: 2px solid var(--danger-border);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: 2px solid #eee;
+  border-top: 2px solid var(--border-softer);
 }
 
 .submitButton {
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 14px 30px;
   font-size: 15px;
   font-family: myriad-boldcond, sans-serif;
@@ -504,9 +504,9 @@
   transition: 0.2s all ease;
 
   &:hover:not(:disabled) {
-    background: white;
-    color: black;
-    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: 4px 4px 0 -1px var(--shadow);
     transform: translate(-2px, -2px);
   }
 
@@ -562,15 +562,15 @@
   }
 
   .tab {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border-soft);
 
     &.activeTab {
-      border-bottom-color: #ddd;
+      border-bottom-color: var(--border-soft);
     }
   }
 
   .tabContent {
-    border-top: 2px solid #ddd;
+    border-top: 2px solid var(--border-soft);
   }
 
   .translationStatus {
@@ -610,9 +610,9 @@
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  background: white;
-  border: 2px solid black;
-  box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+  background: var(--background);
+  border: 2px solid var(--foreground);
+  box-shadow: 4px 4px 0 -1px var(--shadow);
   cursor: pointer;
   transition: 0.3s all ease;
   overflow: hidden;
@@ -621,7 +621,7 @@
     padding: 12px 18px;
     
     &:hover {
-      box-shadow: 6px 6px 0 -1px rgba(0, 0, 0, 1);
+      box-shadow: 6px 6px 0 -1px var(--shadow);
       transform: translate(-2px, -2px);
     }
   }
@@ -630,7 +630,7 @@
     width: 400px;
     max-width: calc(100vw - 40px);
     padding: 0;
-    box-shadow: 8px 8px 0 -1px rgba(0, 0, 0, 1);
+    box-shadow: 8px 8px 0 -1px var(--shadow);
   }
 }
 
@@ -659,8 +659,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  background: black;
-  color: white;
+  background: var(--foreground);
+  color: var(--background);
   font-family: myriad-boldcond, sans-serif;
   font-size: 12px;
   text-transform: uppercase;
@@ -668,15 +668,15 @@
 }
 
 .previewLang {
-  background: white;
-  color: black;
+  background: var(--background);
+  color: var(--foreground);
   padding: 2px 6px;
   font-size: 10px;
   font-weight: 600;
 }
 
 .galleryItemPreview {
-  background: white;
+  background: var(--background);
 }
 
 .previewWrapper {
@@ -688,8 +688,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  background: #f4f4f4;
-  border-bottom: 2px solid black;
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--foreground);
 }
 
 .previewThumb {
@@ -752,7 +752,7 @@
     bottom: 0;
     left: 0;
     animation: previewShimmer 1.8s infinite;
-    background: linear-gradient(to right, #f4f4f4 8%, #ddd 38%, #f4f4f4 54%);
+    background: linear-gradient(to right, var(--skeleton-a) 8%, var(--skeleton-b) 38%, var(--skeleton-a) 54%);
     background-size: 1000px 640px;
   }
 }

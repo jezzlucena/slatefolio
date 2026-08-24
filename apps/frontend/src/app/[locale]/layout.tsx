@@ -28,8 +28,18 @@ export default async function RootLayout({
   const logoIndex = Number.isNaN(parsed) ? 0 : parsed;
 
   return (
-    <html lang={locale}>
+    // suppressHydrationWarning: the inline script below stamps data-theme on
+    // <html> before paint, so the client attribute may differ from the SSR one
+    <html lang={locale} suppressHydrationWarning>
       <body className="antialiased">
+        <script
+          // Runs before first paint to avoid a light/dark flash. "auto" is the
+          // absence of data-theme; globals.css then follows prefers-color-scheme.
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();"
+          }}
+        />
         <NextIntlClientProvider>
           <AuthProvider>
             <Header logoIndex={logoIndex} />

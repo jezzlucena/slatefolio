@@ -3,7 +3,10 @@
     "about": "About",
     "portfolio": "Portfolio",
     "resume": "Resumé",
-    "contact": "Contact"
+    "contact": "Contact",
+    "themeAuto": "Theme: Auto (follows your system)",
+    "themeLight": "Theme: Light",
+    "themeDark": "Theme: Dark"
   },
   "home": {
     "myWork": "Some of my work"

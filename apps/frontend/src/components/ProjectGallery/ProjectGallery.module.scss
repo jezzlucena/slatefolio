@@ -59,11 +59,11 @@
 }
 
 .loadingIndicator {
-  color: #666;
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 
 .errorMessage {
-  color: #e74c3c;
+  color: var(--danger);
   font-size: 1.1rem;
 }

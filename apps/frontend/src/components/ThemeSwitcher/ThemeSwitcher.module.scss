@@ -1,0 +1,90 @@
+.switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  // Matches the nav links' 60px line box so the icon centers vertically
+  height: 60px;
+  vertical-align: top;
+  margin-left: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  // Sits on the TopBar, which stays black in both themes
+  color: white;
+  cursor: pointer;
+}
+
+.icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  transition: 0.5s transform ease;
+}
+
+// Sun core / moon body. Scaling (not the r attribute) is animated for Safari
+// compatibility; transform-box keeps the origin on the circle itself.
+.core {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: 0.5s transform cubic-bezier(0.55, 0, 0.3, 1.4);
+}
+
+// Parked off-canvas at (30, 0); translated onto the core to carve the crescent
+.moonMask {
+  transition: 0.5s transform cubic-bezier(0.55, 0, 0.3, 1.4);
+}
+
+.rays {
+  transform-box: view-box;
+  transform-origin: center;
+  transition: 0.4s transform ease, 0.3s opacity ease;
+}
+
+.switcher.dark {
+  .icon {
+    transform: rotate(-15deg);
+  }
+
+  .core {
+    transform: scale(1.7);
+  }
+
+  .moonMask {
+    // Lands at (17.5, 8.5): overlaps the scaled core's top-right for a crescent
+    transform: translate(-12.5px, 8.5px);
+  }
+
+  .rays {
+    transform: scale(0.2) rotate(-60deg);
+    opacity: 0;
+  }
+}
+
+.autoBadge {
+  position: absolute;
+  top: 14px;
+  right: -8px;
+  font-family: myriad-boldcond, sans-serif;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0;
+  padding: 2px 3px;
+  background: white;
+  color: black;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  // Inside the mobile dropdown the switcher becomes its own centered row
+  .switcher {
+    display: flex;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px 0 20px;
+  }
+
+  .autoBadge {
+    top: 6px;
+  }
+}

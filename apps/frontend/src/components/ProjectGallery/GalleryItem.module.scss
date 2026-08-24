@@ -1,14 +1,14 @@
 .item {
   position: relative;
-  border: 2px solid black;
+  border: 2px solid var(--foreground);
   display: block;
-  background-color: white;
+  background-color: var(--background);
   cursor: pointer;
   width: 100%;
 	transition: 0.2s box-shadow ease, 0.2s transform ease;
 
   &:hover, &:global(.hovered) {
-    box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+    box-shadow: 7px 7px 0 -1px var(--shadow);
     transform: translate(-3px, -3px);
   }
 
@@ -39,12 +39,12 @@
 
   &.list .thumbContainer {
     padding-bottom: 0 !important;
-    border-right: 2px solid black;
+    border-right: 2px solid var(--foreground);
   }
 
   &.columns .thumbContainer {
     width: 100%;
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid var(--foreground);
   }
 
   @media(max-width: 640px) {
@@ -193,7 +193,7 @@
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     animation: 1.8s placeHolderShimmer infinite;
-    background: linear-gradient(to right, #f4f4f4 8%, #ddd 38%, #f4f4f4 54%);
+    background: linear-gradient(to right, var(--skeleton-a) 8%, var(--skeleton-b) 38%, var(--skeleton-a) 54%);
     background-size: 1000px 640px;
     transition: 0.5s opacity ease, 0s visibility ease;
     transition-delay: 2s, 2.5s;
@@ -216,8 +216,8 @@
   }
 
   &.name, &.subtitle, &.description {
-    color: black;
-    text-decoration-color: black;
+    color: var(--foreground);
+    text-decoration-color: var(--foreground);
   }
 }
 

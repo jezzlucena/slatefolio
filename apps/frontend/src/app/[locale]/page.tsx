@@ -44,7 +44,7 @@ export default function Portfolio() {
   }
 
   return (
-    <div className={`${styles.content} relative bg-white`}>
+    <div className={`${styles.content} relative bg-[var(--background)]`}>
       <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
       <div className="w-[100%] mx-auto py-[30px] px-[10px] md:px-[30px] lg:px-[50px]">
         <Heading>

@@ -1,6 +1,6 @@
 .container {
   position: relative;
-  background-color: white;
+  background-color: var(--background);
   min-height: calc(100vh - 200px);
   display: flex;
   align-items: center;
@@ -9,23 +9,23 @@
 }
 
 .card {
-  background: white;
+  background: var(--background);
   padding: 40px;
   max-width: 420px;
   width: 100%;
-  border: 2px solid black;
-  box-shadow: 10px 10px 0 -1px rgba(0, 0, 0, 1);
+  border: 2px solid var(--foreground);
+  box-shadow: 10px 10px 0 -1px var(--shadow);
 }
 
 .title {
   font-family: myriad-boldcond, sans-serif;
   font-size: 32px;
   margin: 0 0 10px 0;
-  color: black;
+  color: var(--foreground);
 }
 
 .subtitle {
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 30px;
   font-size: 16px;
 }
@@ -44,18 +44,18 @@
   label {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-strong);
   }
 
   input {
     padding: 12px 16px;
     font-size: 16px;
-    border: 2px solid black;
+    border: 2px solid var(--foreground);
     transition: 0.2s box-shadow ease, 0.2s transform ease;
 
     &:hover,
     &:focus {
-      box-shadow: 5px 5px 0 -1px rgba(0, 0, 0, 1);
+      box-shadow: 5px 5px 0 -1px var(--shadow);
       transform: translate(-2px, -2px);
       outline: none;
     }
@@ -63,18 +63,18 @@
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 14px;
   margin: 0;
   padding: 10px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
 }
 
 .button {
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 14px 24px;
   font-size: 16px;
   font-family: myriad-boldcond, sans-serif;
@@ -84,9 +84,9 @@
   letter-spacing: 1px;
 
   &:hover:not(:disabled) {
-    background: white;
-    color: black;
-    box-shadow: 5px 5px 0 -1px rgba(0, 0, 0, 1);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: 5px 5px 0 -1px var(--shadow);
     transform: translate(-2px, -2px);
   }
 
@@ -105,12 +105,12 @@
   &::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-soft);
   }
 
   span {
     padding: 0 16px;
-    color: #888;
+    color: var(--text-subtle);
     font-size: 14px;
   }
 }
@@ -121,9 +121,9 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: white;
-  color: black;
-  border: 2px solid black;
+  background: var(--background);
+  color: var(--foreground);
+  border: 2px solid var(--foreground);
   padding: 14px 24px;
   font-size: 16px;
   font-family: opensans, sans-serif;
@@ -131,8 +131,8 @@
   transition: 0.2s all ease;
 
   &:hover:not(:disabled) {
-    background: #f5f5f5;
-    box-shadow: 5px 5px 0 -1px rgba(0, 0, 0, 1);
+    background: var(--surface-2);
+    box-shadow: 5px 5px 0 -1px var(--shadow);
     transform: translate(-2px, -2px);
   }
 

@@ -3,10 +3,10 @@
   letter-spacing: 2px;
   margin-right: 5px;
   font-size: 0;
-  color: white;
+  color: var(--background);
 
   .label, .keyword {
-    color: black;
+    color: var(--foreground);
   }
 
   .label, .keyword {
@@ -35,7 +35,7 @@
     letter-spacing: 0;
     margin-bottom: 6px;
     margin-right: 6px;
-    border: 2px solid black;
+    border: 2px solid var(--foreground);
     padding: 3px 15px;
 
     &:not(:last-child)::after {

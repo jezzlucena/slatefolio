@@ -1,6 +1,6 @@
 .container {
   position: relative;
-  background-color: white;
+  background-color: var(--background);
   min-height: calc(100vh - 200px);
   padding: 40px 20px;
   max-width: 1200px;
@@ -23,13 +23,13 @@
 }
 
 .backLink {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   font-size: 14px;
   text-decoration: none;
   transition: 0.2s color ease;
 
   &:hover {
-    color: white;
+    color: var(--foreground);
   }
 }
 
@@ -37,13 +37,13 @@
   font-family: myriad-boldcond, sans-serif;
   font-size: 36px;
   margin: 0;
-  color: white;
+  color: var(--foreground);
 }
 
 .addButton {
-  background: white;
-  color: black;
-  border: 2px solid white;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 12px 24px;
   font-size: 14px;
   font-family: myriad-boldcond, sans-serif;
@@ -56,28 +56,28 @@
 
   &:hover {
     background: transparent;
-    color: white;
+    color: var(--foreground);
   }
 }
 
 .card {
-  background: white;
+  background: var(--background);
   padding: 30px;
-  border: 2px solid black;
-  box-shadow: 8px 8px 0 -1px rgba(0, 0, 0, 1);
+  border: 2px solid var(--foreground);
+  box-shadow: 8px 8px 0 -1px var(--shadow);
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 14px;
   margin-bottom: 20px;
   padding: 15px;
-  background: #fef2f2;
-  border: 2px solid #fecaca;
+  background: var(--danger-bg);
+  border: 2px solid var(--danger-border);
 }
 
 .loading {
-  color: white;
+  color: var(--text-muted);
   font-size: 16px;
   text-align: center;
   padding: 40px;
@@ -86,11 +86,11 @@
 .empty {
   text-align: center;
   padding: 60px 20px;
-  background: white;
-  border: 2px solid black;
+  background: var(--background);
+  border: 2px solid var(--foreground);
 
   p {
-    color: #555;
+    color: var(--text-medium);
     font-size: 16px;
     margin-bottom: 20px;
   }
@@ -107,13 +107,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: white;
+  background: var(--background);
   padding: 20px;
-  border: 2px solid black;
+  border: 2px solid var(--foreground);
   transition: 0.2s all ease;
 
   &:hover {
-    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    box-shadow: 4px 4px 0 -1px var(--shadow);
     transform: translate(-2px, -2px);
   }
 }
@@ -127,18 +127,18 @@
   font-family: myriad-boldcond, sans-serif;
   font-size: 18px;
   margin: 0 0 5px 0;
-  color: black;
+  color: var(--foreground);
 }
 
 .testimonialRole {
   font-size: 13px;
-  color: #666;
+  color: var(--text-muted);
   margin: 0 0 10px 0;
 }
 
 .testimonialQuote {
   font-size: 14px;
-  color: #888;
+  color: var(--text-subtle);
   margin: 0;
   font-style: italic;
 }
@@ -151,9 +151,9 @@
 }
 
 .editButton {
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 8px 16px;
   font-size: 12px;
   font-family: opensans, sans-serif;
@@ -162,15 +162,15 @@
   text-decoration: none;
 
   &:hover {
-    background: white;
-    color: black;
+    background: var(--background);
+    color: var(--foreground);
   }
 }
 
 .deleteButton {
   background: transparent;
-  color: #dc2626;
-  border: 2px solid #dc2626;
+  color: var(--danger);
+  border: 2px solid var(--danger);
   padding: 8px 16px;
   font-size: 12px;
   font-family: opensans, sans-serif;
@@ -178,8 +178,8 @@
   transition: 0.2s all ease;
 
   &:hover {
-    background: #dc2626;
-    color: white;
+    background: var(--danger);
+    color: var(--background);
   }
 }
 
@@ -190,13 +190,13 @@
 
   span {
     font-size: 12px;
-    color: #dc2626;
+    color: var(--danger);
   }
 }
 
 .confirmYes {
-  background: #dc2626;
-  color: white;
+  background: var(--danger);
+  color: var(--background);
   border: none;
   padding: 6px 12px;
   font-size: 11px;
@@ -204,13 +204,13 @@
   transition: 0.2s all ease;
 
   &:hover {
-    background: #b91c1c;
+    background: var(--danger-hover);
   }
 }
 
 .confirmNo {
-  background: #e5e5e5;
-  color: #555;
+  background: var(--surface-3);
+  color: var(--text-medium);
   border: none;
   padding: 6px 12px;
   font-size: 11px;
@@ -218,7 +218,7 @@
   transition: 0.2s all ease;
 
   &:hover {
-    background: #d4d4d4;
+    background: var(--surface-4);
   }
 }
 

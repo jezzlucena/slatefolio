@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import styles from './Profile.module.scss';
+import useResolvedTheme from '@/hooks/useResolvedTheme';
 
 // Debounce helper
 function debounce<T extends (...args: Parameters<T>) => void>(
@@ -66,6 +67,7 @@ const LANGUAGE_LABELS = {
 
 export default function AdminProfilePage() {
   const { isLoading: authLoading, isLoggedIn } = useAuth();
+  const resolvedTheme = useResolvedTheme();
   const [activeTab, setActiveTab] = useState<'en' | 'es' | 'pt'>('en');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -569,7 +571,7 @@ export default function AdminProfilePage() {
               <label className={styles.label}>
                 Blurb / Bio <span className={styles.langBadge}>{activeTab.toUpperCase()}</span>
               </label>
-              <div className={styles.markdownEditor} data-color-mode="light">
+              <div className={styles.markdownEditor} data-color-mode={resolvedTheme}>
                 <MDEditor
                   value={formData.blurb[activeTab]}
                   onChange={(value: string | undefined) => handleLocalizedChange('blurb', activeTab, value || '')}

@@ -8,12 +8,12 @@
 .noResume {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--text-muted);
   font-size: 16px;
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .icon {
@@ -23,13 +23,13 @@
   right: 10px;
   height: 45px;
   width: 45px;
-  border: 2px solid black;
+  border: 2px solid var(--foreground);
   margin: 0;
-  background-color: white;
+  background-color: var(--background);
   transition: 0.2s box-shadow ease, 0.2s transform ease;
 
   &:hover, &:global(.hovered) {
-    box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+    box-shadow: 7px 7px 0 -1px var(--shadow);
     transform: translate(-3px, calc(-50% - 3px));
   }
   

@@ -10,6 +10,7 @@ import Image from "next/image";
 import { usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import LocaleSwitcher from "../LocaleSwitcher/LocaleSwitcher";
+import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 import { useProfile } from "@/stores/profileStore";
 import { useActiveResume } from "@/stores/resumeStore";
 import { LocalizedString } from "@/types/LocalizedString";
@@ -94,6 +95,7 @@ export default function TopBar() {
               >{t("contact")}</Link>
             )}
             <LocaleSwitcher />
+            <ThemeSwitcher />
           </div>
         </div>
       </div>

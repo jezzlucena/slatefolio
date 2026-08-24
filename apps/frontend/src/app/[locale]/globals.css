@@ -25,6 +25,107 @@
 	src: url("/assets/fonts/MyriadPro-Cond.otf") format("opentype");
 }
 
+/*
+ * Theme tokens. Light values live on :root. The dark values appear twice on
+ * purpose: once for an explicit choice (html[data-theme="dark"], set by
+ * ThemeSwitcher + the pre-paint script in layout.tsx) and once for "auto"
+ * (OS preference while no data-theme attribute is set). Keep both blocks in
+ * sync. The chrome — TopBar, Footer shell, Header/logo stage, and the body
+ * behind content — intentionally stays black in both themes, as does the
+ * Logo family.
+ */
+:root {
+	color-scheme: light;
+	--background: #ffffff;
+	--foreground: #000000;
+	--surface-2: #f5f5f5;
+	--surface-3: #e5e5e5;
+	--surface-4: #d4d4d4;
+	--dim: #aaaaaa;
+	--border-soft: #dddddd;
+	--border-softer: #eeeeee;
+	--text-strong: #333333;
+	--text-medium: #555555;
+	--text-muted: #666666;
+	--text-subtle: #888888;
+	--shadow: #000000;
+	--shadow-soft: rgba(0, 0, 0, 0.3);
+	--overlay: rgba(255, 255, 255, 0.2);
+	--overlay-strong: rgba(255, 255, 255, 0.4);
+	--skeleton-a: #f4f4f4;
+	--skeleton-b: #dddddd;
+	--success: #16a34a;
+	--success-hover: #15803d;
+	--success-bg: #f0fdf4;
+	--success-border: #bbf7d0;
+	--danger: #dc2626;
+	--danger-hover: #b91c1c;
+	--danger-bg: #fef2f2;
+	--danger-border: #fecaca;
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--background: #141414;
+	--foreground: #f1f1f1;
+	--surface-2: #1e1e1e;
+	--surface-3: #292929;
+	--surface-4: #333333;
+	--dim: #4d4d4d;
+	--border-soft: #3b3b3b;
+	--border-softer: #2b2b2b;
+	--text-strong: #d8d8d8;
+	--text-medium: #c0c0c0;
+	--text-muted: #a3a3a3;
+	--text-subtle: #858585;
+	--shadow: #f1f1f1;
+	--shadow-soft: rgba(241, 241, 241, 0.3);
+	--overlay: rgba(20, 20, 20, 0.25);
+	--overlay-strong: rgba(20, 20, 20, 0.45);
+	--skeleton-a: #1e1e1e;
+	--skeleton-b: #333333;
+	--success: #4ade80;
+	--success-hover: #86efac;
+	--success-bg: #10281a;
+	--success-border: #1e5433;
+	--danger: #f87171;
+	--danger-hover: #fca5a5;
+	--danger-bg: #2b1414;
+	--danger-border: #5c2323;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+		--background: #141414;
+		--foreground: #f1f1f1;
+		--surface-2: #1e1e1e;
+		--surface-3: #292929;
+		--surface-4: #333333;
+		--dim: #4d4d4d;
+		--border-soft: #3b3b3b;
+		--border-softer: #2b2b2b;
+		--text-strong: #d8d8d8;
+		--text-medium: #c0c0c0;
+		--text-muted: #a3a3a3;
+		--text-subtle: #858585;
+		--shadow: #f1f1f1;
+		--shadow-soft: rgba(241, 241, 241, 0.3);
+		--overlay: rgba(20, 20, 20, 0.25);
+		--overlay-strong: rgba(20, 20, 20, 0.45);
+		--skeleton-a: #1e1e1e;
+		--skeleton-b: #333333;
+		--success: #4ade80;
+		--success-hover: #86efac;
+		--success-bg: #10281a;
+		--success-border: #1e5433;
+		--danger: #f87171;
+		--danger-hover: #fca5a5;
+		--danger-bg: #2b1414;
+		--danger-border: #5c2323;
+	}
+}
+
 html, body {
 	height: 100%;
 	width: 100%;
@@ -38,7 +139,6 @@ html, body {
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
   padding-top: 62px;
 }

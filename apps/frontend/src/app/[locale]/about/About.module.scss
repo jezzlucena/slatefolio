@@ -1,10 +1,10 @@
 
 .content {
   position: relative;
-  background-color: white;
+  background-color: var(--background);
   width: 100%;
-  color: black;
-  border-top: 2px solid white;
+  color: var(--foreground);
+  border-top: 2px solid var(--background);
 
   .aboutContainer {
     .profilePicture {
@@ -15,25 +15,25 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      border: 2px solid black;
+      border: 2px solid var(--foreground);
       transition: 0.2s box-shadow ease, 0.2s transform ease;
       display: flex;
       align-items: center;
       justify-content: center;
 
       &:hover, &:global(.hovered) {
-        box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+        box-shadow: 7px 7px 0 -1px var(--shadow);
         transform: translate(-3px, -3px);
       }
 
       &.noImage {
-        background-color: #e5e5e5;
+        background-color: var(--surface-3);
       }
 
       .silhouette {
         width: 60%;
         height: 60%;
-        color: #9ca3af;
+        color: var(--text-subtle);
       }
     }
 
@@ -104,7 +104,7 @@
     overflow: hidden;
 
     .readMoreContainer {
-      background-image: linear-gradient(to bottom, transparent, white);
+      background-image: linear-gradient(to bottom, transparent, var(--background));
     }
 
     &.collapsed {
@@ -161,7 +161,7 @@
 .loadingProfile {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--text-muted);
   font-size: 16px;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .testimonials {
-  background-color: white;
+  background-color: var(--background);
   padding: 50px 0;
   margin: 0 auto;
 
@@ -218,7 +218,7 @@
   .noTestimonials {
     text-align: center;
     padding: 40px 20px;
-    color: #666;
+    color: var(--text-muted);
     font-size: 16px;
   }
 }

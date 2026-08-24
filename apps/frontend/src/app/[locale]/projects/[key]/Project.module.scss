@@ -1,6 +1,6 @@
 .content {
   position: relative;
-  background-color: white;
+  background-color: var(--background);
 
   .project {
     .label {
@@ -35,7 +35,7 @@
       height: auto;
       max-height: 640px;
       box-sizing: border-box;
-      border: 2px solid black;
+      border: 2px solid var(--foreground);
 
       .profileVideo {
         position: relative;

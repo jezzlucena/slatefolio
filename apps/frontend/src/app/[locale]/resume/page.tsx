@@ -22,7 +22,7 @@ export default function Resume() {
   }, [t]);
 
   return (
-    <div className="relative bg-white">
+    <div className="relative bg-[var(--background)]">
       <div className="absolute -top-[60px]" id="content"></div>
       <div className="relative w-[100%] max-w-[1280px] mx-auto py-[30px] px-[20px] md:px-[30px] lg:px-[50px]">
         <Heading>

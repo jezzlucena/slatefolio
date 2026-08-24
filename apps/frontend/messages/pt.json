@@ -3,7 +3,10 @@
     "about": "Sobre",
     "portfolio": "Portfólio",
     "resume": "Currículo",
-    "contact": "Contato"
+    "contact": "Contato",
+    "themeAuto": "Tema: Automático (segue o sistema)",
+    "themeLight": "Tema: Claro",
+    "themeDark": "Tema: Escuro"
   },
   "home": {
     "myWork": "Meu Trabalho"

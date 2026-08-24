@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import styles from './TestimonialForm.module.scss';
+import useResolvedTheme from '@/hooks/useResolvedTheme';
 
 // Dynamic import for markdown editor to avoid SSR issues
 const MDEditor = dynamic(
@@ -51,6 +52,7 @@ export default function TestimonialForm({
   isSubmitting,
   isEditMode = false,
 }: TestimonialFormProps) {
+  const resolvedTheme = useResolvedTheme();
   const [activeTab, setActiveTab] = useState<'en' | 'es' | 'pt'>('en');
   const [copyFromLang, setCopyFromLang] = useState<'en' | 'es' | 'pt'>('en');
   const [copyToLang, setCopyToLang] = useState<'en' | 'es' | 'pt'>('es');
@@ -207,7 +209,7 @@ export default function TestimonialForm({
             <label className={styles.label}>
               Quote <span className={styles.langBadge}>{activeTab.toUpperCase()}</span>
             </label>
-            <div className={styles.markdownEditor} data-color-mode="light">
+            <div className={styles.markdownEditor} data-color-mode={resolvedTheme}>
               <MDEditor
                 value={formData.quote[activeTab]}
                 onChange={(value: string | undefined) => handleLocalizedChange('quote', activeTab, value || '')}

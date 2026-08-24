@@ -11,14 +11,14 @@
     position: relative;
     height: 45px;
     width: 45px;
-    border: 2px solid black;
+    border: 2px solid var(--foreground);
     margin: 0;
     margin-right: -2px;
-    background-color: #aaa;
+    background-color: var(--dim);
     transition: 0.6s background-color ease, 0.2s box-shadow ease, 0.2s transform ease;
 
     &:hover, &:global(.hovered) {
-      box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+      box-shadow: 7px 7px 0 -1px var(--shadow);
       transform: translate(-3px, -3px);
     }
     
@@ -35,7 +35,7 @@
     .symbol::after {
       content: '';
       position: absolute;
-      background: black;
+      background: var(--foreground);
     }
 
     &.columns .symbol::before,
@@ -47,19 +47,19 @@
     &.columns .symbol::before {
       top: 0;
       height: 7px;
-      box-shadow: 8px 13px 0 0 black, 16px 0 0 0 black;
+      box-shadow: 8px 13px 0 0 var(--foreground), 16px 0 0 0 var(--foreground);
     }
 
     &.columns .symbol::after {
       bottom: 0;
       height: 11px;
-      box-shadow: 8px -9px 0 0 black, 16px 0 0 0 black;
+      box-shadow: 8px -9px 0 0 var(--foreground), 16px 0 0 0 var(--foreground);
     }
 
     &.list .symbol::before,
     &.list .symbol::after {
       height: 5px;
-      box-shadow: 0 8px 0 0 black, 0 16px 0 0 black;
+      box-shadow: 0 8px 0 0 var(--foreground), 0 16px 0 0 var(--foreground);
     }
 
     &.list .symbol::before {
@@ -75,7 +75,7 @@
 
   &.show {
     &.list .icon.list, &.columns .icon.columns {
-      background-color: white;
+      background-color: var(--background);
     }
   }
 }

@@ -38,7 +38,7 @@ export default function AdminSetupPage() {
 
   if (isLoading) {
     return (
-      <div className={`${styles.container} relative bg-white`}>
+      <div className={`${styles.container} relative bg-[var(--background)]`}>
         <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
         <div className={styles.card}>
           <p>Loading...</p>
@@ -49,7 +49,7 @@ export default function AdminSetupPage() {
 
   if (hasUsers) {
     return (
-      <div className={`${styles.container} relative bg-white`}>
+      <div className={`${styles.container} relative bg-[var(--background)]`}>
         <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
         <div className={styles.card}>
           <h1 className={styles.title}>Setup Complete</h1>
@@ -60,7 +60,7 @@ export default function AdminSetupPage() {
   }
 
   return (
-    <div className={`${styles.container} relative bg-white`}>
+    <div className={`${styles.container} relative bg-[var(--background)]`}>
       <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
       <div className={styles.card}>
         <h1 className={styles.title}>Create Admin Account</h1>

@@ -17,15 +17,15 @@
   &::before {
     top: 0;
     left: 0;
-    border-top: 2px solid black;
-    border-left: 2px solid black;
+    border-top: 2px solid var(--foreground);
+    border-left: 2px solid var(--foreground);
   }
 
   &::after {
     bottom: 0;
     right: 0;
-    border-bottom: 2px solid black;
-    border-right: 2px solid black;
+    border-bottom: 2px solid var(--foreground);
+    border-right: 2px solid var(--foreground);
   }
 
   .quote {

@@ -62,7 +62,7 @@ export default async function Project({
   }
 
   return (
-    <div className={`${styles.content} bg-white relative`}>
+    <div className={`${styles.content} bg-[var(--background)] relative`}>
       <div className={`${styles.anchor} absolute -top-[60px]`} id="content"></div>
 
       <div className={`${styles.project} w-[100%] mx-auto py-[70px] px-[50px]`}>

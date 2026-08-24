@@ -9,26 +9,28 @@
 	margin-right: 5px;
 	font-size: 14px;
 	letter-spacing: 1px;
-	color: white;
-	background-color: black;
+	color: var(--background);
+	background-color: var(--foreground);
   box-shadow: 0px 0px 0 0px rgba(0, 0, 0, 0);
-  border: 2px solid white;
+  border: 2px solid var(--background);
 	text-decoration: underline;
   white-space: nowrap;
 	cursor: pointer;
 	transition: 0.2s box-shadow ease, 0.2s transform ease;
 
   &:hover, &:global(.hovered) {
-		box-shadow: 7px 7px 0 -1px rgba(0, 0, 0, 1);
+		box-shadow: 7px 7px 0 -1px var(--shadow);
     transform: translate(-3px, -3px);
 	}
 
   &:active {
-		background-color: #fff;
-		color: black;
+		background-color: var(--background);
+		color: var(--foreground);
 		transition: all 0 linear;
 	}
 
+  // Deliberately unthemed: only used on the Footer's button area, whose
+  // black chrome background is the same in both themes
   &.light {
     color: black;
     background-color: white;

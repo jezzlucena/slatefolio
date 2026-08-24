@@ -1,5 +1,6 @@
 .container {
   position: relative;
+  background-color: var(--background);
   min-height: calc(100vh - 200px);
   padding: 40px 20px;
   max-width: 1200px;
@@ -19,13 +20,13 @@
   font-family: myriad-boldcond, sans-serif;
   font-size: 36px;
   margin: 0;
-  color: white;
+  color: var(--foreground);
 }
 
 .logoutButton {
   background: transparent;
-  color: white;
-  border: 2px solid white;
+  color: var(--foreground);
+  border: 2px solid var(--foreground);
   padding: 10px 20px;
   font-size: 14px;
   font-family: myriad-boldcond, sans-serif;
@@ -35,8 +36,8 @@
   letter-spacing: 1px;
 
   &:hover {
-    background: white;
-    color: black;
+    background: var(--foreground);
+    color: var(--background);
   }
 }
 
@@ -47,21 +48,21 @@
 }
 
 .card {
-  background: white;
+  background: var(--background);
   padding: 30px;
-  border: 2px solid black;
-  box-shadow: 8px 8px 0 -1px rgba(0, 0, 0, 1);
+  border: 2px solid var(--foreground);
+  box-shadow: 8px 8px 0 -1px var(--shadow);
 }
 
 .cardTitle {
   font-family: myriad-boldcond, sans-serif;
   font-size: 22px;
   margin: 0 0 15px 0;
-  color: black;
+  color: var(--foreground);
 }
 
 .cardText {
-  color: #555;
+  color: var(--text-medium);
   font-size: 15px;
   line-height: 1.6;
   margin-bottom: 20px;
@@ -77,9 +78,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: black;
-  color: white;
-  border: 2px solid black;
+  background: var(--foreground);
+  color: var(--background);
+  border: 2px solid var(--foreground);
   padding: 12px 20px;
   font-size: 14px;
   font-family: opensans, sans-serif;
@@ -88,9 +89,9 @@
   text-decoration: none;
 
   &:hover:not(:disabled) {
-    background: white;
-    color: black;
-    box-shadow: 4px 4px 0 -1px rgba(0, 0, 0, 1);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: 4px 4px 0 -1px var(--shadow);
     transform: translate(-2px, -2px);
   }
 
@@ -105,25 +106,25 @@
 }
 
 .success {
-  color: #16a34a;
+  color: var(--success);
   font-size: 14px;
   margin-bottom: 15px;
   padding: 10px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 14px;
   margin-bottom: 15px;
   padding: 10px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
 }
 
 .comingSoon {
-  color: #888;
+  color: var(--text-subtle);
   font-style: italic;
   font-size: 14px;
 }

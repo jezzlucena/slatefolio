@@ -9,17 +9,20 @@
 .disclaimer {
   font-family: opensans;
   width: 100%;
-  background-color: white;
-  color: black;
+  background-color: var(--background);
+  color: var(--foreground);
   text-align: center;
   padding: 20px 10px;
   font-size: 14px;
 }
 
 .disclaimer *:link {
-  color: black;
+  color: var(--foreground);
   text-decoration: underline;
 }
+
+// Everything below is chrome: the button area stays black in both themes
+// (its buttons use the unthemed Button `.light` variant)
 
 .buttonAreaWrapper {
 	display: table;
