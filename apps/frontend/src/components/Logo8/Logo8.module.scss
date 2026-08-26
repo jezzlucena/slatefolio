@@ -3,9 +3,6 @@
 // steps, column pitch) lives in Logo8.tsx; the circle diameter arrives as
 // the --d custom property so there's a single source of truth.
 
-// Diamond-plate texture over the waves: one on-screen tile of the SVG below
-$plate-tile: 44px;
-
 .wrapper {
   position: absolute;
   inset: 0;
@@ -16,13 +13,17 @@ $plate-tile: 44px;
   isolation: isolate;
 }
 
-// Diamond-plate stud layer above every wave column. The background is an
-// inline SVG tile: one pair of short round-capped strokes ('') rotated +45deg
-// at the tile center, and the perpendicular -45deg pair on the corners (drawn
-// at all four so the repeat is seamless) — a diagonal lattice of isolated
-// studs, neighbors perpendicular, none touching. Strokes are white and
-// mix-blend-mode: difference is the "subtract" wish: they read black over
-// white waves, white over black.
+// Plus/cross glyph layer above every wave column. The background is an
+// inline SVG tile: a '+' at the tile center and an 'x' (the same + rotated
+// 45deg) on the corners (drawn at all four so the repeat is seamless) — a
+// diagonal lattice whose neighboring glyphs alternate + and x. Each glyph is
+// surrounded by one short '-' dash on each of its 4 diagonals: the dashes
+// sit on the quarter points — the midpoints between glyphs, so diagonal
+// neighbors share them — and each is rotated 45deg to lie along its own
+// diagonal (+45 for the pair on the tile's main diagonal, -45 for the
+// other two), radial to both glyphs it separates and touching neither.
+// Strokes are white and mix-blend-mode: difference is the "subtract" wish:
+// they read black over white waves, white over black.
 // This layer must stay a direct sibling of the wave columns — wrapping it in
 // a positioned container would create a stacking context that isolates the
 // blend from the waves underneath.
@@ -33,19 +34,26 @@ $plate-tile: 44px;
   pointer-events: none;
   overflow: hidden;
   mix-blend-mode: difference;
-  // The stud tile is the MASK now — it defines where anything paints. The
-  // faint base color keeps every stud dimly present between waves.
+  // Entrance: the texture fades in once the last wave starts blooming
+  // (--hatch-delay = the last circle's --delay, set by Logo8.tsx). 1s is the
+  // longest entrance animation — ENTRANCE_ANIM_MS in Logo8.tsx must match it.
+  animation: fadeIn 1s ease backwards;
+  animation-delay: var(--hatch-delay, 0s);
+  // The glyph tile is the MASK — it defines where anything paints. The
+  // faint base color keeps every glyph dimly present between waves.
+  // mask-image/mask-size/mask-composite arrive INLINE from Logo8.tsx: the
+  // tile geometry is shared with the knock-off hit-testing there, and all
+  // knocked-off glyphs (permanent — they never respawn) are erased via one
+  // extra subtract-composited holes layer.
   background-color: rgba(255, 255, 255, 0.22);
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg stroke='white' stroke-width='2' stroke-linecap='round' fill='none'%3E%3Cg transform='translate(24 24) rotate(45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(0 0) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(48 0) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(0 48) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3Cg transform='translate(48 48) rotate(-45)'%3E%3Cpath d='M-6 -2.5 H6 M-6 2.5 H6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  mask-size: $plate-tile $plate-tile;
 }
 
 // Two oversized gradient sheets drifting on opposing diagonals at different
-// speeds; the parent's stud mask clips them, so each stud's brightness is
+// speeds; the parent's glyph mask clips them, so each glyph's brightness is
 // the wave intensity passing under it — crossing waves of shimmer. The
 // translate distance per loop is exactly one gradient period projected onto
 // the x axis (period * sqrt(2)), so the drift tiles seamlessly. Transform
-// animations stay on the compositor: no per-frame repaints, no per-stud
+// animations stay on the compositor: no per-frame repaints, no per-glyph
 // elements.
 .shimmerWave {
   position: absolute;
@@ -80,9 +88,54 @@ $plate-tile: 44px;
   to { transform: translateX(-254.56px); } // 180px period * sqrt(2), opposing
 }
 
+// A glyph knocked out of the pattern by the pointer, mid-fall. Rendered as a
+// direct sibling of the wave columns (same constraint as .hatch: a wrapping
+// container would isolate the difference blend from the waves). Full-strength
+// white — brighter than the hatch's dim base — so detaching reads as the bit
+// catching the light. Trajectory (--dx/--hop/--spin/--fall/--fall-dur) is
+// hash-seeded per glyph in Logo8.tsx.
+.bit {
+  position: absolute;
+  z-index: 51; // just above .hatch
+  pointer-events: none;
+  mix-blend-mode: difference;
+  // The base 'linear' is never used: each keyframe below sets the timing
+  // function for its own segment (pop out, then gravity). --knock-delay
+  // staggers a burst's bits into an expanding shockwave; fill-mode 'both'
+  // parks a delayed clone on its spot (covering the hole already punched in
+  // the hatch mask) until its turn to detach.
+  animation: knockFall var(--fall-dur, 1s) linear both;
+  animation-delay: var(--knock-delay, 0s);
+}
+
+@keyframes knockFall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    // Pop: launched fast, decelerating to the top of the hop
+    animation-timing-function: cubic-bezier(0.15, 0.6, 0.4, 1);
+  }
+  16% {
+    transform: translate(calc(var(--dx) * 0.22), var(--hop)) rotate(calc(var(--spin) * 0.18));
+    // Gravity: accelerate the whole way down
+    animation-timing-function: cubic-bezier(0.45, 0, 0.85, 0.6);
+  }
+  100% {
+    transform: translate(var(--dx), var(--fall)) rotate(var(--spin));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shimmerWave {
+  .shimmerWave,
+  .stripe,
+  .circle,
+  .hatch {
+    animation: none; // pattern appears fully assembled, no shimmer
+  }
+
+  .bit {
+    // No fall: knocked glyphs just vanish (the mask hole erases them)
     animation: none;
+    opacity: 0;
   }
 }
 
@@ -98,6 +151,11 @@ $plate-tile: 44px;
   left: 0;
   right: 0;
   height: calc(var(--d) / 2); // R: half the circle diameter
+  // Entrance: bands fade in bottom-up ahead of the circle sweep. A plain
+  // fade is safe here — stripes never overlap each other, so no pattern
+  // shows through mid-fade.
+  animation: fadeIn 0.5s ease-out backwards;
+  animation-delay: var(--delay, 0s);
 }
 
 .column {
@@ -113,6 +171,42 @@ $plate-tile: 44px;
   height: var(--d);
   margin-left: calc(var(--d) / -2);
   border-radius: 50%;
+  // Entrance: each circle blooms from its own center (scale keeps it fully
+  // opaque throughout, so the stacked-circle crescent trick never shows the
+  // circles underneath mid-animation — opacity would). The mild back-out
+  // overshoot reads as the wave swelling past the crest, then settling.
+  animation: bloom 0.6s cubic-bezier(0.3, 1.4, 0.45, 1) backwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes bloom {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Entrance finished (Logo8.tsx flips this after the last animation ends):
+// drop the animations so circles/stripes added by a resize appear in place
+// instead of replaying a bloom on a stale delay. Final keyframes equal the
+// natural state, so this swap is invisible.
+.settled {
+  .stripe,
+  .circle,
+  .hatch {
+    animation: none;
+  }
 }
 
 .white {

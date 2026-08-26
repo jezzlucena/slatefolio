@@ -18,6 +18,6 @@ export const LOGO_THEMES = [
   'tetra', // Logo5 — tetrahedron flood-fill field
   'origami', // Logo6 — isometric cube wall unfolding
   'vasarely', // Logo7 — checkerboard warped by a gaussian bulge
-  'crescent', // Logo8 — crescent columns in blend-mode difference
+  'copacabana', // Logo8 — crescent columns in blend-mode difference
   'glitch', // Logo9 — torn-broadcast aurora test card
 ];
