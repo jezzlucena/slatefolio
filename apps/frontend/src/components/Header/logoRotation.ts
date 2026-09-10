@@ -20,4 +20,5 @@ export const LOGO_THEMES = [
   'vasarely', // Logo7 — checkerboard warped by a gaussian bulge
   'copacabana', // Logo8 — crescent columns in blend-mode difference
   'glitch', // Logo9 — torn-broadcast aurora test card
+  'interference', // Logo10 — engraved ellipse plates forming optical folds
 ];

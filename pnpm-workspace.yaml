@@ -1,6 +1,11 @@
 packages:
   - 'apps/*'
 
+# Keep transitive Node types aligned with the workspace catalog to avoid
+# conflicting global declarations from multiple major versions.
+overrides:
+  "@types/node": "catalog:"
+
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
