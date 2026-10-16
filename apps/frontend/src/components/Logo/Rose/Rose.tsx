@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useRef } from "react";
-import useWindowScroll from "../../hooks/useWindowScroll";
-import styles from "./Logo4.module.scss"
-import useTabActive from "../../hooks/useTabActive";
+import useWindowScroll from "../../../hooks/useWindowScroll";
+import useTabActive from "../../../hooks/useTabActive";
+import styles from "./Rose.module.scss"
 
 /** Breathing phases: bloom → tracery → ember → void */
 const PHASE_COUNT = 4;
@@ -111,7 +111,7 @@ const patchClip = (seg: Seg): string => {
   const px = -uy;
   const py = ux;
   const w = 17;      // casing half-width (15) plus margin
-  const endTrim = 4; // stop the black casing short of the core's ends
+  const endTrim = 10; // stop the black casing short of the core's ends
   const sx = x1 + ux * endTrim, sy = y1 + uy * endTrim;
   const ex = x2 - ux * endTrim, ey = y2 - uy * endTrim;
   return [
@@ -237,7 +237,7 @@ const CIRC_STYLE = shapeStyle(0.5, 3);
  * fresh balanced arrangement: the knot unweaves as they drift, then locks
  * again in a new combination.
  */
-export default function Logo4() {
+export default function Rose() {
   const { scrollY } = useWindowScroll();
   const isTabActive = useTabActive();
   const svg = useRef<SVGSVGElement>(null);

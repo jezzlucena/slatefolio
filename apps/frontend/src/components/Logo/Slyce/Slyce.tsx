@@ -39,7 +39,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createOpponent, createShowman } from './ai';
 import { encodeSnapshot, NetRole, PaddleSide, RemoteView, SlyceNet } from './net';
 import { C, clearTrail, Crack, createGame, maxOmega, rand01, resetMatch, resizeGame, spinNorm, stepGame, traceTrail } from './physics';
-import styles from './Logo3.module.scss';
+import styles from './Slyce.module.scss';
 
 /** Backing-store resolution cap — same rationale as Logo2's MAX_DPR. */
 const MAX_DPR = 2;
@@ -143,7 +143,7 @@ interface Controls {
   declinePromotion(): void;
 }
 
-export default function Logo3() {
+export default function Slyce() {
   const wrapper = useRef<HTMLDivElement>(null);
   const [overlay, setOverlay] = useState<Ui>('attract');
   // Transient multiplayer toast (a translation key), auto-cleared by the effect.

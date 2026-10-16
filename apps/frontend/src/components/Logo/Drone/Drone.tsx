@@ -35,7 +35,7 @@ import { hashSeed } from './noise';
 import { buildPois, cssColor, type PoiConfig } from './pois';
 import { buildScenery } from './scenery';
 import { buildTerrain, type MapConfig } from './terrain';
-import styles from './Logo2.module.scss';
+import styles from './Drone.module.scss';
 
 /* ===================== MAP & FLIGHT AUTHORING ============================
  * Edit these (and only these) to author a new world. Same seed => same map,
@@ -146,7 +146,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), h
 /** Wrap a degree difference into (-180, 180]. */
 const shortestDeg = (a: number) => a - 360 * Math.round(a / 360);
 
-export default function Logo2() {
+export default function Drone() {
   const wrapper = useRef<HTMLDivElement>(null);
   const ladder = useRef<SVGGElement>(null);
   const compassTape = useRef<SVGGElement>(null);

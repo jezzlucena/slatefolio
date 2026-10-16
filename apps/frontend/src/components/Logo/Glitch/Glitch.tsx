@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import styles from "./Logo9.module.scss"
+import styles from "./Glitch.module.scss"
 
 /**
  * Glitch transmission — a broken broadcast. The viewport is a test card of
@@ -113,7 +113,7 @@ function buildBlocks(w: number, h: number): Block[] {
   });
 }
 
-export default function Logo9() {
+export default function Glitch() {
   const wrapper = useRef<HTMLDivElement>(null);
   const [slices, setSlices] = useState<Slice[]>([]);
   const [blocks, setBlocks] = useState<Block[]>([]);

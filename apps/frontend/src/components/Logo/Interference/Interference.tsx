@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import styles from './Logo10.module.scss';
+import styles from './Interference.module.scss';
 
 /** Two engraved plates, slightly out of register. Their intersections invert
  * the ink, making broad optical folds out of simple concentric ellipses. */
@@ -24,7 +24,7 @@ type Press = { id: number; x: number; y: number; moved: boolean };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-export default function Logo10() {
+export default function Interference() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<Engine | null>(null);
   const press = useRef<Press | null>(null);

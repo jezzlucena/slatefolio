@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useRef } from "react";
-import useWindowScroll from "../../hooks/useWindowScroll";
-import styles from "./Logo.module.scss"
-import useTabActive from "../../hooks/useTabActive";
+import useWindowScroll from "../../../hooks/useWindowScroll";
+import styles from "./Mosaic.module.scss"
+import useTabActive from "../../../hooks/useTabActive";
 
 /** Aurora gradient stops as [hue, saturation, lightness] — teal, violet, magenta, gold */
 const AURORA_STOPS: [number, number, number][] = [
@@ -122,7 +122,7 @@ const SVG_STYLE_CYCLES: StylePhase[] = [
 /** 
  * Container for the very large (and optimized) interactive SVG that decorates every page
  */
-export default function Logo() {
+export default function Mosaic() {
   const { scrollY } = useWindowScroll();
   const isTabActive = useTabActive();
   const svg = useRef<SVGSVGElement>(null);

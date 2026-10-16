@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import styles from "./Logo8.module.scss"
+import styles from "./Copacabana.module.scss"
 
 // The drawn SVG template, transcribed: circles of r=500 stacked every 250
 // (half a radius) in columns 968 apart, alternating white/black. Outer-style
@@ -275,7 +275,7 @@ function buildColumns(w: number, h: number): Column[] {
  * the pattern can fill any viewport (no viewBox) and each crescent is a real
  * element we can animate later.
  */
-export default function Logo8() {
+export default function Copacabana() {
   const wrapper = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState<Column[]>([]);
   const [stripes, setStripes] = useState<Stripe[]>([]);

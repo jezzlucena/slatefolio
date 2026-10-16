@@ -2,16 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import Logo from "../Logo/Logo";
-import Logo2 from "../Logo2/Logo2";
-import Logo3 from "../Logo3/Logo3";
-import Logo4 from "../Logo4/Logo4";
-import Logo5 from "../Logo5/Logo5";
-import Logo6 from "../Logo6/Logo6";
-import Logo7 from "../Logo7/Logo7";
-import Logo8 from "../Logo8/Logo8";
-import Logo9 from "../Logo9/Logo9";
-import Logo10 from "../Logo10/Logo10";
+import {
+  Mosaic,
+  Drone,
+  Slyce,
+  Rose,
+  Tetra,
+  Origami,
+  Vasarely,
+  Copacabana,
+  Glitch,
+  Interference,
+  Flipdots
+} from "../Logo";
 import TopBar from "../TopBar/TopBar";
 import styles from "./Header.module.scss"
 import { useSearchParams } from "next/navigation";
@@ -21,7 +24,19 @@ import { LocalizedString } from "@/types/LocalizedString";
 
 /** The rotation order: one logo per full page load.
  * Order must match LOGO_THEMES in logoRotation.ts (the ?logo= deep links). */
-const LOGOS = [Logo, Logo2, Logo3, Logo4, Logo5, Logo6, Logo7, Logo8, Logo9, Logo10];
+const LOGOS = [
+  Mosaic, 
+  Drone, 
+  Slyce, 
+  Rose, 
+  Tetra, 
+  Origami, 
+  Vasarely, 
+  Copacabana, 
+  Glitch, 
+  Interference,
+  Flipdots
+];
 
 interface HeaderProps {
   /** Which logo to show this load — read from the cookie by the server layout */

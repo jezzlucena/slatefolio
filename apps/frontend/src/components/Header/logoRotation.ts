@@ -21,4 +21,5 @@ export const LOGO_THEMES = [
   'copacabana', // Logo8 — crescent columns in blend-mode difference
   'glitch', // Logo9 — torn-broadcast aurora test card
   'interference', // Logo10 — engraved ellipse plates forming optical folds
+  'flipdots', // Flipdots — webcam silhouette on a mechanical flip-dot panel
 ];

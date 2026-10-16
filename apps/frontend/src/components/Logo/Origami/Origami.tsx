@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import styles from "./Logo6.module.scss"
+import styles from "./Origami.module.scss"
 
 // Grid metrics: the exact isometric lattice. The demo advanced 278/240 to
 // deliberately overlap cubes and seal cracks; we tile edge-to-edge instead so

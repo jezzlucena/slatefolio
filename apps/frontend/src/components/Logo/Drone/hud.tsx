@@ -15,7 +15,7 @@
 
 import type { RefObject } from 'react';
 import type { FlightState } from './autopilot';
-import styles from './Logo2.module.scss';
+import styles from './Drone.module.scss';
 
 export type HudRefs = {
   /** Moving part of the artificial horizon (sky/ground + pitch ladder). */

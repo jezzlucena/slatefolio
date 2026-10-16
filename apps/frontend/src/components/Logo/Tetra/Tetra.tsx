@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import styles from "./Logo5.module.scss"
+import styles from "./Tetra.module.scss"
 
 const SIDE = 180;
 const TRI_HEIGHT = SIDE * Math.sqrt(3) / 2;
@@ -196,7 +196,7 @@ function buildCells(w: number, h: number): Cell[] {
  * without it — so it is only mounted while its cell is selected or
  * gliding home.
  */
-export default function Logo5() {
+export default function Tetra() {
   const wrapper = useRef<HTMLDivElement>(null);
   const [cells, setCells] = useState<Cell[]>([]);
   const solidRefs = useRef(new Map<string, HTMLDivElement>());

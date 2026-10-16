@@ -1,0 +1,71 @@
+// Vega field — after Victor Vasarely's Vega series: a polychromatic checker
+// grid warped by a spherical bulge, rendered as actual 3D instead of painted
+// illusion.
+//
+// Vasarely.tsx solves the bulge (a cap of a third of a sphere under the
+// pointer) on the grid's corners and writes each tile a projective matrix3d
+// that stretches its cell onto its four shared, projected corners — so the
+// tiles bend into a dome without ever cracking apart. It also sets each
+// tile's --lift (0 flat → 1 at the dome's apex), which swells its disc — the
+// Vega signature, circles growing inside the bulge.
+
+$tile: 90px; // 2px shy of the 92px pitch: the family's black seams
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  // Only the entrance flip is 3D; the bulge's matrices stay in the z = 0
+  // plane, so this perspective leaves them untouched
+  perspective: 1200px;
+}
+
+.tile {
+  position: absolute;
+  width: $tile;
+  height: $tile;
+  // overflow is a grouping property, but this tile's children are coplanar
+  // 2D — flattening changes nothing, and it clips the swelling disc
+  overflow: hidden;
+  // The bulge matrices map from the tile's top-left corner
+  transform-origin: 0 0;
+  animation: flipIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) backwards;
+}
+
+.disc {
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  // Circles swell as the bulge passes under them; on top of the dome's own
+  // magnification, the apex disc just about fills its tile
+  transform: scale(calc(1 + var(--lift, 0) * 0.35));
+  filter: invert(0);
+  transition: filter 0.3s ease;
+}
+
+// Op-art inversion under the pointer
+.tile:hover .disc {
+  filter: invert(1);
+}
+
+// Radial entrance bloom. fill: backwards only — when the animation ends the
+// transform releases to the bulge's inline matrix (the dome only rises after
+// the bloom, so there's no snap); fill: both would pin tiles flat forever.
+@keyframes flipIn {
+  from {
+    opacity: 0;
+    // Pivot on the center despite the 0 0 origin the bulge needs
+    transform: translate(45px, 45px) rotateY(85deg) scale(0.5) translate(-45px, -45px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(45px, 45px) rotateY(0deg) scale(1) translate(-45px, -45px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile, .disc {
+    animation: none;
+    transition: none;
+  }
+}

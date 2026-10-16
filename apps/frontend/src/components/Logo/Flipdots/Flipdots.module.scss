@@ -1,0 +1,35 @@
+// Flip-dot panel — the webcam silhouette rendered on a mechanical flip-dot
+// display. All geometry (40px cells, disc/socket radii, the diagonal flip
+// axis) lives in Flipdots.tsx, which paints the panel on a canvas; this file
+// stretches that canvas over the header and darkens its edges.
+
+.wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  // Matches PANEL in Flipdots.tsx, so the header never flashes another color
+  // before the first frame is painted
+  background: #080808;
+
+  // Vignette: the panel falls off into darkness toward the header's edges.
+  // An overlay rather than a canvas pass, so it costs nothing per frame; it
+  // tracks the header's own aspect (ellipse), and lets clicks through.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0) 38%,
+      rgba(0, 0, 0, 0.35) 68%,
+      rgba(0, 0, 0, 0.85) 100%
+    );
+  }
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

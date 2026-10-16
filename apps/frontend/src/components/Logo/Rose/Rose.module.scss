@@ -31,7 +31,7 @@
 
   .casing {
     stroke: black;
-    stroke-width: 30;
+    stroke-width: 24;
     stroke-linecap: round;
     fill: none;
     pointer-events: none;
@@ -39,7 +39,7 @@
 
   .core {
     stroke: var(--c);
-    stroke-width: 15;
+    stroke-width: 20;
     stroke-linecap: round;
   }
 
@@ -88,7 +88,7 @@
   &[data-phase='1'] {
     .petal { opacity: 0.2; stroke: white; }
     .ring { opacity: 0.6; stroke: white; }
-    .core { opacity: 0.9; stroke: white; }
+    .core { opacity: 1; stroke: white; }
   }
 
   // Phase 2: ember — the rose dims while the knot glows gold
