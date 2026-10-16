@@ -62,6 +62,19 @@ const GLINT_GAIN = 0.6;
 const GLINT_ANGLE = 0.75;
 const GLINT_WIDTH = 0.32;
 
+/** Disc sprite atlas. A disc's look depends on nothing but its phase, so
+ * every frame of the flip is painted once — ATLAS_STEPS per half-turn, plus
+ * ATLAS_PAD frames past each rest for the clack's overshoot (≈ 0.05 turn) —
+ * and the panel just blits sprites. Each sprite is painted at SUPERSAMPLE×
+ * resolution and halved down step by step: canvas antialiasing composites
+ * every fill's edge on its own, so where the rim's edge lies on (or within a
+ * pixel of) the face's, their partial coverages leak into each other and the
+ * thin rim breaks into stair-stepped pixels. At 4× those leaks shrink below a
+ * quarter pixel and the box-filter halvings average them away. */
+const ATLAS_STEPS = 128;
+const ATLAS_PAD = 10;
+const SUPERSAMPLE = 4;
+
 /** Deterministic 0..1 jitter, stable across re-renders */
 const jitter = (row: number, col: number) => ((row * 67 + col * 113) % 83) / 83;
 
@@ -95,8 +108,9 @@ const clack = (t: number) => {
  * the coin's normal, so their projections part by DISC_T·sin θ across the
  * diagonal, and the white rim is the hull between them — a white line
  * DISC_T wide when the coin is edge-on. The purple face shows for cos θ ≥ 0,
- * the white one past edge-on. Frames go no further than the browser: nothing
- * is uploaded.
+ * the white one past edge-on. The discs are pre-painted, supersampled, into a
+ * sprite atlas (see ATLAS_STEPS) and blitted pixel-aligned. Frames go no
+ * further than the browser: nothing is uploaded.
  */
 export default function Flipdots() {
   const wrapper = useRef<HTMLDivElement>(null);
@@ -121,6 +135,9 @@ export default function Flipdots() {
     let dirty = true;
     /** Panel + sockets, prerendered once per size */
     const plate = document.createElement('canvas');
+    /** Device-pixel ratio and sprite size (device px) of the current atlas */
+    let dpr = 1;
+    let sprite = 0;
 
     // ---- Camera sampling + background model (rebuilt on resize) ----
     const sampler = document.createElement('canvas');
@@ -133,10 +150,13 @@ export default function Flipdots() {
     const layout = () => {
       w = el.clientWidth;
       h = el.clientHeight;
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const nextDpr = Math.min(2, window.devicePixelRatio || 1);
+      if (nextDpr !== dpr || sprite === 0) {
+        dpr = nextDpr;
+        buildAtlas();
+      }
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       cols = Math.max(1, Math.ceil(w / CELL));
       rows = Math.max(1, Math.ceil(h / CELL));
@@ -337,62 +357,115 @@ export default function Flipdots() {
     // ---- Render ----
     const whiteFor = (k: number) =>
       `rgb(${(WHITE_FACE[0] * k) | 0},${(WHITE_FACE[1] * k) | 0},${(WHITE_FACE[2] * k) | 0})`;
-    const WHITE_REST = whiteFor(1);
-    const PURPLE_RESTING = PURPLE[Math.round(PURPLE_REST * (PURPLE_STEPS - 1))];
     const AXIS = Math.PI / 4;
     /** The flip axis (cell diagonal) and its in-plane perpendicular */
     const ax = Math.SQRT1_2, ay = Math.SQRT1_2;
     const ux = -Math.SQRT1_2, uy = Math.SQRT1_2;
 
+    /** Paint one disc at phase p, centered on (x, y), every length × k */
+    const paintDisc = (g: CanvasRenderingContext2D, x: number, y: number, k: number, p: number) => {
+      const R = DISC_R * k;
+      // Rotation θ = p·π about the cell's diagonal; the face toward the
+      // viewer flips when the coin passes edge-on (cos θ = 0)
+      const theta = p * Math.PI;
+      const cos = Math.cos(theta);
+      const sin = Math.sin(theta);
+      const minor = R * Math.abs(cos);
+      const white = cos < 0;
+
+      // The faces' projected centers part along u by DISC_T·sin θ; the
+      // hidden face's ellipse plus the band joining the two is the rim
+      const off = (DISC_T / 2) * k * sin * (white ? -1 : 1);
+      const fx = x + ux * off, fy = y + uy * off;
+      if (Math.abs(off) > 0.01 * k) {
+        const bx = x - ux * off, by = y - uy * off;
+        g.fillStyle = RIM;
+        g.beginPath();
+        g.ellipse(bx, by, R, minor, AXIS, 0, Math.PI * 2);
+        g.fill();
+        g.beginPath();
+        g.moveTo(bx + ax * R, by + ay * R);
+        g.lineTo(fx + ax * R, fy + ay * R);
+        g.lineTo(fx - ax * R, fy - ay * R);
+        g.lineTo(bx - ax * R, by - ay * R);
+        g.closePath();
+        g.fill();
+      }
+
+      if (white) {
+        // Tilted faces catch less light than one square to the viewer
+        g.fillStyle = whiteFor(0.62 + 0.38 * Math.abs(cos));
+      } else {
+        const a = Math.acos(cos);
+        const gl = (a - GLINT_ANGLE) / GLINT_WIDTH;
+        const level = (PURPLE_REST + GLINT_GAIN * Math.exp(-gl * gl)) * (0.7 + 0.3 * cos);
+        g.fillStyle = PURPLE[Math.round(Math.min(1, level) * (PURPLE_STEPS - 1))];
+      }
+      g.beginPath();
+      g.ellipse(fx, fy, R, minor, AXIS, 0, Math.PI * 2);
+      g.fill();
+    };
+
+    /** Frames laid out in a grid of ATLAS_COLS sprites per row */
+    const FRAMES = ATLAS_STEPS + 1 + ATLAS_PAD * 2;
+    const ATLAS_COLS = 16;
+    const atlas = document.createElement('canvas');
+
+    const buildAtlas = () => {
+      sprite = Math.round(CELL * dpr);
+      atlas.width = sprite * ATLAS_COLS;
+      atlas.height = sprite * Math.ceil(FRAMES / ATLAS_COLS);
+      const actx = atlas.getContext('2d');
+      if (!actx) return;
+      actx.imageSmoothingEnabled = true;
+      actx.imageSmoothingQuality = 'high';
+
+      // Paint at SUPERSAMPLE×, then halve until sprite size: each halving
+      // averages 2×2 blocks, a clean box filter
+      const levels: HTMLCanvasElement[] = [];
+      for (let size = sprite * SUPERSAMPLE; size >= sprite; size /= 2) {
+        const lv = document.createElement('canvas');
+        lv.width = lv.height = size;
+        levels.push(lv);
+      }
+      const hctx = levels[0].getContext('2d');
+      if (!hctx) return;
+      const k = levels[0].width / CELL;
+
+      for (let f = 0; f < FRAMES; f++) {
+        hctx.clearRect(0, 0, levels[0].width, levels[0].height);
+        paintDisc(hctx, levels[0].width / 2, levels[0].height / 2, k, (f - ATLAS_PAD) / ATLAS_STEPS);
+        for (let i = 1; i < levels.length; i++) {
+          const lctx = levels[i].getContext('2d');
+          if (!lctx) return;
+          lctx.imageSmoothingQuality = 'high';
+          lctx.clearRect(0, 0, levels[i].width, levels[i].height);
+          lctx.drawImage(levels[i - 1], 0, 0, levels[i].width, levels[i].height);
+        }
+        actx.drawImage(
+          levels[levels.length - 1],
+          (f % ATLAS_COLS) * sprite,
+          Math.floor(f / ATLAS_COLS) * sprite,
+        );
+      }
+    };
+
     const draw = () => {
-      ctx.drawImage(plate, 0, 0, w, h);
+      // Everything here is in device pixels, so sprites blit 1:1 with no
+      // resampling blur
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(plate, 0, 0);
       for (let r = 0; r < rows; r++) {
+        const y = Math.round((oy + r * CELL) * dpr);
         for (let c = 0; c < cols; c++) {
-          const p = phase[r * cols + c];
-          const x = ox + c * CELL + CELL / 2;
-          const y = oy + r * CELL + CELL / 2;
-          // Rotation θ = p·π about the cell's diagonal; the face toward the
-          // viewer flips when the coin passes edge-on (cos θ = 0)
-          const theta = p * Math.PI;
-          const cos = Math.cos(theta);
-          const sin = Math.sin(theta);
-          const minor = DISC_R * Math.abs(cos);
-          const white = cos < 0;
-
-          // The faces' projected centers part along u by DISC_T·sin θ; the
-          // hidden face's ellipse plus the band joining the two is the rim
-          const off = (DISC_T / 2) * sin * (white ? -1 : 1);
-          const fx = x + ux * off, fy = y + uy * off;
-          if (Math.abs(off) > 0.05) {
-            const bx = x - ux * off, by = y - uy * off;
-            ctx.fillStyle = RIM;
-            ctx.beginPath();
-            ctx.ellipse(bx, by, DISC_R, minor, AXIS, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.moveTo(bx + ax * DISC_R, by + ay * DISC_R);
-            ctx.lineTo(fx + ax * DISC_R, fy + ay * DISC_R);
-            ctx.lineTo(fx - ax * DISC_R, fy - ay * DISC_R);
-            ctx.lineTo(bx - ax * DISC_R, by - ay * DISC_R);
-            ctx.closePath();
-            ctx.fill();
-          }
-
-          // Tilted faces catch less light than one square to the viewer
-          const tilt = 0.62 + 0.38 * Math.abs(cos);
-          if (white) {
-            ctx.fillStyle = p === 1 ? WHITE_REST : whiteFor(tilt);
-          } else if (p === 0) {
-            ctx.fillStyle = PURPLE_RESTING;
-          } else {
-            const a = Math.acos(cos);
-            const g = (a - GLINT_ANGLE) / GLINT_WIDTH;
-            const level = (PURPLE_REST + GLINT_GAIN * Math.exp(-g * g)) * (0.7 + 0.3 * cos);
-            ctx.fillStyle = PURPLE[Math.round(Math.min(1, level) * (PURPLE_STEPS - 1))];
-          }
-          ctx.beginPath();
-          ctx.ellipse(fx, fy, DISC_R, minor, AXIS, 0, Math.PI * 2);
-          ctx.fill();
+          const x = Math.round((ox + c * CELL) * dpr);
+          const f = Math.min(FRAMES - 1, Math.max(0,
+            Math.round(phase[r * cols + c] * ATLAS_STEPS) + ATLAS_PAD));
+          ctx.drawImage(
+            atlas,
+            (f % ATLAS_COLS) * sprite, Math.floor(f / ATLAS_COLS) * sprite, sprite, sprite,
+            x, y, sprite, sprite,
+          );
         }
       }
     };
