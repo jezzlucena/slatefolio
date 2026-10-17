@@ -24,6 +24,9 @@ catalogs:
     '@tailwindcss/postcss':
       specifier: ^4
       version: 4.1.18
+    '@techstark/opencv-js':
+      specifier: 4.12.0-release.1
+      version: 4.12.0-release.1
     '@types/bcryptjs':
       specifier: ^2.4.6
       version: 2.4.6
@@ -258,6 +261,9 @@ importers:
       '@simplewebauthn/browser':
         specifier: 'catalog:'
         version: 11.0.0
+      '@techstark/opencv-js':
+        specifier: 'catalog:'
+        version: 4.12.0-release.1
       '@uiw/react-md-editor':
         specifier: 'catalog:'
         version: 4.0.11(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(supports-color@7.2.0)
@@ -1544,6 +1550,9 @@ packages:
 
   '@tailwindcss/postcss@4.1.18':
     resolution: {integrity: sha512-Ce0GFnzAOuPyfV5SxjXGn0CubwGcuDB0zcdaPuCSzAa/2vII24JTkH+I6jcbXLb1ctjZMZZI6OjDaLPJQL1S0g==}
+
+  '@techstark/opencv-js@4.12.0-release.1':
+    resolution: {integrity: sha512-LtTaph9v/HqLPXEg3m1xs2h7QJh10pUpuDT0nj8g77lelWnTwwQrehtd+fXElLOdrkqc4Fea6Z/sJBvEJLYPfw==}
 
   '@tsconfig/node10@1.0.12':
     resolution: {integrity: sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ==}
@@ -5370,6 +5379,8 @@ snapshots:
       '@tailwindcss/oxide': 4.1.18
       postcss: 8.5.6
       tailwindcss: 4.1.18
+
+  '@techstark/opencv-js@4.12.0-release.1': {}
 
   '@tsconfig/node10@1.0.12': {}
 

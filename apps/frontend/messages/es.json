@@ -73,5 +73,29 @@
     "promoteAccept": "Continuar la partida",
     "promoteDecline": "Seguir mirando",
     "matchEnded": "Partida terminada"
+  },
+  "logoSwitcher": {
+    "open": "Elegir la obra de la cabecera",
+    "title": "Obras de la cabecera",
+    "close": "Cerrar",
+    "previous": "Obra anterior",
+    "next": "Obra siguiente",
+    "show": "Mostrar {name}",
+    "preview": "Ver {name}",
+    "showThis": "Mostrar esta obra",
+    "nowShowing": "En pantalla",
+    "taglines": {
+      "mosaic": "Un mosaico de teselas iluminado con tonos de aurora.",
+      "drone": "Un vuelo de dron en primera persona sobre un mundo low-poly.",
+      "slyce": "Pong de 8 bits con efecto. Toma una paleta.",
+      "rose": "Un rosetón que respira, de la flor a la brasa.",
+      "tetra": "Un campo de tetraedros que inunda la pantalla.",
+      "origami": "Un muro de cubos isométricos que se despliega.",
+      "vasarely": "Un tablero de ajedrez deformado por una protuberancia móvil.",
+      "copacabana": "Ondas en media luna, al estilo de la acera de Copacabana.",
+      "glitch": "Una carta de ajuste que se desgarra por las costuras.",
+      "interference": "Dos placas grabadas fuera de registro que pliegan la luz.",
+      "flipdots": "Tu silueta en un panel mecánico de flip-dots. Usa la cámara."
+    }
   }
 }

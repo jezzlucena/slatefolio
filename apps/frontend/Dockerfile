@@ -29,6 +29,11 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --froze
 # Copy frontend source (node_modules excluded via .dockerignore)
 COPY apps/frontend/ ./
 
+# Vendor opencv.js into public/ now, while the layer is writable. The dev and
+# build scripts run this too, but as a no-op once the copy is current — so a
+# read-only filesystem at runtime no longer breaks `pnpm run dev`.
+RUN node scripts/vendor-opencv.mjs
+
 # Only build in production mode
 RUN if [ "$ENVIRONMENT" = "production" ]; then pnpm run build; fi
 

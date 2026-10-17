@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useRef } from "react";
 import styles from "./Flipdots.module.scss"
+import { loadOpenCv, type BackgroundSubtractorMOG2, type Mat, type OpenCv } from "./opencv";
 
 /** One flip-dot cell (px). The grid is ceil()ed past the header's edges and
  * centered, so it always covers the header and the excess is cropped evenly */
@@ -14,7 +15,9 @@ const SOCKET_R = 18.5;
 /** How often (ms) a new camera frame is sampled and the panel re-targeted.
  * Real flip-dot panels refresh at a mechanical ~15 Hz */
 const SAMPLE_MS = 66;
-/** Each cell's color is the mean of SUB×SUB camera samples */
+/** MOG2 sees the camera at SUB× the panel's resolution (≈ 190×110 px on a
+ * 1080p header): enough detail for clean silhouettes, cheap enough to run
+ * every sample in wasm */
 const SUB = 4;
 
 /** One half-turn of a disc (ms), and the column sweep: real panels drive
@@ -22,17 +25,23 @@ const SUB = 4;
 const FLIP_MS = 1000;
 const SWEEP_MS_PER_COL = 7;
 
-/** Background model: frames averaged before segmentation starts */
-const WARMUP_FRAMES = 20;
-/** Per-sample learning rates. Background cells track lighting quickly;
- * foreground cells bleed into the model very slowly (time constant ≈ 1 min at
- * 15 Hz), so a sitter who holds still stays lit instead of fading out */
-const LEARN_BG = 0.05;
-const LEARN_FG = 0.001;
-/** RGB distance (0..441) from the background that turns a cell on / off.
- * The gap is hysteresis, so noise at the boundary doesn't make dots chatter */
-const ON_DIST = 34;
-const OFF_DIST = 22;
+/** OpenCV's MOG2 background subtractor (a per-pixel Gaussian mixture).
+ * HISTORY is in samples: at 15 Hz, 900 ≈ 1 min before something that stops
+ * moving — a sitter holding still — is absorbed into the background.
+ * VAR_THRESHOLD is the squared Mahalanobis distance that marks a pixel as
+ * foreground (OpenCV's default is 16; a touch higher ignores sensor noise) */
+const MOG2_HISTORY = 900;
+const MOG2_VAR_THRESHOLD = 20;
+/** Samples fed to MOG2 before it drives the panel (its first frames are all
+ * "foreground" while the mixture is still forming) */
+const WARMUP_FRAMES = 15;
+/** MOG2 marks shadows 127 and foreground 255: thresholding between keeps a
+ * sitter's cast shadow from lighting up the wall behind them */
+const SHADOW_CUT = 200;
+/** A cell turns on when this share of its pixels is foreground, and off below
+ * the second: hysteresis, so dots on the silhouette's edge don't chatter */
+const ON_COVER = 0.4;
+const OFF_COVER = 0.25;
 
 /** Disc thickness (px): seen edge-on, a disc is a white line this wide */
 const DISC_T = 2;
@@ -88,18 +97,19 @@ const clack = (t: number) => {
 
 /**
  * A flip-dot display fed by the webcam. Each frame is cropped to the panel's
- * aspect (object-fit: cover), mirrored like a selfie view, averaged down to
- * one color per cell, and segmented against a learned background model:
- * cells that differ from the background (the foreground — you) flip to their
+ * aspect (object-fit: cover), mirrored like a selfie view, and segmented by
+ * OpenCV.js's BackgroundSubtractorMOG2: foreground cells (you) flip to their
  * white face, everything else shows the shimmering purple one.
  *
- * Segmentation is on-device and dependency-free: a per-cell running-average
- * background with selective update (only background cells learn quickly),
- * global gain compensation for the camera's auto-exposure, hysteresis, and a
- * 3×3 majority filter to clean speckle. Its known limit: the model learns
- * whatever is in view during warm-up, so a sitter already in frame starts as
- * "background" and lights up once they move. Without a camera (no device,
- * denied, or still warming up) the panel plays drifting metaballs instead.
+ * The mask pipeline, per sample: MOG2 on the frame at SUB× panel resolution →
+ * drop its shadow class (SHADOW_CUT) → morphological open (removes speckle)
+ * and close (fills pinholes) → INTER_AREA resize to one value per cell, which
+ * is the share of the cell that's foreground → on/off with hysteresis. MOG2
+ * learns its background from what it sees, so a sitter already in frame when
+ * it starts reads as background until they move, and one who holds still
+ * fades out over MOG2_HISTORY. OpenCV (~10 MB) loads lazily, only once a
+ * camera is streaming (see ./opencv.ts); without a camera (no device, denied,
+ * or still loading / warming up) the panel plays drifting metaballs instead.
  *
  * Rendering is a canvas, not DOM: each disc is drawn as the orthographic
  * projection of a DISC_T-thick coin rotating about its cell's diagonal. Each
@@ -126,7 +136,7 @@ export default function Flipdots() {
 
     // ---- Grid + per-dot flip state (rebuilt on resize) ----
     let w = 0, h = 0, cols = 0, rows = 0, ox = 0, oy = 0;
-    /** Shown face as a fraction of a half-turn: 0 black, 1 white */
+    /** Shown face as a fraction of a half-turn: 0 purple, 1 white */
     let phase = new Float32Array(0);
     let fromPhase = new Float32Array(0);
     let goal = new Uint8Array(0);
@@ -139,13 +149,32 @@ export default function Flipdots() {
     let dpr = 1;
     let sprite = 0;
 
-    // ---- Camera sampling + background model (rebuilt on resize) ----
+    // ---- Camera sampling + MOG2 segmentation (rebuilt on resize) ----
     const sampler = document.createElement('canvas');
     const sctx = sampler.getContext('2d', { willReadFrequently: true });
-    let means = new Float32Array(0);
-    let model = new Float32Array(0);
-    let rawMask = new Uint8Array(0);
+    let cv: OpenCv | null = null;
+    /** MOG2 and its working buffers, allocated in the wasm heap: they must be
+     * delete()d, so they live in one bundle that's torn down as a unit */
+    let vision: {
+      mog2: BackgroundSubtractorMOG2;
+      rgb: Mat;
+      fg: Mat;
+      cover: Mat;
+      kernel: Mat;
+      cells: object;
+    } | null = null;
+    let cellMask = new Uint8Array(0);
     let modelFrames = 0;
+
+    const disposeVision = () => {
+      if (!vision) return;
+      vision.mog2.delete();
+      vision.rgb.delete();
+      vision.fg.delete();
+      vision.cover.delete();
+      vision.kernel.delete();
+      vision = null;
+    };
 
     const layout = () => {
       w = el.clientWidth;
@@ -169,12 +198,11 @@ export default function Flipdots() {
       startAt = new Float64Array(n);
       animating = 0;
 
-      // The cell mapping changed: the background model starts over
+      // The frame size changed: MOG2's per-pixel model starts over
       sampler.width = cols * SUB;
       sampler.height = rows * SUB;
-      means = new Float32Array(n * 3);
-      model = new Float32Array(n * 3);
-      rawMask = new Uint8Array(n);
+      disposeVision();
+      cellMask = new Uint8Array(n);
       modelFrames = 0;
 
       plate.width = canvas.width;
@@ -252,17 +280,24 @@ export default function Flipdots() {
       }
       stream = s;
       video.srcObject = s;
-      return video.play().then(() => { cameraReady = true; });
+      // OpenCV is only worth its download once there's a picture to segment
+      return Promise.all([video.play(), loadOpenCv()])
+        .then(([, loaded]) => {
+          if (disposed) return;
+          cv = loaded.cv;
+          cameraReady = true;
+        });
     }).catch(() => {
-      // No camera, or permission denied: the metaballs keep playing
+      // No camera, permission denied, or OpenCV failed to load: the metaballs
+      // keep playing
     });
 
-    /** Average the cover-cropped, mirrored frame down to one RGB per cell */
+    /** Draw the cover-cropped, mirrored frame into the sampler */
     const sampleFrame = () => {
-      if (!sctx) return false;
+      if (!sctx) return null;
       const vw = video.videoWidth;
       const vh = video.videoHeight;
-      if (!vw || !vh) return false;
+      if (!vw || !vh) return null;
       const aspect = cols / rows;
       let sw = vw, sh = vh, sx = 0, sy = 0;
       if (vw / vh > aspect) {
@@ -274,83 +309,49 @@ export default function Flipdots() {
       }
       sctx.setTransform(-1, 0, 0, 1, sampler.width, 0);
       sctx.drawImage(video, sx, sy, sw, sh, 0, 0, sampler.width, sampler.height);
-      const px = sctx.getImageData(0, 0, sampler.width, sampler.height).data;
-      means.fill(0);
-      const stride = sampler.width * 4;
-      for (let y = 0; y < sampler.height; y++) {
-        const r = (y / SUB) | 0;
-        for (let x = 0; x < sampler.width; x++) {
-          const i = (r * cols + ((x / SUB) | 0)) * 3;
-          const p = y * stride + x * 4;
-          means[i] += px[p];
-          means[i + 1] += px[p + 1];
-          means[i + 2] += px[p + 2];
-        }
-      }
-      const inv = 1 / (SUB * SUB);
-      for (let i = 0; i < means.length; i++) means[i] *= inv;
-      return true;
+      return sctx.getImageData(0, 0, sampler.width, sampler.height);
     };
 
-    /** Segment the sampled frame against the background model */
+    /** Segment the sampled frame with MOG2 and reduce it to one bit per cell */
     const cameraMask = (): Uint8Array | null => {
-      if (!sampleFrame()) return null;
-      const n = cols * rows;
+      if (!cv) return null;
+      const image = sampleFrame();
+      if (!image) return null;
+      if (!vision) {
+        vision = {
+          mog2: new cv.BackgroundSubtractorMOG2(MOG2_HISTORY, MOG2_VAR_THRESHOLD, true),
+          rgb: new cv.Mat(),
+          fg: new cv.Mat(),
+          cover: new cv.Mat(),
+          kernel: cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(3, 3)),
+          cells: new cv.Size(cols, rows),
+        };
+      }
+      const { mog2, rgb, fg, cover, kernel, cells } = vision;
 
+      // MOG2 models 1- or 3-channel images; the canvas hands over RGBA
+      const rgba = cv.matFromImageData(image);
+      cv.cvtColor(rgba, rgb, cv.COLOR_RGBA2RGB);
+      rgba.delete();
+      mog2.apply(rgb, fg, -1);
       if (modelFrames < WARMUP_FRAMES) {
-        const k = 1 / (modelFrames + 1);
-        for (let i = 0; i < means.length; i++) model[i] += (means[i] - model[i]) * k;
         modelFrames++;
         return null;
       }
 
-      // Auto-exposure shifts the whole frame: compare against the model scaled
-      // by the median frame/model luma ratio (the median ignores the sitter as
-      // long as they fill under half the panel)
-      const ratios = new Float32Array(n);
-      for (let i = 0; i < n; i++) {
-        const f = means[i * 3] + means[i * 3 + 1] + means[i * 3 + 2];
-        const m = model[i * 3] + model[i * 3 + 1] + model[i * 3 + 2];
-        ratios[i] = (f + 8) / (m + 8);
-      }
-      ratios.sort();
-      const gain = Math.min(2, Math.max(0.5, ratios[n >> 1]));
+      cv.threshold(fg, fg, SHADOW_CUT, 255, cv.THRESH_BINARY);
+      cv.morphologyEx(fg, fg, cv.MORPH_OPEN, kernel);
+      cv.morphologyEx(fg, fg, cv.MORPH_CLOSE, kernel);
+      // INTER_AREA averages each SUB×SUB block: 0..255 = foreground share
+      cv.resize(fg, cover, cells, 0, 0, cv.INTER_AREA);
 
-      for (let i = 0; i < n; i++) {
-        const dr = means[i * 3] - model[i * 3] * gain;
-        const dg = means[i * 3 + 1] - model[i * 3 + 1] * gain;
-        const db = means[i * 3 + 2] - model[i * 3 + 2] * gain;
-        const d = Math.sqrt(dr * dr + dg * dg + db * db);
-        rawMask[i] = d > (rawMask[i] ? OFF_DIST : ON_DIST) ? 1 : 0;
+      const share = cover.data;
+      const next = new Uint8Array(cols * rows);
+      for (let i = 0; i < next.length; i++) {
+        const limit = (cellMask[i] ? OFF_COVER : ON_COVER) * 255;
+        next[i] = share[i] > limit ? 1 : 0;
       }
-
-      // 3×3 majority vote: drops lone specks, fills pinholes in the silhouette
-      const next = new Uint8Array(n);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          let votes = 0, seen = 0;
-          for (let dy = -1; dy <= 1; dy++) {
-            const rr = r + dy;
-            if (rr < 0 || rr >= rows) continue;
-            for (let dx = -1; dx <= 1; dx++) {
-              const cc = c + dx;
-              if (cc < 0 || cc >= cols) continue;
-              votes += rawMask[rr * cols + cc];
-              seen++;
-            }
-          }
-          next[r * cols + c] = votes * 2 > seen ? 1 : 0;
-        }
-      }
-
-      // Selective update, in the model's un-gained space
-      for (let i = 0; i < n; i++) {
-        const rate = next[i] ? LEARN_FG : LEARN_BG;
-        for (let ch = 0; ch < 3; ch++) {
-          const j = i * 3 + ch;
-          model[j] += (means[j] / gain - model[j]) * rate;
-        }
-      }
+      cellMask = next;
       return next;
     };
 
@@ -518,6 +519,7 @@ export default function Flipdots() {
       ro.disconnect();
       stream?.getTracks().forEach(t => t.stop());
       video.srcObject = null;
+      disposeVision();
     };
   }, []);
 

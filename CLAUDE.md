@@ -105,6 +105,18 @@ pnpm --filter slatefolio-frontend build
   source comments encode the math: hinge axes, transform-origin reasoning,
   z-fight offsets, timing invariants. **Maintain these comments when
   editing** — they are load-bearing documentation.
+- **Flipdots** (webcam flip-dot logo) segments with OpenCV.js
+  (`@techstark/opencv-js`, ~10 MB). Don't import that package from app code:
+  Turbopack overflows its stack on it. `scripts/vendor-opencv.mjs` copies it to
+  the gitignored `public/vendor/opencv.js` (it runs as part of `dev` and
+  `build` — pnpm skips pre/post hooks — and once in the frontend Dockerfile
+  after the source `COPY`; it is a no-op when the copy is already current, so
+  a read-only container filesystem at runtime is fine), and
+  `Logo/Flipdots/opencv.ts` injects it as a `<script>` only once a camera is
+  streaming. Never resolve a promise
+  with `window.cv` itself: it is an emscripten thenable and the promise loops
+  forever. OpenCV `Mat`s and the MOG2 object live in the wasm heap and must be
+  `delete()`d.
 - **Cross-file timing/geometry invariants are explicit in comments** — e.g.
   Logo6's TSX column beat must stay exactly `3 * $swing` from its SCSS, and
   Logo6's `SCALE` constant must match the `.wall` transform. When a comment

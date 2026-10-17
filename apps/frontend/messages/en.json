@@ -77,5 +77,29 @@
     "promoteAccept": "Continue the match",
     "promoteDecline": "Keep watching",
     "matchEnded": "Match ended"
+  },
+  "logoSwitcher": {
+    "open": "Choose a header artwork",
+    "title": "Header artworks",
+    "close": "Close",
+    "previous": "Previous artwork",
+    "next": "Next artwork",
+    "show": "Show {name}",
+    "preview": "Preview {name}",
+    "showThis": "Show this artwork",
+    "nowShowing": "Now showing",
+    "taglines": {
+      "mosaic": "A tile mosaic lit in aurora hues.",
+      "drone": "A first-person drone flight over a low-poly world.",
+      "slyce": "8-bit pong with spin. Grab a paddle.",
+      "rose": "A rose window breathing from bloom to ember.",
+      "tetra": "A field of tetrahedra flooding the screen.",
+      "origami": "An isometric cube wall unfolding.",
+      "vasarely": "A checkerboard warped by a rolling bulge.",
+      "copacabana": "Crescent waves, in the Copacabana sidewalk style.",
+      "glitch": "A broadcast test card tearing at the seams.",
+      "interference": "Two engraved plates out of register, folding the light.",
+      "flipdots": "Your silhouette on a mechanical flip-dot panel. Uses the camera."
+    }
   }
 }

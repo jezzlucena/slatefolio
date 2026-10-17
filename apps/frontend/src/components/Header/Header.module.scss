@@ -91,6 +91,43 @@
           transform: translateY(-50%);
         }
       }
+
+      // Opens the LogoSwitcher coverflow. The bar itself is pointer-events:
+      // none (so clicks reach the hero's chevrons) — re-enable them here.
+      .switcherButton {
+        position: absolute;
+        top: 50%;
+        right: 16px;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 2px solid rgba(255, 255, 255, 0.75);
+        background-color: rgba(0, 0, 0, 0.35);
+        color: white;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        &:hover,
+        &:focus-visible {
+          background-color: rgba(255, 255, 255, 0.15);
+          border-color: white;
+        }
+
+        &:focus-visible {
+          outline: 2px solid white;
+          outline-offset: 2px;
+        }
+      }
     }
   }
 }
@@ -117,6 +154,17 @@
 
           &::after {
             display: none;
+          }
+        }
+
+        .switcherButton {
+          right: 10px;
+          width: 34px;
+          height: 34px;
+
+          svg {
+            width: 17px;
+            height: 17px;
           }
         }
       }

@@ -73,5 +73,29 @@
     "promoteAccept": "Continuar a partida",
     "promoteDecline": "Continuar assistindo",
     "matchEnded": "Partida encerrada"
+  },
+  "logoSwitcher": {
+    "open": "Escolher a arte do cabeçalho",
+    "title": "Artes do cabeçalho",
+    "close": "Fechar",
+    "previous": "Arte anterior",
+    "next": "Próxima arte",
+    "show": "Mostrar {name}",
+    "preview": "Ver {name}",
+    "showThis": "Mostrar esta arte",
+    "nowShowing": "Em exibição",
+    "taglines": {
+      "mosaic": "Um mosaico de pastilhas iluminado em tons de aurora.",
+      "drone": "Um voo de drone em primeira pessoa sobre um mundo low-poly.",
+      "slyce": "Pong de 8 bits com efeito. Pegue uma raquete.",
+      "rose": "Uma rosácea que respira, do desabrochar à brasa.",
+      "tetra": "Um campo de tetraedros inundando a tela.",
+      "origami": "Uma parede de cubos isométricos se desdobrando.",
+      "vasarely": "Um tabuleiro de xadrez deformado por uma bolha que rola.",
+      "copacabana": "Ondas em meia-lua, no estilo do calçadão de Copacabana.",
+      "glitch": "Um padrão de teste de TV se rasgando pelas costuras.",
+      "interference": "Duas placas gravadas fora de registro, dobrando a luz.",
+      "flipdots": "Sua silhueta em um painel mecânico de flip-dots. Usa a câmera."
+    }
   }
 }

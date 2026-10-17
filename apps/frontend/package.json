@@ -3,13 +3,14 @@
   "version": "0.4.7",
   "private": true,
   "scripts": {
-    "dev": "next dev -p $FRONTEND_PORT -H 0.0.0.0 --turbopack",
-    "build": "next build",
+    "dev": "node scripts/vendor-opencv.mjs && next dev -p $FRONTEND_PORT -H 0.0.0.0 --turbopack",
+    "build": "node scripts/vendor-opencv.mjs && next build",
     "start": "next start -p $FRONTEND_PORT -H 0.0.0.0",
     "lint": "next lint"
   },
   "dependencies": {
     "@simplewebauthn/browser": "catalog:",
+    "@techstark/opencv-js": "catalog:",
     "@uiw/react-md-editor": "catalog:",
     "deepmerge": "catalog:",
     "lodash": "catalog:",

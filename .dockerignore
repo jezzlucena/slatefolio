@@ -6,6 +6,9 @@ apps/*/node_modules
 apps/backend/dist
 apps/frontend/.next
 apps/frontend/out
+# Vendored at image build time by apps/frontend/scripts/vendor-opencv.mjs,
+# from the lockfile-pinned package — never from a developer's local copy
+apps/frontend/public/vendor
 
 # Environment files
 .env
